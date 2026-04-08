@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, LogOut, Camera } from 'lucide-react';
+import { X, Trash2, LogOut, Camera, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Announcement, Video } from '../types';
 
@@ -11,6 +11,7 @@ interface AdminModalProps {
   setVisitInfo: React.Dispatch<React.SetStateAction<string>>;
   announcements: Announcement[];
   deleteAnnouncement: (id: number) => void;
+  toggleAnnouncement: (id: number) => void;
   videos: Video[];
   deleteVideo: (id: number) => void;
   setHeroBg: (bg: string | null) => void;
@@ -25,6 +26,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   setVisitInfo,
   announcements,
   deleteAnnouncement,
+  toggleAnnouncement,
   videos,
   deleteVideo,
   setHeroBg,
@@ -135,13 +137,25 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     {ann.image && <img src={ann.image} className="w-10 h-10 rounded-lg object-cover" alt="" />}
                     <span className="text-sm font-bold text-gray-800 truncate max-w-[200px]">{ann.title}</span>
                   </div>
-                  <button 
-                    onClick={() => deleteAnnouncement(ann.id)} 
-                    className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-1 group/del"
-                  >
-                    <span className="text-xs font-bold opacity-0 group-hover/del:opacity-100 transition-opacity">Borrar</span>
-                    <Trash2 size={20} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => toggleAnnouncement(ann.id)} 
+                      className={`p-2 rounded-xl transition-colors flex items-center gap-1 group/toggle ${ann.active ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
+                      title={ann.active ? "Ocultar" : "Mostrar"}
+                    >
+                      <span className="text-xs font-bold opacity-0 group-hover/toggle:opacity-100 transition-opacity">
+                        {ann.active ? "Ocultar" : "Mostrar"}
+                      </span>
+                      {ann.active ? <Eye size={20} /> : <EyeOff size={20} />}
+                    </button>
+                    <button 
+                      onClick={() => deleteAnnouncement(ann.id)} 
+                      className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-1 group/del"
+                    >
+                      <span className="text-xs font-bold opacity-0 group-hover/del:opacity-100 transition-opacity">Borrar</span>
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
                 </div>
               )) : (
                 <p className="text-sm text-gray-400 italic text-center py-4">No hay anuncios activos actualmente.</p>

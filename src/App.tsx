@@ -69,9 +69,7 @@ export default function App() {
   };
 
   const deleteAnnouncement = (id: number) => {
-    if (confirm('¿Estás seguro de borrar este anuncio?')) {
-      setAnnouncements(announcements.filter(a => a.id !== id));
-    }
+    setAnnouncements(announcements.filter(a => a.id !== id));
   };
 
   const addAnnouncement = (newAnn: Omit<Announcement, 'id' | 'active'>) => {
@@ -79,10 +77,12 @@ export default function App() {
     setAnnouncements([...announcements, { ...newAnn, id, active: true }]);
   };
 
+  const toggleAnnouncement = (id: number) => {
+    setAnnouncements(announcements.map(a => a.id === id ? { ...a, active: !a.active } : a));
+  };
+
   const deleteVideo = (id: number) => {
-    if (confirm('¿Estás seguro de borrar este video?')) {
-      setVideos(videos.filter(v => v.id !== id));
-    }
+    setVideos(videos.filter(v => v.id !== id));
   };
 
   return (
@@ -133,6 +133,7 @@ export default function App() {
           setVisitInfo={setVisitInfo}
           announcements={announcements}
           deleteAnnouncement={deleteAnnouncement}
+          toggleAnnouncement={toggleAnnouncement}
           addAnnouncement={addAnnouncement}
           videos={videos}
           deleteVideo={deleteVideo}
