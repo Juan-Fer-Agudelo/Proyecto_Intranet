@@ -57,16 +57,6 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                       : 'w-full max-w-[240px] hover:shadow-xl hover:-translate-y-2'}
                   `}
                 >
-                  <button 
-                    className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-black/40 text-white rounded-full hover:bg-black/60 z-10 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setAnnouncements(announcements.map(a => a.id === ann.id ? { ...a, active: false } : a));
-                      if (isExpanded) setExpandedId(null);
-                    }}
-                  >
-                    <X size={16} />
-                  </button>
                   {ann.image && (
                     <div className={`overflow-hidden transition-all duration-700 ${isExpanded ? 'h-72' : 'h-32'}`}>
                       <img src={ann.image} alt="" className="w-full h-full object-cover" />

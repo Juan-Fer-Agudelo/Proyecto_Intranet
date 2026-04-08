@@ -164,23 +164,23 @@ export default function App() {
         
         :root {
           --primary: #1B4969;
-          --primary-overlay: rgba(27, 73, 105, 0.85);
-          --secondary-overlay: rgba(1, 42, 74, 0.7);
+          --primary-overlay: rgba(0, 0, 0, 0.75);
+          --secondary-overlay: rgba(0, 0, 0, 0.6);
         }
         .theme-sx {
           --primary: #264074;
-          --primary-overlay: rgba(38, 64, 116, 0.85);
-          --secondary-overlay: rgba(26, 45, 82, 0.7);
+          --primary-overlay: rgba(0, 0, 0, 0.75);
+          --secondary-overlay: rgba(0, 0, 0, 0.6);
         }
         .theme-so {
           --primary: #e2171b;
-          --primary-overlay: rgba(226, 23, 27, 0.85);
-          --secondary-overlay: rgba(179, 18, 21, 0.7);
+          --primary-overlay: rgba(0, 0, 0, 0.75);
+          --secondary-overlay: rgba(0, 0, 0, 0.6);
         }
         .theme-pl {
           --primary: #FF6600;
-          --primary-overlay: rgba(255, 102, 0, 0.85);
-          --secondary-overlay: rgba(204, 82, 0, 0.7);
+          --primary-overlay: rgba(0, 0, 0, 0.75);
+          --secondary-overlay: rgba(0, 0, 0, 0.6);
         }
       `}</style>
     </div>

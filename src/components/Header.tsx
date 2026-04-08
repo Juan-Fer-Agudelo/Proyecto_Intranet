@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Menu, X, Camera, Video, User, Settings, ChevronDown, Building2 } from 'lucide-react';
+import { Menu, X, Camera, Video, User, Settings, ChevronDown, Building2, LayoutDashboard, ChevronRight, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CONFIG, MODULES_BY_COMPANY } from '../constants/config';
 import { CompanyCode, Module } from '../types';
@@ -25,8 +25,80 @@ export const Header: React.FC<HeaderProps> = ({
   onVideosClick,
   handleModuleClick
 }) => {
-  const [activeDropdown, setActiveDropdown] = useState<CompanyCode | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
+  const [activeSubSubMenu, setActiveSubSubMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const dashboardMaquinas = {
+    name: "Dashboard Maquinas",
+    items: [
+      {
+        name: "Simex",
+        subItems: [
+          { name: "Estado Planta", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Planta&rs:Command=Render" },
+          {
+            name: "P-Producción",
+            subItems: [
+              { name: "P-Ensamble", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquina_Ens&rs:Command=Render" },
+              { name: "P-Envases", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas&rs:Command=Render" },
+              { name: "P-Estampacion", url: "#" },
+              { name: "P-Inyeccion", url: "#" },
+              { name: "P-Tampografia-Serigrafia", url: "#" }
+            ]
+          },
+          {
+            name: "Paros",
+            subItems: [
+              { name: "P-Calidad", url: "#" },
+              { name: "P-Mantenimiento", url: "#" },
+              { name: "P-Moldes", url: "#" }
+            ]
+          },
+          {
+            name: "T-Moldes",
+            subItems: [
+              { name: "Planta Moldes", url: "#" },
+              { name: "T-Banco Pulida", url: "#" },
+              { name: "T-Banco Ensamble", url: "#" },
+              { name: "T-Mecanizado", url: "#" },
+              { name: "T-Electroerosión", url: "#" },
+              { name: "T-Programación", url: "#" },
+              { name: "T-Rectificado", url: "#" },
+              { name: "T-Torno", url: "#" },
+              { name: "T-Const Moldes", url: "#" }
+            ]
+          }
+        ]
+      },
+      {
+        name: "Soinco",
+        subItems: [
+          { name: "Estado Planta", url: "#" },
+          { name: "P-Inyección", url: "#" },
+          { name: "P-Acabados", url: "#" }
+        ]
+      },
+      { 
+        name: "Plastinovo",
+        subItems: [
+          { name: "Estado Planta", url: "#" }
+        ]
+      }
+    ]
+  };
+
+  const handleDashboardClick = (url?: string) => {
+    if (url && url !== '#') {
+      window.open(url, '_blank');
+      setActiveDropdown(null);
+      setActiveSubMenu(null);
+      setActiveSubSubMenu(null);
+      setIsMobileMenuOpen(false);
+    } else if (url === '#') {
+      alert('Este enlace aún no ha sido configurado.');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-[1500] bg-[var(--primary)] text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
@@ -58,28 +130,29 @@ export const Header: React.FC<HeaderProps> = ({
           shadow-[-5px_0_20px_rgba(0,0,0,0.2)] md:shadow-none
         `}
       >
+        {/* Empresas Dropdown */}
         <div className="relative w-full md:w-auto" ref={dropdownRef}>
           <button 
             className={`
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
               bg-white text-[var(--primary)] shadow-lg hover:bg-blue-50
             `}
-            onClick={() => setActiveDropdown(activeDropdown ? null : currentCompany)}
+            onClick={() => setActiveDropdown(activeDropdown === 'EMPRESAS' ? null : 'EMPRESAS')}
           >
             <div className="flex items-center gap-2">
               <Building2 size={18} />
               <span>EMPRESAS</span>
             </div>
-            <ChevronDown size={16} className={`transition-transform duration-300 ${activeDropdown ? 'rotate-180' : ''}`} />
+            <ChevronDown size={16} className={`transition-transform duration-300 ${activeDropdown === 'EMPRESAS' ? 'rotate-180' : ''}`} />
           </button>
 
           <AnimatePresence>
-            {activeDropdown && (
+            {activeDropdown === 'EMPRESAS' && (
               <motion.div 
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[320px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1700] overflow-hidden"
+                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[320px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1700] overflow-y-auto max-h-[70vh] md:max-h-[80vh] custom-scrollbar"
               >
                 <div className="space-y-2">
                   {(['SX', 'SO', 'PL'] as CompanyCode[]).map(company => (
@@ -119,6 +192,164 @@ export const Header: React.FC<HeaderProps> = ({
                       )}
                     </div>
                   ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Dashboard Maquinas Dropdown */}
+        <div className="relative w-full md:w-auto">
+          <button 
+            className={`
+              w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
+              bg-white/10 text-white hover:bg-white/20 border border-white/20
+            `}
+            onClick={() => setActiveDropdown(activeDropdown === 'DASHBOARD' ? null : 'DASHBOARD')}
+          >
+            <div className="flex items-center gap-2">
+              <LayoutDashboard size={18} />
+              <span>Dashboard Maquinas</span>
+            </div>
+            <ChevronDown size={16} className={`transition-transform duration-300 ${activeDropdown === 'DASHBOARD' ? 'rotate-180' : ''}`} />
+          </button>
+
+          <AnimatePresence>
+            {activeDropdown === 'DASHBOARD' && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[300px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1700] overflow-visible"
+              >
+                <div className="space-y-1">
+                  {dashboardMaquinas.items.map(item => (
+                    <div key={item.name} className="relative group">
+                      <button 
+                        className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
+                        onClick={() => {
+                          if (item.subItems) {
+                            setActiveSubMenu(activeSubMenu === item.name ? null : item.name);
+                          } else {
+                            setActiveDropdown(null);
+                            setIsMobileMenuOpen(false);
+                          }
+                        }}
+                      >
+                        <span>{item.name}</span>
+                        {item.subItems && <ChevronRight size={16} className={`transition-transform ${activeSubMenu === item.name ? 'rotate-90' : ''}`} />}
+                      </button>
+
+                      {/* Submenu Level 1 */}
+                      <AnimatePresence>
+                        {activeSubMenu === item.name && item.subItems && (
+                          <motion.div 
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 10 }}
+                            className="md:absolute md:left-full md:top-0 md:ml-2 w-full md:w-[250px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1800]"
+                          >
+                            <div className="space-y-1">
+                              {item.subItems.map(subItem => (
+                                <div key={subItem.name} className="relative">
+                                  <button 
+                                    className="w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-[var(--primary)] transition-all"
+                                    onClick={() => {
+                                      if (subItem.subItems) {
+                                        setActiveSubSubMenu(activeSubSubMenu === subItem.name ? null : subItem.name);
+                                      } else {
+                                        handleDashboardClick(subItem.url);
+                                      }
+                                    }}
+                                  >
+                                    <span>{subItem.name}</span>
+                                    {subItem.subItems && <ChevronRight size={14} className={`transition-transform ${activeSubSubMenu === subItem.name ? 'rotate-90' : ''}`} />}
+                                  </button>
+
+                                  {/* Submenu Level 2 */}
+                                  <AnimatePresence>
+                                    {activeSubSubMenu === subItem.name && subItem.subItems && (
+                                      <motion.div 
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 10 }}
+                                        className="md:absolute md:left-full md:top-0 md:ml-2 w-full md:w-[220px] bg-white rounded-xl shadow-2xl p-2 border border-gray-100 z-[1900]"
+                                      >
+                                        <div className="space-y-1 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                          {subItem.subItems.map(subSubItem => (
+                                            <button 
+                                              key={subSubItem.name}
+                                              className="w-full p-2 rounded-lg text-[11px] font-bold text-gray-500 hover:bg-gray-50 hover:text-[var(--primary)] transition-all text-left"
+                                              onClick={() => {
+                                                handleDashboardClick(subSubItem.url);
+                                              }}
+                                            >
+                                              {subSubItem.name}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Sitios Web Dropdown */}
+        <div className="relative w-full md:w-auto">
+          <button 
+            className={`
+              w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
+              bg-white/10 text-white hover:bg-white/20 border border-white/20
+            `}
+            onClick={() => setActiveDropdown(activeDropdown === 'SITIOS' ? null : 'SITIOS')}
+          >
+            <div className="flex items-center gap-2">
+              <Globe size={18} />
+              <span>Sitios Web</span>
+            </div>
+            <ChevronDown size={16} className={`transition-transform duration-300 ${activeDropdown === 'SITIOS' ? 'rotate-180' : ''}`} />
+          </button>
+
+          <AnimatePresence>
+            {activeDropdown === 'SITIOS' && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[240px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1700]"
+              >
+                <div className="space-y-1">
+                  <button 
+                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
+                    onClick={() => {
+                      window.open('https://www.soinco-sas.com/', '_blank');
+                      setActiveDropdown(null);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Soinco
+                  </button>
+                  <button 
+                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
+                    onClick={() => {
+                      window.open('https://plastinovo.com/', '_blank');
+                      setActiveDropdown(null);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Plastinovo
+                  </button>
                 </div>
               </motion.div>
             )}
