@@ -42,31 +42,31 @@ export const Header: React.FC<HeaderProps> = ({
             subItems: [
               { name: "P-Ensamble", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquina_Ens&rs:Command=Render" },
               { name: "P-Envases", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas&rs:Command=Render" },
-              { name: "P-Estampacion", url: "#" },
-              { name: "P-Inyeccion", url: "#" },
-              { name: "P-Tampografia-Serigrafia", url: "#" }
+              { name: "P-Estampacion", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Estampacion_SX&rs:Command=Render" },
+              { name: "P-Inyeccion", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Inyeccion_SX&rs:Command=Render" },
+              { name: "P-Tampografia-Serigrafia", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Tampografia_SX&rs:Command=Render" }
             ]
           },
           {
             name: "Paros",
             subItems: [
-              { name: "P-Calidad", url: "#" },
-              { name: "P-Mantenimiento", url: "#" },
-              { name: "P-Moldes", url: "#" }
+              { name: "P-Calidad", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Paros_x_Calidad_SX&rs:Command=Render" },
+              { name: "P-Mantenimiento", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Paros_x_Mtto_SX&rs:Command=Render" },
+              { name: "P-Moldes", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Paros_x_Molde_SX&rs:Command=Render" }
             ]
           },
           {
             name: "T-Moldes",
             subItems: [
-              { name: "Planta Moldes", url: "#" },
-              { name: "T-Banco Pulida", url: "#" },
-              { name: "T-Banco Ensamble", url: "#" },
-              { name: "T-Mecanizado", url: "#" },
-              { name: "T-Electroerosión", url: "#" },
-              { name: "T-Programación", url: "#" },
-              { name: "T-Rectificado", url: "#" },
-              { name: "T-Torno", url: "#" },
-              { name: "T-Const Moldes", url: "#" }
+              { name: "Planta Moldes", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Moldes&rs:Command=Render" },
+              { name: "T-Banco Pulida", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_BAN&rs:Command=Render" },
+              { name: "T-Banco Ensamble", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_BCO&rs:Command=Render" },
+              { name: "T-Mecanizado", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_CME&rs:Command=Render" },
+              { name: "T-Electroerosión", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_EER&rs:Command=Render" },
+              { name: "T-Programación", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_PRG&rs:Command=Render" },
+              { name: "T-Rectificado", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_RTF&rs:Command=Render" },
+              { name: "T-Torno", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_TOR&rs:Command=Render" },
+              { name: "T-Const Moldes", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_CMO&rs:Command=Render" }
             ]
           }
         ]
@@ -74,15 +74,15 @@ export const Header: React.FC<HeaderProps> = ({
       {
         name: "Soinco",
         subItems: [
-          { name: "Estado Planta", url: "#" },
-          { name: "P-Inyección", url: "#" },
-          { name: "P-Acabados", url: "#" }
+          { name: "Estado Planta", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Planta_SO&rs:Command=Render" },
+          { name: "P-Inyección", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquina_Inyeccion_Soinco_TODO&rs:Command=Render" },
+          { name: "P-Acabados", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquina_Decoracion_Soinco&rs:Command=Render" }
         ]
       },
       { 
         name: "Plastinovo",
         subItems: [
-          { name: "Estado Planta", url: "#" }
+          { name: "Estado Planta", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Planta_PL&rs:Command=Render" }
         ]
       }
     ]
