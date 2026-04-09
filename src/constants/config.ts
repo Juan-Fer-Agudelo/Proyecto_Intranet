@@ -3,7 +3,7 @@ import { Module, CompanyCode } from '../types';
 
 export const CONFIG = {
   DEFAULT_COMPANY: 'SX' as CompanyCode,
-  SECURITY_TOKEN: 'andrea2026*',
+  SECURITY_TOKEN: 'Admin2027*',
   LOGOS: {
     SX: 'https://media.licdn.com/dms/image/v2/C4E0BAQFZHWX79Enq_g/company-logo_200_200/company-logo_200_200/0/1630580415587?e=2147483647&v=beta&t=zsj_Lhq0pgti6kAiuKfuNwk8Kq5tuFEyL9JYiew2Dmk',
     SO: 'https://media.licdn.com/dms/image/v2/C4E0BAQHN0aLWJ1NY9Q/company-logo_200_200/company-logo_200_200/0/1630607524238?e=2147483647&v=beta&t=6bmcpkeVOfN8WDHxAbWyH2fweQgFr8UEFps8ndsdk9o',
