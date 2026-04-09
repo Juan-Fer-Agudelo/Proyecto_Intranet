@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, LogOut, Camera, Eye, EyeOff } from 'lucide-react';
+import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Announcement, Video } from '../types';
 
@@ -15,6 +15,8 @@ interface AdminModalProps {
   videos: Video[];
   deleteVideo: (id: number) => void;
   setHeroBg: (bg: string | null) => void;
+  rhVideo: string | null;
+  setRhVideo: (url: string | null) => void;
   addAnnouncement: (ann: Omit<Announcement, 'id' | 'active'>) => void;
 }
 
@@ -30,6 +32,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   videos,
   deleteVideo,
   setHeroBg,
+  rhVideo,
+  setRhVideo,
   addAnnouncement
 }) => {
   const [newAnn, setNewAnn] = useState({ title: '', content: '', image: '' });
@@ -167,7 +171,46 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">3</span>
-              Videos Corporativos
+              Video RH (Archivo)
+            </h3>
+            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
+              <input 
+                type="file" 
+                accept="video/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    const url = URL.createObjectURL(e.target.files[0]);
+                    setRhVideo(url);
+                  }
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              <div className="space-y-2">
+                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                  <VideoIcon size={24} />
+                </div>
+                <p className="text-sm font-bold text-gray-600">Haz clic para subir un video de RH</p>
+                <p className="text-xs text-gray-400">Formatos: MP4, WebM</p>
+              </div>
+            </div>
+            {rhVideo && (
+              <div className="flex justify-between items-center p-4 bg-green-50 rounded-2xl border-2 border-green-100">
+                <span className="text-sm font-bold text-green-800">Video cargado correctamente</span>
+                <button 
+                  onClick={() => setRhVideo(null)} 
+                  className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+            )}
+          </section>
+
+          {/* Videos Corporativos */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+              <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">4</span>
+              Videos Corporativos (YouTube)
             </h3>
             <div className="space-y-3">
               {videos.map(v => (
@@ -187,7 +230,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           {/* Hero BG */}
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-              <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">4</span>
+              <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">5</span>
               Imagen de Bienvenida
             </h3>
             <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">

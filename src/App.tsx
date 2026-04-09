@@ -10,6 +10,7 @@ import { Announcements } from './components/Announcements';
 import { LoginModal } from './components/LoginModal';
 import { AdminModal } from './components/AdminModal';
 import { VideosModal } from './components/VideosModal';
+import { RHVideoModal } from './components/RHVideoModal';
 
 export default function App() {
   // --- STATE ---
@@ -22,11 +23,13 @@ export default function App() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [heroBg, setHeroBg] = useState<string | null>(null);
   const [visitInfo, setVisitInfo] = useState("Hoy nos visita Bancolombia para asesoría en crédito de vivienda");
+  const [rhVideo, setRhVideo] = useState<string | null>(null);
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [showVideosModal, setShowVideosModal] = useState(false);
+  const [showRHVideoModal, setShowRHVideoModal] = useState(false);
   
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -95,6 +98,7 @@ export default function App() {
         isAdminLoggedIn={isAdminLoggedIn}
         onAdminClick={() => isAdminLoggedIn ? setShowAdminModal(true) : setShowLoginModal(true)}
         onVideosClick={() => setShowVideosModal(true)}
+        onRHVideoClick={() => setShowRHVideoModal(true)}
         handleModuleClick={handleModuleClick}
       />
 
@@ -138,12 +142,20 @@ export default function App() {
           videos={videos}
           deleteVideo={deleteVideo}
           setHeroBg={setHeroBg}
+          rhVideo={rhVideo}
+          setRhVideo={setRhVideo}
         />
 
         <VideosModal 
           isOpen={showVideosModal}
           onClose={() => setShowVideosModal(false)}
           videos={videos}
+        />
+
+        <RHVideoModal 
+          isOpen={showRHVideoModal}
+          onClose={() => setShowRHVideoModal(false)}
+          videoUrl={rhVideo}
         />
       </AnimatePresence>
 

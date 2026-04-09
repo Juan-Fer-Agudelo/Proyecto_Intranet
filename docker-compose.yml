@@ -1,0 +1,13 @@
+services:
+  intranet-app:
+    build: .
+    container_name: intranet_corporativa
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - intranet-network
+
+networks:
+  intranet-network:
+    driver: bridge

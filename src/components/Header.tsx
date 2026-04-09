@@ -12,6 +12,7 @@ interface HeaderProps {
   isAdminLoggedIn: boolean;
   onAdminClick: () => void;
   onVideosClick: () => void;
+  onRHVideoClick: () => void;
   handleModuleClick: (mod: Module) => void;
 }
 
@@ -23,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   isAdminLoggedIn,
   onAdminClick,
   onVideosClick,
+  onRHVideoClick,
   handleModuleClick
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -107,7 +109,6 @@ export const Header: React.FC<HeaderProps> = ({
           src={CONFIG.LOGOS[currentCompany]} 
           alt="Logo" 
           className="h-8 md:h-10 w-auto max-w-[150px] md:max-w-[180px] object-contain transition-transform hover:scale-105"
-          style={{ filter: currentCompany === 'SO' ? 'none' : 'brightness(0) invert(1)' }}
         />
         <span className="hidden lg:block font-bold text-lg xl:text-xl uppercase tracking-wider">Intranet Corporativa</span>
       </div>
@@ -357,7 +358,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto border-t md:border-none border-white/10 pt-6 md:pt-0">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group">
+          <button 
+            className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+            onClick={() => window.open('http://srvaplicaciones/desarrollos/archivos/apps/directorioDinamicoV/', '_blank')}
+          >
             <User size={18} className="group-hover:scale-110 transition-transform" /> Directorio
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group">
@@ -366,7 +370,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button 
             className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
             onClick={() => {
-              onVideosClick();
+              onRHVideoClick();
               setIsMobileMenuOpen(false);
             }}
           >
