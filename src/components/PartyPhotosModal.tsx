@@ -21,9 +21,9 @@ export const PartyPhotosModal: React.FC<PartyPhotosModalProps> = ({ isOpen, onCl
       />
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-        className="relative bg-white rounded-[2rem] overflow-hidden w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl"
+        className="relative glass rounded-[2rem] overflow-hidden w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl"
       >
-        <div className="flex justify-between items-center p-6 bg-white border-b">
+        <div className="flex justify-between items-center p-6 bg-transparent backdrop-blur-md border-b border-gray-200">
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">Fotos Fiesta 2025</h2>
           <button 
             onClick={onClose}

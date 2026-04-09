@@ -29,7 +29,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
       </AnimatePresence>
 
       <div className="fixed bottom-24 left-0 right-0 flex justify-center items-end px-6 z-[1450] pointer-events-none">
-        <div className="flex flex-row justify-center flex-wrap gap-4 w-full max-w-7xl">
+        <div className="flex flex-row justify-center flex-wrap gap-4 w-full container-custom">
           <AnimatePresence mode="popLayout">
             {activeAnnouncements.map(ann => {
               const isExpanded = expandedId === ann.id;
@@ -51,7 +51,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                   exit={{ opacity: 0, scale: 0.8, y: 20 }}
                   onClick={() => setExpandedId(isExpanded ? null : ann.id)}
                   className={`
-                    pointer-events-auto bg-white/95 rounded-[28px] shadow-2xl overflow-hidden relative border border-white/40 backdrop-blur-xl cursor-pointer transition-all duration-500
+                    pointer-events-auto glass rounded-[28px] shadow-2xl overflow-hidden relative cursor-pointer transition-all duration-500
                     ${isExpanded 
                       ? 'w-[95vw] max-w-[500px] shadow-blue-500/40 ring-4 ring-blue-500/10 mb-4' 
                       : 'w-full max-w-[240px] hover:shadow-xl hover:-translate-y-2'}

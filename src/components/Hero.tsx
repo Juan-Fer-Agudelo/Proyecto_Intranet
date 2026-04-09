@@ -16,7 +16,7 @@ export const Hero: React.FC<HeroProps> = ({ news, heroBg }) => {
     >
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary-overlay)] to-[var(--secondary-overlay)]" />
       
-      <div className="relative z-10 w-full max-w-[1200px] flex flex-col gap-8 items-center pt-8 md:pt-16">
+      <div className="relative z-10 w-full container-custom flex flex-col gap-8 items-center pt-8 md:pt-16">
         {news.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full">
             {news.map((item, idx) => (

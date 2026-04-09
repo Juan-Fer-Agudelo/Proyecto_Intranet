@@ -34,7 +34,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       />
       <motion.div 
         initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative bg-white rounded-3xl p-8 w-full max-w-[380px] shadow-2xl"
+        className="relative glass rounded-3xl p-8 w-full max-w-[380px] shadow-2xl"
       >
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">Acceso Admin</h2>

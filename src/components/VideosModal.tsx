@@ -26,9 +26,9 @@ export const VideosModal: React.FC<VideosModalProps> = ({ isOpen, onClose, video
       />
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-        className="relative bg-white rounded-[32px] p-6 md:p-10 w-full max-w-[1000px] max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
+        className="relative glass rounded-[32px] p-6 md:p-10 w-full max-w-[1000px] max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
       >
-        <div className="flex justify-between items-center mb-10 sticky top-0 bg-white z-10 pb-4 border-b">
+        <div className="flex justify-between items-center mb-10 sticky top-0 bg-transparent backdrop-blur-md z-10 pb-4 border-b border-gray-200">
           <h2 className="text-3xl font-black text-gray-900 tracking-tight">Videos de Recursos Humanos</h2>
           <button 
             onClick={onClose}

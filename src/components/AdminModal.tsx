@@ -72,9 +72,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       />
       <motion.div 
         initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
-        className="relative bg-white rounded-3xl p-6 md:p-10 w-full max-w-[650px] max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
+        className="relative glass rounded-3xl p-6 md:p-10 w-full max-w-[650px] max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
       >
-        <div className="flex justify-between items-center mb-8 sticky top-0 bg-white z-10 pb-4 border-b">
+        <div className="flex justify-between items-center mb-8 sticky top-0 bg-transparent backdrop-blur-md z-10 pb-4 border-b border-gray-200">
           <h2 className="text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
           <button 
             onClick={onClose}

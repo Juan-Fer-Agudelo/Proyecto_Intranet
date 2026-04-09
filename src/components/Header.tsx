@@ -155,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[320px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1700] overflow-y-auto max-h-[70vh] md:max-h-[80vh] custom-scrollbar"
+                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[320px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-y-auto max-h-[70vh] md:max-h-[80vh] custom-scrollbar"
               >
                 <div className="space-y-2">
                   {(['SX', 'SO', 'PL'] as CompanyCode[]).map(company => (
@@ -223,7 +223,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[300px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1700] overflow-visible"
+                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[300px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-visible"
               >
                 <div className="space-y-1">
                   {dashboardMaquinas.items.map(item => (
@@ -330,7 +330,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[240px] bg-white rounded-2xl shadow-2xl p-3 border border-gray-100 z-[1700]"
+                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[240px] glass rounded-2xl shadow-2xl p-3 z-[1700]"
               >
                 <div className="space-y-1">
                   <button 
