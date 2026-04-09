@@ -2,19 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { CONFIG } from './constants/config';
 import { Announcement, Video as VideoType, NewsItem, CompanyCode, Module, PartyPhoto } from './types';
-import { getDb, handleFirestoreError, OperationType } from './lib/firebase';
-import { 
-  collection, 
-  onSnapshot, 
-  addDoc, 
-  deleteDoc, 
-  doc, 
-  updateDoc, 
-  setDoc, 
-  query,
-  orderBy,
-  serverTimestamp
-} from 'firebase/firestore';
 
 // Components
 import { Header } from './components/Header';
@@ -31,15 +18,16 @@ export default function App() {
   const [currentCompany, setCurrentCompany] = useState<CompanyCode>(CONFIG.DEFAULT_COMPANY);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [videos, setVideos] = useState<VideoType[]>([
-    { id: 1, title: 'Mensaje de Gerencia', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
-  ]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Data from Backend
+  const [videos, setVideos] = useState<VideoType[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [heroBg, setHeroBg] = useState<string | null>(null);
-  const [visitInfo, setVisitInfo] = useState("Hoy nos visita Bancolombia para asesoría en crédito de vivienda");
+  const [heroBgs, setHeroBgs] = useState<string[]>([]);
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [visitInfo, setVisitInfo] = useState("");
   const [rhVideo, setRhVideo] = useState<string | null>(null);
   const [partyPhotos, setPartyPhotos] = useState<PartyPhoto[]>([]);
-  const [isDataReady, setIsDataReady] = useState(false);
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -52,61 +40,55 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginMessage, setLoginMessage] = useState({ text: '', color: '' });
 
+  // --- API FETCHING ---
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/data');
+      const data = await response.json();
+      setVideos(data.videos);
+      setAnnouncements(data.announcements);
+      setHeroBgs(data.heroBgs);
+      setVisitInfo(data.visitInfo);
+      setRhVideo(data.rhVideo);
+      setPartyPhotos(data.partyPhotos);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveData = async (updates: any) => {
+    try {
+      await fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  };
+
   // --- EFFECTS ---
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   useEffect(() => {
     document.body.className = `theme-${currentCompany.toLowerCase()}`;
   }, [currentCompany]);
 
-  // Real-time listeners
+  // Background rotation effect
   useEffect(() => {
-    let unsubs: (() => void)[] = [];
-
-    const setupListeners = async () => {
-      const db = await getDb();
-      
-      const unsubAnn = onSnapshot(query(collection(db, 'announcements'), orderBy('createdAt', 'desc')), 
-        (snapshot) => {
-          setAnnouncements(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as any)));
-        },
-        (error) => handleFirestoreError(error, OperationType.LIST, 'announcements')
-      );
-
-      const unsubVideos = onSnapshot(query(collection(db, 'videos'), orderBy('createdAt', 'desc')), 
-        (snapshot) => {
-          setVideos(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as any)));
-        },
-        (error) => handleFirestoreError(error, OperationType.LIST, 'videos')
-      );
-
-      const unsubPhotos = onSnapshot(query(collection(db, 'partyPhotos'), orderBy('createdAt', 'desc')), 
-        (snapshot) => {
-          setPartyPhotos(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as any)));
-        },
-        (error) => handleFirestoreError(error, OperationType.LIST, 'partyPhotos')
-      );
-
-      const unsubSettings = onSnapshot(doc(db, 'settings', 'global'), 
-        (docSnap) => {
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            if (data.visitInfo) setVisitInfo(data.visitInfo);
-            if (data.heroBg) setHeroBg(data.heroBg);
-            if (data.rhVideo) setRhVideo(data.rhVideo);
-          }
-          setIsDataReady(true);
-        },
-        (error) => handleFirestoreError(error, OperationType.GET, 'settings/global')
-      );
-
-      unsubs = [unsubAnn, unsubVideos, unsubPhotos, unsubSettings];
-    };
-
-    setupListeners();
-
-    return () => {
-      unsubs.forEach(unsub => unsub());
-    };
-  }, []);
+    if (heroBgs.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prev) => (prev + 1) % heroBgs.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [heroBgs]);
 
   // --- HANDLERS ---
   const handleModuleClick = (mod: Module) => {
@@ -139,89 +121,77 @@ export default function App() {
     }
   };
 
-  const deleteAnnouncement = async (id: string) => {
-    try {
-      const db = await getDb();
-      await deleteDoc(doc(db, 'announcements', id));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `announcements/${id}`);
-    }
+  const deleteAnnouncement = (id: string | number) => {
+    const updated = announcements.filter(a => a.id !== id);
+    setAnnouncements(updated);
+    saveData({ announcements: updated });
   };
 
-  const addAnnouncement = async (newAnn: Omit<Announcement, 'id' | 'active'>) => {
-    try {
-      const db = await getDb();
-      await addDoc(collection(db, 'announcements'), {
-        ...newAnn,
-        active: true,
-        createdAt: serverTimestamp()
-      });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'announcements');
-    }
+  const addAnnouncement = (newAnn: Omit<Announcement, 'id' | 'active'>) => {
+    const id = Date.now().toString();
+    const updated = [{ ...newAnn, id, active: true }, ...announcements];
+    setAnnouncements(updated);
+    saveData({ announcements: updated });
   };
 
-  const toggleAnnouncement = async (id: string, currentActive: boolean) => {
-    try {
-      const db = await getDb();
-      await updateDoc(doc(db, 'announcements', id), {
-        active: !currentActive
-      });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `announcements/${id}`);
-    }
+  const toggleAnnouncement = (id: string | number, currentActive: boolean) => {
+    const updated = announcements.map(a => a.id === id ? { ...a, active: !currentActive } : a);
+    setAnnouncements(updated);
+    saveData({ announcements: updated });
   };
 
-  const deleteVideo = async (id: string) => {
-    try {
-      const db = await getDb();
-      await deleteDoc(doc(db, 'videos', id));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `videos/${id}`);
-    }
+  const deleteVideo = (id: string | number) => {
+    const updated = videos.filter(v => v.id !== id);
+    setVideos(updated);
+    saveData({ videos: updated });
   };
 
-  const addVideo = async (newVideo: Omit<VideoType, 'id'>) => {
-    try {
-      const db = await getDb();
-      await addDoc(collection(db, 'videos'), {
-        ...newVideo,
-        createdAt: serverTimestamp()
-      });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'videos');
-    }
+  const addVideo = (newVideo: Omit<VideoType, 'id'>) => {
+    const updated = [{ ...newVideo, id: Date.now().toString() }, ...videos];
+    setVideos(updated);
+    saveData({ videos: updated });
   };
 
-  const addPartyPhoto = async (url: string) => {
-    try {
-      const db = await getDb();
-      await addDoc(collection(db, 'partyPhotos'), {
-        url,
-        createdAt: serverTimestamp()
-      });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'partyPhotos');
-    }
+  const addPartyPhoto = (url: string) => {
+    const updated = [{ id: Date.now().toString(), url }, ...partyPhotos];
+    setPartyPhotos(updated);
+    saveData({ partyPhotos: updated });
   };
 
-  const deletePartyPhoto = async (id: string) => {
-    try {
-      const db = await getDb();
-      await deleteDoc(doc(db, 'partyPhotos', id));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `partyPhotos/${id}`);
-    }
+  const deletePartyPhoto = (id: string | number) => {
+    const updated = partyPhotos.filter(p => p.id !== id);
+    setPartyPhotos(updated);
+    saveData({ partyPhotos: updated });
   };
 
-  const updateGlobalSettings = async (updates: Partial<{ visitInfo: string, heroBg: string, rhVideo: string }>) => {
-    try {
-      const db = await getDb();
-      await setDoc(doc(db, 'settings', 'global'), updates, { merge: true });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, 'settings/global');
-    }
+  const handleSetVisitInfo = (val: string | ((prev: string) => string)) => {
+    const newValue = typeof val === 'function' ? val(visitInfo) : val;
+    setVisitInfo(newValue);
+    saveData({ visitInfo: newValue });
   };
+
+  const handleSetHeroBgs = (val: string[] | ((prev: string[]) => string[])) => {
+    const newValue = typeof val === 'function' ? val(heroBgs) : val;
+    setHeroBgs(newValue);
+    saveData({ heroBgs: newValue });
+  };
+
+  const handleSetRhVideo = (val: string | null | ((prev: string | null) => string | null)) => {
+    const newValue = typeof val === 'function' ? val(rhVideo) : val;
+    setRhVideo(newValue);
+    saveData({ rhVideo: newValue });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-bold animate-pulse">Cargando Intranet...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
@@ -241,10 +211,11 @@ export default function App() {
       <Announcements 
         announcements={announcements}
         setAnnouncements={setAnnouncements}
+        currentCompany={currentCompany}
       />
 
       <main className="flex-grow flex flex-col">
-        <Hero news={news} heroBg={heroBg} />
+        <Hero news={news} heroBgs={heroBgs} currentBgIndex={currentBgIndex} />
 
         {/* Visit Banner */}
         <div className="bg-black text-white py-4 px-8 text-center font-bold text-sm md:text-base relative z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] tracking-wide">
@@ -270,7 +241,7 @@ export default function App() {
           onClose={() => setShowAdminModal(false)}
           onLogout={() => { setIsAdminLoggedIn(false); setShowAdminModal(false); }}
           visitInfo={visitInfo}
-          setVisitInfo={(val) => updateGlobalSettings({ visitInfo: val })}
+          setVisitInfo={handleSetVisitInfo}
           announcements={announcements}
           deleteAnnouncement={deleteAnnouncement}
           toggleAnnouncement={toggleAnnouncement}
@@ -278,9 +249,10 @@ export default function App() {
           videos={videos}
           deleteVideo={deleteVideo}
           addVideo={addVideo}
-          setHeroBg={(val) => updateGlobalSettings({ heroBg: val })}
+          heroBgs={heroBgs}
+          setHeroBgs={handleSetHeroBgs}
           rhVideo={rhVideo}
-          setRhVideo={(val) => updateGlobalSettings({ rhVideo: val })}
+          setRhVideo={handleSetRhVideo}
           partyPhotos={partyPhotos}
           addPartyPhoto={addPartyPhoto}
           deletePartyPhoto={deletePartyPhoto}

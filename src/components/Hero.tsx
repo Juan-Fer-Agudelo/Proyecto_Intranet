@@ -1,20 +1,34 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Image as ImageIcon } from 'lucide-react';
 import { NewsItem } from '../types';
 
 interface HeroProps {
   news: NewsItem[];
-  heroBg: string | null;
+  heroBgs: string[];
+  currentBgIndex: number;
 }
 
-export const Hero: React.FC<HeroProps> = ({ news, heroBg }) => {
+export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => {
+  const defaultBg = 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=2070&auto=format&fit=crop';
+  const displayBgs = heroBgs.length > 0 ? heroBgs : [defaultBg];
+  
   return (
-    <section 
-      className="relative min-h-[500px] md:min-h-[calc(100vh-120px)] flex flex-col items-center justify-start p-6 md:p-12 text-center bg-cover bg-center transition-all duration-700 ease-in-out"
-      style={{ backgroundImage: `url(${heroBg || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=2070&auto=format&fit=crop'})` }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary-overlay)] to-[var(--secondary-overlay)]" />
+    <section className="relative min-h-[500px] md:min-h-[calc(100vh-120px)] flex flex-col items-center justify-start p-6 md:p-12 text-center overflow-hidden">
+      {/* Background Images with Transitions */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentBgIndex}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5 }}
+          className="absolute inset-0 bg-cover bg-center z-0"
+          style={{ backgroundImage: `url(${displayBgs[currentBgIndex % displayBgs.length]})` }}
+        />
+      </AnimatePresence>
+
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary-overlay)] to-[var(--secondary-overlay)] z-[1]" />
       
       <div className="relative z-10 w-full container-custom flex flex-col gap-8 items-center pt-8 md:pt-16">
         {news.length > 0 ? (

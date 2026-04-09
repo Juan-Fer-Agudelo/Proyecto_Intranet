@@ -15,7 +15,8 @@ interface AdminModalProps {
   videos: Video[];
   deleteVideo: (id: string) => void;
   addVideo: (video: Omit<Video, 'id'>) => void;
-  setHeroBg: (bg: string | null) => void;
+  heroBgs: string[];
+  setHeroBgs: React.Dispatch<React.SetStateAction<string[]>>;
   rhVideo: string | null;
   setRhVideo: (url: string | null) => void;
   partyPhotos: PartyPhoto[];
@@ -36,7 +37,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   videos,
   deleteVideo,
   addVideo,
-  setHeroBg,
+  heroBgs,
+  setHeroBgs,
   rhVideo,
   setRhVideo,
   partyPhotos,
@@ -44,7 +46,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   deletePartyPhoto,
   addAnnouncement
 }) => {
-  const [newAnn, setNewAnn] = useState({ title: '', content: '', image: '' });
+  const [newAnn, setNewAnn] = useState<{ title: string; content: string; image: string; company: 'SX' | 'SO' | 'PL' | 'Global' }>({ 
+    title: '', 
+    content: '', 
+    image: '', 
+    company: 'Global' 
+  });
   const [newVideo, setNewVideo] = useState({ title: '', url: '' });
 
   if (!isOpen) return null;
@@ -53,7 +60,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     e.preventDefault();
     if (!newAnn.title || !newAnn.content) return;
     addAnnouncement(newAnn);
-    setNewAnn({ title: '', content: '', image: '' });
+    setNewAnn({ title: '', content: '', image: '', company: 'Global' });
   };
 
   const handleAddVideo = (e: React.FormEvent) => {
@@ -129,6 +136,27 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 value={newAnn.content}
                 onChange={e => setNewAnn({...newAnn, content: e.target.value})}
               />
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Mostrar en:</label>
+                <div className="flex flex-wrap gap-2">
+                  {['Global', 'SX', 'SO', 'PL'].map((comp) => (
+                    <button
+                      key={comp}
+                      type="button"
+                      onClick={() => setNewAnn({...newAnn, company: comp as any})}
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${
+                        newAnn.company === comp 
+                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' 
+                          : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      }`}
+                    >
+                      {comp === 'Global' ? 'Todas las empresas' : comp}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <input 
                 type="file"
                 accept="image/*"
@@ -155,7 +183,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <div key={ann.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border-2 border-gray-100 group hover:border-blue-200 transition-colors">
                   <div className="flex items-center gap-3">
                     {ann.image && <img src={ann.image} className="w-10 h-10 rounded-lg object-cover" alt="" />}
-                    <span className="text-sm font-bold text-gray-800 truncate max-w-[200px]">{ann.title}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-gray-800 truncate max-w-[150px]">{ann.title}</span>
+                      <span className={`text-[8px] font-black px-2 py-0.5 rounded-full w-fit uppercase ${
+                        ann.company === 'Global' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
+                      }`}>
+                        {ann.company}
+                      </span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
@@ -265,32 +300,46 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             </div>
           </section>
 
-          {/* Hero BG */}
+          {/* Hero BGs */}
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">5</span>
-              Imagen de Bienvenida
+              Imágenes de Bienvenida Dinámicas (Máx 4)
             </h3>
-            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => setHeroBg(ev.target?.result as string);
-                    reader.readAsDataURL(e.target.files[0]);
-                  }
-                }}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
-              <div className="space-y-2">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                  <Camera size={24} />
+            
+            <div className="grid grid-cols-2 gap-4">
+              {heroBgs.map((bg, idx) => (
+                <div key={idx} className="relative aspect-video rounded-2xl overflow-hidden border-2 border-gray-100 group">
+                  <img src={bg} className="w-full h-full object-cover" alt="" />
+                  <button 
+                    onClick={() => setHeroBgs(heroBgs.filter((_, i) => i !== idx))}
+                    className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-                <p className="text-sm font-bold text-gray-600">Haz clic para subir una nueva imagen</p>
-                <p className="text-xs text-gray-400">Recomendado: 1920x1080px</p>
-              </div>
+              ))}
+              
+              {heroBgs.length < 4 && (
+                <div className="p-4 border-2 border-dashed border-gray-200 rounded-2xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group flex flex-col items-center justify-center aspect-video">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setHeroBgs([...heroBgs, ev.target?.result as string]);
+                        reader.readAsDataURL(e.target.files[0]);
+                      }
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-2">
+                    <Camera size={20} />
+                  </div>
+                  <p className="text-[10px] font-bold text-gray-500">Subir imagen</p>
+                </div>
+              )}
             </div>
           </section>
 

@@ -18,6 +18,7 @@ export interface Announcement {
   content: string;
   image?: string;
   active: boolean;
+  company: CompanyCode | 'Global';
 }
 
 export interface NewsItem {

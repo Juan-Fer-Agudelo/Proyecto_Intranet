@@ -1,17 +1,20 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Announcement } from '../types';
+import { Announcement, CompanyCode } from '../types';
 
 interface AnnouncementsProps {
   announcements: Announcement[];
   setAnnouncements: React.Dispatch<React.SetStateAction<Announcement[]>>;
+  currentCompany: CompanyCode;
 }
 
-export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnouncements }) => {
-  const [expandedId, setExpandedId] = React.useState<number | null>(null);
+export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnouncements, currentCompany }) => {
+  const [expandedId, setExpandedId] = React.useState<string | number | null>(null);
 
-  const activeAnnouncements = announcements.filter(a => a.active).slice(-5);
+  const activeAnnouncements = announcements
+    .filter(a => a.active && (a.company === currentCompany || a.company === 'Global'))
+    .slice(-5);
   const isAnyExpanded = expandedId !== null;
 
   return (
