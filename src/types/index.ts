@@ -31,3 +31,8 @@ export interface NewsItem {
 }
 
 export type CompanyCode = 'SX' | 'SO' | 'PL';
+
+export interface PartyPhoto {
+  id: number;
+  url: string;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { CONFIG } from './constants/config';
-import { Announcement, Video as VideoType, NewsItem, CompanyCode, Module } from './types';
+import { Announcement, Video as VideoType, NewsItem, CompanyCode, Module, PartyPhoto } from './types';
 
 // Components
 import { Header } from './components/Header';
@@ -11,6 +11,7 @@ import { LoginModal } from './components/LoginModal';
 import { AdminModal } from './components/AdminModal';
 import { VideosModal } from './components/VideosModal';
 import { RHVideoModal } from './components/RHVideoModal';
+import { PartyPhotosModal } from './components/PartyPhotosModal';
 
 export default function App() {
   // --- STATE ---
@@ -24,12 +25,14 @@ export default function App() {
   const [heroBg, setHeroBg] = useState<string | null>(null);
   const [visitInfo, setVisitInfo] = useState("Hoy nos visita Bancolombia para asesoría en crédito de vivienda");
   const [rhVideo, setRhVideo] = useState<string | null>(null);
+  const [partyPhotos, setPartyPhotos] = useState<PartyPhoto[]>([]);
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [showVideosModal, setShowVideosModal] = useState(false);
   const [showRHVideoModal, setShowRHVideoModal] = useState(false);
+  const [showPartyPhotosModal, setShowPartyPhotosModal] = useState(false);
   
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -88,6 +91,18 @@ export default function App() {
     setVideos(videos.filter(v => v.id !== id));
   };
 
+  const addVideo = (newVideo: Omit<VideoType, 'id'>) => {
+    setVideos([...videos, { ...newVideo, id: Date.now() }]);
+  };
+
+  const addPartyPhoto = (url: string) => {
+    setPartyPhotos([...partyPhotos, { id: Date.now(), url }]);
+  };
+
+  const deletePartyPhoto = (id: number) => {
+    setPartyPhotos(partyPhotos.filter(p => p.id !== id));
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
       <Header 
@@ -99,6 +114,7 @@ export default function App() {
         onAdminClick={() => isAdminLoggedIn ? setShowAdminModal(true) : setShowLoginModal(true)}
         onVideosClick={() => setShowVideosModal(true)}
         onRHVideoClick={() => setShowRHVideoModal(true)}
+        onPartyPhotosClick={() => setShowPartyPhotosModal(true)}
         handleModuleClick={handleModuleClick}
       />
 
@@ -141,9 +157,13 @@ export default function App() {
           addAnnouncement={addAnnouncement}
           videos={videos}
           deleteVideo={deleteVideo}
+          addVideo={addVideo}
           setHeroBg={setHeroBg}
           rhVideo={rhVideo}
           setRhVideo={setRhVideo}
+          partyPhotos={partyPhotos}
+          addPartyPhoto={addPartyPhoto}
+          deletePartyPhoto={deletePartyPhoto}
         />
 
         <VideosModal 
@@ -156,6 +176,12 @@ export default function App() {
           isOpen={showRHVideoModal}
           onClose={() => setShowRHVideoModal(false)}
           videoUrl={rhVideo}
+        />
+
+        <PartyPhotosModal 
+          isOpen={showPartyPhotosModal}
+          onClose={() => setShowPartyPhotosModal(false)}
+          photos={partyPhotos}
         />
       </AnimatePresence>
 

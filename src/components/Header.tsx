@@ -13,6 +13,7 @@ interface HeaderProps {
   onAdminClick: () => void;
   onVideosClick: () => void;
   onRHVideoClick: () => void;
+  onPartyPhotosClick: () => void;
   handleModuleClick: (mod: Module) => void;
 }
 
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   onAdminClick,
   onVideosClick,
   onRHVideoClick,
+  onPartyPhotosClick,
   handleModuleClick
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -334,6 +336,16 @@ export const Header: React.FC<HeaderProps> = ({
                   <button 
                     className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
                     onClick={() => {
+                      window.open('https://www.simex.com.co/', '_blank');
+                      setActiveDropdown(null);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Simex
+                  </button>
+                  <button 
+                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
+                    onClick={() => {
                       window.open('https://www.soinco-sas.com/', '_blank');
                       setActiveDropdown(null);
                       setIsMobileMenuOpen(false);
@@ -364,7 +376,13 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <User size={18} className="group-hover:scale-110 transition-transform" /> Directorio
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group">
+          <button 
+            className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+            onClick={() => {
+              onPartyPhotosClick();
+              setIsMobileMenuOpen(false);
+            }}
+          >
             <Camera size={18} className="group-hover:scale-110 transition-transform" /> Fotos Fiesta 2025
           </button>
           <button 

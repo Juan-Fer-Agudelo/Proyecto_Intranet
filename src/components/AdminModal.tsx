@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Announcement, Video } from '../types';
+import { Announcement, Video, PartyPhoto } from '../types';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -14,9 +14,13 @@ interface AdminModalProps {
   toggleAnnouncement: (id: number) => void;
   videos: Video[];
   deleteVideo: (id: number) => void;
+  addVideo: (video: Omit<Video, 'id'>) => void;
   setHeroBg: (bg: string | null) => void;
   rhVideo: string | null;
   setRhVideo: (url: string | null) => void;
+  partyPhotos: PartyPhoto[];
+  addPartyPhoto: (url: string) => void;
+  deletePartyPhoto: (id: number) => void;
   addAnnouncement: (ann: Omit<Announcement, 'id' | 'active'>) => void;
 }
 
@@ -31,12 +35,17 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   toggleAnnouncement,
   videos,
   deleteVideo,
+  addVideo,
   setHeroBg,
   rhVideo,
   setRhVideo,
+  partyPhotos,
+  addPartyPhoto,
+  deletePartyPhoto,
   addAnnouncement
 }) => {
   const [newAnn, setNewAnn] = useState({ title: '', content: '', image: '' });
+  const [newVideo, setNewVideo] = useState({ title: '', url: '' });
 
   if (!isOpen) return null;
 
@@ -45,6 +54,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     if (!newAnn.title || !newAnn.content) return;
     addAnnouncement(newAnn);
     setNewAnn({ title: '', content: '', image: '' });
+  };
+
+  const handleAddVideo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVideo.title || !newVideo.url) return;
+    addVideo(newVideo);
+    setNewVideo({ title: '', url: '' });
   };
 
   return (
@@ -212,6 +228,28 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">4</span>
               Videos Corporativos (YouTube)
             </h3>
+            
+            <form onSubmit={handleAddVideo} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+              <input 
+                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
+                placeholder="Título del video"
+                value={newVideo.title}
+                onChange={e => setNewVideo({...newVideo, title: e.target.value})}
+              />
+              <input 
+                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
+                placeholder="URL del video (YouTube/Vimeo)"
+                value={newVideo.url}
+                onChange={e => setNewVideo({...newVideo, url: e.target.value})}
+              />
+              <button 
+                type="submit"
+                className="w-full py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors"
+              >
+                Agregar Video
+              </button>
+            </form>
+
             <div className="space-y-3">
               {videos.map(v => (
                 <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border-2 border-gray-100 group hover:border-blue-200 transition-colors">
@@ -253,6 +291,52 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <p className="text-sm font-bold text-gray-600">Haz clic para subir una nueva imagen</p>
                 <p className="text-xs text-gray-400">Recomendado: 1920x1080px</p>
               </div>
+            </div>
+          </section>
+
+          {/* Fotos Fiesta */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+              <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">6</span>
+              Fotos Fiesta 2025
+            </h3>
+            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
+              <input 
+                type="file" 
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  if (e.target.files) {
+                    Array.from(e.target.files).forEach((file) => {
+                      const reader = new FileReader();
+                      reader.onload = (ev) => addPartyPhoto(ev.target?.result as string);
+                      reader.readAsDataURL(file as File);
+                    });
+                  }
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              <div className="space-y-2">
+                <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                  <Camera size={24} />
+                </div>
+                <p className="text-sm font-bold text-gray-600">Haz clic para subir fotos de la fiesta</p>
+                <p className="text-xs text-gray-400">Puedes seleccionar varias imágenes</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2">
+              {partyPhotos.map(photo => (
+                <div key={photo.id} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-100">
+                  <img src={photo.url} className="w-full h-full object-cover" alt="" />
+                  <button 
+                    onClick={() => deletePartyPhoto(photo.id)}
+                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              ))}
             </div>
           </section>
 
