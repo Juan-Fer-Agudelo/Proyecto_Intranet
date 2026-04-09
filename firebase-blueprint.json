@@ -1,0 +1,54 @@
+{
+  "entities": {
+    "announcements": {
+      "title": "Announcements",
+      "description": "Floating announcements shown on the intranet",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the announcement" },
+        "content": { "type": "string", "description": "Content of the announcement" },
+        "image": { "type": "string", "description": "Optional image URL (base64 or external)" },
+        "active": { "type": "boolean", "description": "Whether the announcement is currently visible" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["title", "content", "active"]
+    },
+    "videos": {
+      "title": "Videos",
+      "description": "Corporate YouTube/Vimeo videos",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Video title" },
+        "url": { "type": "string", "description": "Video URL" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "url"]
+    },
+    "partyPhotos": {
+      "title": "Party Photos",
+      "description": "Photos from the 2025 party",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "description": "Photo URL (base64 or external)" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["url"]
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Global app settings like visit info and hero background",
+      "type": "object",
+      "properties": {
+        "visitInfo": { "type": "string", "description": "Text for the visit banner" },
+        "heroBg": { "type": "string", "description": "Hero background image URL" },
+        "rhVideo": { "type": "string", "description": "URL for the uploaded RH video" }
+      }
+    }
+  },
+  "firestore": {
+    "/announcements/{id}": { "schema": "announcements", "description": "Collection of announcements" },
+    "/videos/{id}": { "schema": "videos", "description": "Collection of corporate videos" },
+    "/partyPhotos/{id}": { "schema": "partyPhotos", "description": "Collection of party photos" },
+    "/settings/global": { "schema": "settings", "description": "Global configuration document" }
+  }
+}

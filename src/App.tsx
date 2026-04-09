@@ -2,6 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { CONFIG } from './constants/config';
 import { Announcement, Video as VideoType, NewsItem, CompanyCode, Module, PartyPhoto } from './types';
+import { getDb, handleFirestoreError, OperationType } from './lib/firebase';
+import { 
+  collection, 
+  onSnapshot, 
+  addDoc, 
+  deleteDoc, 
+  doc, 
+  updateDoc, 
+  setDoc, 
+  query,
+  orderBy,
+  serverTimestamp
+} from 'firebase/firestore';
 
 // Components
 import { Header } from './components/Header';
@@ -26,6 +39,7 @@ export default function App() {
   const [visitInfo, setVisitInfo] = useState("Hoy nos visita Bancolombia para asesoría en crédito de vivienda");
   const [rhVideo, setRhVideo] = useState<string | null>(null);
   const [partyPhotos, setPartyPhotos] = useState<PartyPhoto[]>([]);
+  const [isDataReady, setIsDataReady] = useState(false);
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -42,6 +56,57 @@ export default function App() {
   useEffect(() => {
     document.body.className = `theme-${currentCompany.toLowerCase()}`;
   }, [currentCompany]);
+
+  // Real-time listeners
+  useEffect(() => {
+    let unsubs: (() => void)[] = [];
+
+    const setupListeners = async () => {
+      const db = await getDb();
+      
+      const unsubAnn = onSnapshot(query(collection(db, 'announcements'), orderBy('createdAt', 'desc')), 
+        (snapshot) => {
+          setAnnouncements(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as any)));
+        },
+        (error) => handleFirestoreError(error, OperationType.LIST, 'announcements')
+      );
+
+      const unsubVideos = onSnapshot(query(collection(db, 'videos'), orderBy('createdAt', 'desc')), 
+        (snapshot) => {
+          setVideos(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as any)));
+        },
+        (error) => handleFirestoreError(error, OperationType.LIST, 'videos')
+      );
+
+      const unsubPhotos = onSnapshot(query(collection(db, 'partyPhotos'), orderBy('createdAt', 'desc')), 
+        (snapshot) => {
+          setPartyPhotos(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as any)));
+        },
+        (error) => handleFirestoreError(error, OperationType.LIST, 'partyPhotos')
+      );
+
+      const unsubSettings = onSnapshot(doc(db, 'settings', 'global'), 
+        (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.visitInfo) setVisitInfo(data.visitInfo);
+            if (data.heroBg) setHeroBg(data.heroBg);
+            if (data.rhVideo) setRhVideo(data.rhVideo);
+          }
+          setIsDataReady(true);
+        },
+        (error) => handleFirestoreError(error, OperationType.GET, 'settings/global')
+      );
+
+      unsubs = [unsubAnn, unsubVideos, unsubPhotos, unsubSettings];
+    };
+
+    setupListeners();
+
+    return () => {
+      unsubs.forEach(unsub => unsub());
+    };
+  }, []);
 
   // --- HANDLERS ---
   const handleModuleClick = (mod: Module) => {
@@ -74,33 +139,88 @@ export default function App() {
     }
   };
 
-  const deleteAnnouncement = (id: number) => {
-    setAnnouncements(announcements.filter(a => a.id !== id));
+  const deleteAnnouncement = async (id: string) => {
+    try {
+      const db = await getDb();
+      await deleteDoc(doc(db, 'announcements', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `announcements/${id}`);
+    }
   };
 
-  const addAnnouncement = (newAnn: Omit<Announcement, 'id' | 'active'>) => {
-    const id = Date.now();
-    setAnnouncements([...announcements, { ...newAnn, id, active: true }]);
+  const addAnnouncement = async (newAnn: Omit<Announcement, 'id' | 'active'>) => {
+    try {
+      const db = await getDb();
+      await addDoc(collection(db, 'announcements'), {
+        ...newAnn,
+        active: true,
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'announcements');
+    }
   };
 
-  const toggleAnnouncement = (id: number) => {
-    setAnnouncements(announcements.map(a => a.id === id ? { ...a, active: !a.active } : a));
+  const toggleAnnouncement = async (id: string, currentActive: boolean) => {
+    try {
+      const db = await getDb();
+      await updateDoc(doc(db, 'announcements', id), {
+        active: !currentActive
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `announcements/${id}`);
+    }
   };
 
-  const deleteVideo = (id: number) => {
-    setVideos(videos.filter(v => v.id !== id));
+  const deleteVideo = async (id: string) => {
+    try {
+      const db = await getDb();
+      await deleteDoc(doc(db, 'videos', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `videos/${id}`);
+    }
   };
 
-  const addVideo = (newVideo: Omit<VideoType, 'id'>) => {
-    setVideos([...videos, { ...newVideo, id: Date.now() }]);
+  const addVideo = async (newVideo: Omit<VideoType, 'id'>) => {
+    try {
+      const db = await getDb();
+      await addDoc(collection(db, 'videos'), {
+        ...newVideo,
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'videos');
+    }
   };
 
-  const addPartyPhoto = (url: string) => {
-    setPartyPhotos([...partyPhotos, { id: Date.now(), url }]);
+  const addPartyPhoto = async (url: string) => {
+    try {
+      const db = await getDb();
+      await addDoc(collection(db, 'partyPhotos'), {
+        url,
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'partyPhotos');
+    }
   };
 
-  const deletePartyPhoto = (id: number) => {
-    setPartyPhotos(partyPhotos.filter(p => p.id !== id));
+  const deletePartyPhoto = async (id: string) => {
+    try {
+      const db = await getDb();
+      await deleteDoc(doc(db, 'partyPhotos', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `partyPhotos/${id}`);
+    }
+  };
+
+  const updateGlobalSettings = async (updates: Partial<{ visitInfo: string, heroBg: string, rhVideo: string }>) => {
+    try {
+      const db = await getDb();
+      await setDoc(doc(db, 'settings', 'global'), updates, { merge: true });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'settings/global');
+    }
   };
 
   return (
@@ -150,7 +270,7 @@ export default function App() {
           onClose={() => setShowAdminModal(false)}
           onLogout={() => { setIsAdminLoggedIn(false); setShowAdminModal(false); }}
           visitInfo={visitInfo}
-          setVisitInfo={setVisitInfo}
+          setVisitInfo={(val) => updateGlobalSettings({ visitInfo: val })}
           announcements={announcements}
           deleteAnnouncement={deleteAnnouncement}
           toggleAnnouncement={toggleAnnouncement}
@@ -158,9 +278,9 @@ export default function App() {
           videos={videos}
           deleteVideo={deleteVideo}
           addVideo={addVideo}
-          setHeroBg={setHeroBg}
+          setHeroBg={(val) => updateGlobalSettings({ heroBg: val })}
           rhVideo={rhVideo}
-          setRhVideo={setRhVideo}
+          setRhVideo={(val) => updateGlobalSettings({ rhVideo: val })}
           partyPhotos={partyPhotos}
           addPartyPhoto={addPartyPhoto}
           deletePartyPhoto={deletePartyPhoto}

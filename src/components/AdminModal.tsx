@@ -10,17 +10,17 @@ interface AdminModalProps {
   visitInfo: string;
   setVisitInfo: React.Dispatch<React.SetStateAction<string>>;
   announcements: Announcement[];
-  deleteAnnouncement: (id: number) => void;
-  toggleAnnouncement: (id: number) => void;
+  deleteAnnouncement: (id: string) => void;
+  toggleAnnouncement: (id: string, currentActive: boolean) => void;
   videos: Video[];
-  deleteVideo: (id: number) => void;
+  deleteVideo: (id: string) => void;
   addVideo: (video: Omit<Video, 'id'>) => void;
   setHeroBg: (bg: string | null) => void;
   rhVideo: string | null;
   setRhVideo: (url: string | null) => void;
   partyPhotos: PartyPhoto[];
   addPartyPhoto: (url: string) => void;
-  deletePartyPhoto: (id: number) => void;
+  deletePartyPhoto: (id: string) => void;
   addAnnouncement: (ann: Omit<Announcement, 'id' | 'active'>) => void;
 }
 
@@ -159,7 +159,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => toggleAnnouncement(ann.id)} 
+                      onClick={() => toggleAnnouncement(ann.id.toString(), ann.active)} 
                       className={`p-2 rounded-xl transition-colors flex items-center gap-1 group/toggle ${ann.active ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
                       title={ann.active ? "Ocultar" : "Mostrar"}
                     >
@@ -169,7 +169,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       {ann.active ? <Eye size={20} /> : <EyeOff size={20} />}
                     </button>
                     <button 
-                      onClick={() => deleteAnnouncement(ann.id)} 
+                      onClick={() => deleteAnnouncement(ann.id.toString())} 
                       className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-1 group/del"
                     >
                       <span className="text-xs font-bold opacity-0 group-hover/del:opacity-100 transition-opacity">Borrar</span>
@@ -255,7 +255,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border-2 border-gray-100 group hover:border-blue-200 transition-colors">
                   <span className="text-sm font-bold text-gray-800 truncate max-w-[250px]">{v.title}</span>
                   <button 
-                    onClick={() => deleteVideo(v.id)} 
+                    onClick={() => deleteVideo(v.id.toString())} 
                     className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
                   >
                     <Trash2 size={20} />
@@ -330,7 +330,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <div key={photo.id} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-100">
                   <img src={photo.url} className="w-full h-full object-cover" alt="" />
                   <button 
-                    onClick={() => deletePartyPhoto(photo.id)}
+                    onClick={() => deletePartyPhoto(photo.id.toString())}
                     className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 size={12} />

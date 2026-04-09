@@ -7,13 +7,13 @@ export interface Module {
 }
 
 export interface Video {
-  id: number;
+  id: string | number;
   title: string;
   url: string;
 }
 
 export interface Announcement {
-  id: number;
+  id: string | number;
   title: string;
   content: string;
   image?: string;
@@ -33,6 +33,6 @@ export interface NewsItem {
 export type CompanyCode = 'SX' | 'SO' | 'PL';
 
 export interface PartyPhoto {
-  id: number;
+  id: string | number;
   url: string;
 }
