@@ -1,30 +1,29 @@
-# Etapa 1: Construcción
-FROM node:20-alpine as build-stage
+# Build stage
+FROM node:20-slim AS build
 
 WORKDIR /app
 
-# Copiar archivos de dependencias
 COPY package*.json ./
-
-# Instalar dependencias
 RUN npm install
 
-# Copiar el resto del código
 COPY . .
-
-# Construir la aplicación para producción
 RUN npm run build
 
-# Etapa 2: Servidor de Producción (Nginx)
-FROM nginx:stable-alpine as production-stage
+# Production stage
+FROM node:20-slim
 
-# Copiar la configuración personalizada de Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Copiar los archivos compilados desde la etapa de build
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY package*.json ./
+RUN npm install --omit=dev
 
-# Exponer el puerto 80 (interno del contenedor)
-EXPOSE 80
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/server.ts ./
+COPY --from=build /app/data.json ./
 
-CMD ["nginx", "-g", "daemon off;"]
+# Install tsx to run the server
+RUN npm install -g tsx
+
+EXPOSE 3000
+
+CMD ["tsx", "server.ts"]
