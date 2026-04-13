@@ -22,10 +22,27 @@ const initialData = {
   partyPhotos: []
 };
 
-// Ensure data file exists
-if (!fs.existsSync(DATA_FILE)) {
-  fs.writeJsonSync(DATA_FILE, initialData);
-}
+// Ensure data file exists and is valid
+const ensureDataFile = () => {
+  try {
+    if (!fs.existsSync(DATA_FILE)) {
+      fs.writeJsonSync(DATA_FILE, initialData);
+    } else {
+      const content = fs.readFileSync(DATA_FILE, 'utf8').trim();
+      if (content === "") {
+        fs.writeJsonSync(DATA_FILE, initialData);
+      } else {
+        // Try to parse it to ensure it's valid JSON
+        JSON.parse(content);
+      }
+    }
+  } catch (error) {
+    console.error('Data file corrupted, resetting to initial data');
+    fs.writeJsonSync(DATA_FILE, initialData);
+  }
+};
+
+ensureDataFile();
 
 async function startServer() {
   const app = express();
@@ -37,20 +54,34 @@ async function startServer() {
   // API Routes
   app.get('/api/data', async (req, res) => {
     try {
+      if (!fs.existsSync(DATA_FILE)) {
+        return res.json(initialData);
+      }
       const data = await fs.readJson(DATA_FILE);
-      res.json(data);
+      // Ensure all keys exist
+      const safeData = { ...initialData, ...data };
+      res.json(safeData);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to read data' });
+      console.error('Error reading data:', error);
+      res.json(initialData);
     }
   });
 
   app.post('/api/data', async (req, res) => {
     try {
-      const currentData = await fs.readJson(DATA_FILE);
+      let currentData = initialData;
+      if (fs.existsSync(DATA_FILE)) {
+        try {
+          currentData = await fs.readJson(DATA_FILE);
+        } catch (e) {
+          currentData = initialData;
+        }
+      }
       const newData = { ...currentData, ...req.body };
       await fs.writeJson(DATA_FILE, newData);
       res.json({ success: true, data: newData });
     } catch (error) {
+      console.error('Error saving data:', error);
       res.status(500).json({ error: 'Failed to save data' });
     }
   });

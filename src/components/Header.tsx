@@ -32,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
   const [activeSubSubMenu, setActiveSubSubMenu] = useState<string | null>(null);
+  const [expandedCompany, setExpandedCompany] = useState<CompanyCode | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const dashboardMaquinas = {
@@ -140,7 +141,10 @@ export const Header: React.FC<HeaderProps> = ({
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
               bg-white text-[var(--primary)] shadow-lg hover:bg-blue-50
             `}
-            onClick={() => setActiveDropdown(activeDropdown === 'EMPRESAS' ? null : 'EMPRESAS')}
+            onClick={() => {
+              setActiveDropdown(activeDropdown === 'EMPRESAS' ? null : 'EMPRESAS');
+              setExpandedCompany(null); // Reset expansion when opening/closing main dropdown
+            }}
           >
             <div className="flex items-center gap-2">
               <Building2 size={18} />
@@ -165,13 +169,16 @@ export const Header: React.FC<HeaderProps> = ({
                           w-full flex items-center justify-between p-3 rounded-xl text-sm font-black transition-all
                           ${currentCompany === company ? 'bg-blue-50 text-[var(--primary)]' : 'text-gray-500 hover:bg-gray-50'}
                         `}
-                        onClick={() => setCurrentCompany(company)}
+                        onClick={() => {
+                          setCurrentCompany(company);
+                          setExpandedCompany(expandedCompany === company ? null : company);
+                        }}
                       >
                         <span>{company === 'SX' ? 'SIMEX' : company === 'SO' ? 'SOINCO' : 'PLASTINOVO'}</span>
                         {currentCompany === company && <div className="w-2 h-2 bg-[var(--primary)] rounded-full" />}
                       </button>
                       
-                      {currentCompany === company && (
+                      {expandedCompany === company && (
                         <motion.div 
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}

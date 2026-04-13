@@ -45,12 +45,12 @@ export default function App() {
     try {
       const response = await fetch('/api/data');
       const data = await response.json();
-      setVideos(data.videos);
-      setAnnouncements(data.announcements);
-      setHeroBgs(data.heroBgs);
-      setVisitInfo(data.visitInfo);
-      setRhVideo(data.rhVideo);
-      setPartyPhotos(data.partyPhotos);
+      setVideos(data.videos || []);
+      setAnnouncements(data.announcements || []);
+      setHeroBgs(data.heroBgs || []);
+      setVisitInfo(data.visitInfo || "");
+      setRhVideo(data.rhVideo || null);
+      setPartyPhotos(data.partyPhotos || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
