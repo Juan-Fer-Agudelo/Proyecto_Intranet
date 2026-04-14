@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Announcement, Video, PartyPhoto } from '../types';
+import { Announcement, Video, PartyPhoto, Visit } from '../types';
 
 interface AdminModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLogout: () => void;
-  visitInfo: string;
-  setVisitInfo: React.Dispatch<React.SetStateAction<string>>;
+  visits: Visit[];
+  setVisits: (val: Visit[] | ((prev: Visit[]) => Visit[])) => void;
   announcements: Announcement[];
   deleteAnnouncement: (id: string) => void;
   toggleAnnouncement: (id: string, currentActive: boolean) => void;
@@ -16,11 +16,11 @@ interface AdminModalProps {
   deleteVideo: (id: string) => void;
   addVideo: (video: Omit<Video, 'id'>) => void;
   heroBgs: string[];
-  setHeroBgs: React.Dispatch<React.SetStateAction<string[]>>;
+  setHeroBgs: (val: string[] | ((prev: string[]) => string[])) => void;
   rhVideo: string | null;
   setRhVideo: (url: string | null) => void;
   partyPhotos: PartyPhoto[];
-  addPartyPhoto: (url: string) => void;
+  addPartyPhotos: (urls: string[], year: string) => void;
   deletePartyPhoto: (id: string) => void;
   addAnnouncement: (ann: Omit<Announcement, 'id' | 'active'>) => void;
 }
@@ -29,8 +29,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   isOpen,
   onClose,
   onLogout,
-  visitInfo,
-  setVisitInfo,
+  visits,
+  setVisits,
   announcements,
   deleteAnnouncement,
   toggleAnnouncement,
@@ -42,7 +42,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   rhVideo,
   setRhVideo,
   partyPhotos,
-  addPartyPhoto,
+  addPartyPhotos,
   deletePartyPhoto,
   addAnnouncement
 }) => {
@@ -52,7 +52,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     image: '', 
     company: 'Global' 
   });
-  const [newVideo, setNewVideo] = useState({ title: '', url: '' });
+  const [newVideo, setNewVideo] = useState<{ title: string; description: string; url: string; type: 'youtube' | 'local' }>({ title: '', description: '', url: '', type: 'youtube' });
+  const [photoYear, setPhotoYear] = useState(new Date().getFullYear().toString());
+  const [newVisit, setNewVisit] = useState('');
 
   if (!isOpen) return null;
 
@@ -67,7 +69,38 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     e.preventDefault();
     if (!newVideo.title || !newVideo.url) return;
     addVideo(newVideo);
-    setNewVideo({ title: '', url: '' });
+    setNewVideo({ title: '', description: '', url: '', type: 'youtube' });
+  };
+
+  const handleAddVisit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVisit.trim()) return;
+    setVisits([...visits, { id: Date.now().toString(), text: newVisit.trim() }]);
+    setNewVisit('');
+  };
+
+  const deleteVisit = (id: string) => {
+    setVisits(visits.filter(v => v.id !== id));
+  };
+
+  const handleBulkPhotos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      const urls: string[] = [];
+      let processed = 0;
+
+      files.forEach((file: File) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          urls.push(ev.target?.result as string);
+          processed++;
+          if (processed === files.length) {
+            addPartyPhotos(urls, photoYear);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
   };
 
   return (
@@ -83,12 +116,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       >
         <div className="flex justify-between items-center mb-8 sticky top-0 bg-transparent backdrop-blur-md z-10 pb-4 border-b border-gray-200">
           <h2 className="text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
-          <button 
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X size={28} className="text-gray-500" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={onLogout}
+              className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-black hover:bg-red-100 transition-colors"
+            >
+              <LogOut size={16} /> Cerrar Sesión
+            </button>
+            <button 
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X size={28} className="text-gray-500" />
+            </button>
+          </div>
         </div>
         
         <div className="space-y-10">
@@ -100,19 +141,39 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">1</span>
-              Gestión de Visitas
+              Gestión de Visitas (Rotativas)
             </h3>
-            <div className="grid gap-3">
-              <input 
-                className="w-full px-5 py-3 rounded-xl border-2 border-gray-100 focus:border-blue-500 outline-none font-semibold"
-                placeholder="Nombre de la entidad (ej: Bancolombia)"
-                onBlur={(e) => setVisitInfo(prev => e.target.value ? `Hoy nos visita ${e.target.value} para ${prev.split(' para ')[1] || ''}` : prev)}
-              />
+            
+            <form onSubmit={handleAddVisit} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <textarea 
                 className="w-full px-5 py-3 rounded-xl border-2 border-gray-100 focus:border-blue-500 outline-none font-semibold h-24 resize-none"
-                placeholder="Tema de asesoría o motivo de la visita"
-                onBlur={(e) => setVisitInfo(prev => e.target.value ? `${prev.split(' para ')[0]} para ${e.target.value}` : prev)}
+                placeholder="Ej: Hoy nos visita Bancolombia para asesoría financiera"
+                value={newVisit}
+                onChange={(e) => setNewVisit(e.target.value)}
               />
+              <button 
+                type="submit"
+                className="w-full py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors"
+              >
+                Agregar Visita
+              </button>
+            </form>
+
+            <div className="space-y-3">
+              {visits.map(v => (
+                <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border-2 border-gray-100 group hover:border-blue-200 transition-colors">
+                  <span className="text-sm font-semibold text-gray-700 leading-tight">{v.text}</span>
+                  <button 
+                    onClick={() => deleteVisit(v.id)} 
+                    className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              ))}
+              {visits.length === 0 && (
+                <p className="text-sm text-gray-400 italic text-center py-4">No hay visitas programadas.</p>
+              )}
             </div>
           </section>
 
@@ -218,11 +279,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             </div>
           </section>
 
-          {/* Videos */}
+          {/* Video RH */}
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">3</span>
-              Video RH (Archivo)
+              Vídeo RH (Archivo)
             </h3>
             <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
               <input 
@@ -230,8 +291,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 accept="video/*"
                 onChange={(e) => {
                   if (e.target.files?.[0]) {
-                    const url = URL.createObjectURL(e.target.files[0]);
-                    setRhVideo(url);
+                    const reader = new FileReader();
+                    reader.onload = (ev) => setRhVideo(ev.target?.result as string);
+                    reader.readAsDataURL(e.target.files[0]);
                   }
                 }}
                 className="absolute inset-0 opacity-0 cursor-pointer"
@@ -240,13 +302,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
                   <VideoIcon size={24} />
                 </div>
-                <p className="text-sm font-bold text-gray-600">Haz clic para subir un video de RH</p>
+                <p className="text-sm font-bold text-gray-600">Haz clic para subir un vídeo de RH</p>
                 <p className="text-xs text-gray-400">Formatos: MP4, WebM</p>
               </div>
             </div>
             {rhVideo && (
               <div className="flex justify-between items-center p-4 bg-green-50 rounded-2xl border-2 border-green-100">
-                <span className="text-sm font-bold text-green-800">Video cargado correctamente</span>
+                <span className="text-sm font-bold text-green-800">Vídeo cargado correctamente</span>
                 <button 
                   onClick={() => setRhVideo(null)} 
                   className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
@@ -261,34 +323,76 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">4</span>
-              Videos Corporativos (YouTube)
+              Videos Corporativos
             </h3>
             
             <form onSubmit={handleAddVideo} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <input 
                 className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
-                placeholder="Título del video"
+                placeholder="Título del vídeo"
                 value={newVideo.title}
                 onChange={e => setNewVideo({...newVideo, title: e.target.value})}
               />
-              <input 
-                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
-                placeholder="URL del video (YouTube/Vimeo)"
-                value={newVideo.url}
-                onChange={e => setNewVideo({...newVideo, url: e.target.value})}
+              <textarea 
+                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 h-20 resize-none"
+                placeholder="Descripción del vídeo"
+                value={newVideo.description}
+                onChange={e => setNewVideo({...newVideo, description: e.target.value})}
               />
+              <div className="flex gap-2">
+                <button 
+                  type="button"
+                  onClick={() => setNewVideo({...newVideo, type: 'youtube'})}
+                  className={`flex-1 py-1 rounded-lg text-xs font-bold transition-all ${newVideo.type === 'youtube' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-500'}`}
+                >
+                  YouTube
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setNewVideo({...newVideo, type: 'local'})}
+                  className={`flex-1 py-1 rounded-lg text-xs font-bold transition-all ${newVideo.type === 'local' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}
+                >
+                  Local
+                </button>
+              </div>
+              {newVideo.type === 'youtube' ? (
+                <input 
+                  className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
+                  placeholder="URL de YouTube"
+                  value={newVideo.url}
+                  onChange={e => setNewVideo({...newVideo, url: e.target.value})}
+                />
+              ) : (
+                <div className="relative">
+                  <input 
+                    type="file"
+                    accept="video/*"
+                    className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setNewVideo({...newVideo, url: ev.target?.result as string});
+                        reader.readAsDataURL(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </div>
+              )}
               <button 
                 type="submit"
                 className="w-full py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors"
               >
-                Agregar Video
+                Agregar Vídeo
               </button>
             </form>
 
             <div className="space-y-3">
               {videos.map(v => (
                 <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border-2 border-gray-100 group hover:border-blue-200 transition-colors">
-                  <span className="text-sm font-bold text-gray-800 truncate max-w-[250px]">{v.title}</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-gray-800 truncate max-w-[250px]">{v.title}</span>
+                    <span className="text-[10px] text-gray-400 uppercase font-black">{v.type}</span>
+                  </div>
                   <button 
                     onClick={() => deleteVideo(v.id.toString())} 
                     className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
@@ -347,37 +451,36 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">6</span>
-              Fotos Fiesta 2025
+              Fotos de la Fiesta
             </h3>
-            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
+            <div className="flex gap-2 mb-4">
               <input 
-                type="file" 
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  if (e.target.files) {
-                    Array.from(e.target.files).forEach((file) => {
-                      const reader = new FileReader();
-                      reader.onload = (ev) => addPartyPhoto(ev.target?.result as string);
-                      reader.readAsDataURL(file as File);
-                    });
-                  }
-                }}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                type="number"
+                className="w-24 px-3 py-2 rounded-xl border-2 border-gray-100 outline-none focus:border-blue-500 font-bold"
+                value={photoYear}
+                onChange={e => setPhotoYear(e.target.value)}
+                placeholder="Año"
               />
-              <div className="space-y-2">
-                <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                  <Camera size={24} />
-                </div>
-                <p className="text-sm font-bold text-gray-600">Haz clic para subir fotos de la fiesta</p>
-                <p className="text-xs text-gray-400">Puedes seleccionar varias imágenes</p>
+              <div className="flex-grow p-4 border-2 border-dashed border-gray-200 rounded-2xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group flex items-center justify-center gap-2">
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  multiple
+                  onChange={handleBulkPhotos}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <Camera size={20} className="text-purple-600" />
+                <span className="text-xs font-bold text-gray-600">Subir fotos para {photoYear}</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-2 border rounded-2xl custom-scrollbar">
               {partyPhotos.map(photo => (
                 <div key={photo.id} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-100">
                   <img src={photo.url} className="w-full h-full object-cover" alt="" />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[8px] font-bold text-center py-0.5">
+                    {photo.year}
+                  </div>
                   <button 
                     onClick={() => deletePartyPhoto(photo.id.toString())}
                     className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity"

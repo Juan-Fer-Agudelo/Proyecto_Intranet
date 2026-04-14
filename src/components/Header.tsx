@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Menu, X, Camera, Video, User, Settings, ChevronDown, Building2, LayoutDashboard, ChevronRight, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CONFIG, MODULES_BY_COMPANY } from '../constants/config';
 import { CompanyCode, Module } from '../types';
 
@@ -34,6 +35,34 @@ export const Header: React.FC<HeaderProps> = ({
   const [activeSubSubMenu, setActiveSubSubMenu] = useState<string | null>(null);
   const [expandedCompany, setExpandedCompany] = useState<CompanyCode | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Click outside logic
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+        setActiveSubMenu(null);
+        setActiveSubSubMenu(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const toggleDropdown = (name: string | null) => {
+    setActiveDropdown(activeDropdown === name ? null : name);
+    setActiveSubMenu(null);
+    setActiveSubSubMenu(null);
+  };
+
+  const handleCompanyChange = (company: CompanyCode) => {
+    setCurrentCompany(company);
+    const companyName = company === 'SX' ? 'Simex' : company === 'SO' ? 'Soinco' : 'Plastinovo';
+    navigate(`/${companyName}`);
+    setExpandedCompany(expandedCompany === company ? null : company);
+  };
 
   const dashboardMaquinas = {
     name: "Dashboard Maquinas",
@@ -125,6 +154,7 @@ export const Header: React.FC<HeaderProps> = ({
       </button>
 
       <nav 
+        ref={dropdownRef}
         className={`
           fixed md:static top-[60px] md:top-0 right-0 bottom-0 w-[280px] md:w-auto
           bg-[var(--primary)] md:bg-transparent
@@ -135,15 +165,15 @@ export const Header: React.FC<HeaderProps> = ({
         `}
       >
         {/* Empresas Dropdown */}
-        <div className="relative w-full md:w-auto" ref={dropdownRef}>
+        <div className="relative w-full md:w-auto">
           <button 
             className={`
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
               bg-white text-[var(--primary)] shadow-lg hover:bg-blue-50
             `}
             onClick={() => {
-              setActiveDropdown(activeDropdown === 'EMPRESAS' ? null : 'EMPRESAS');
-              setExpandedCompany(null); // Reset expansion when opening/closing main dropdown
+              toggleDropdown('EMPRESAS');
+              setExpandedCompany(null);
             }}
           >
             <div className="flex items-center gap-2">
@@ -159,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[320px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-y-auto max-h-[70vh] md:max-h-[80vh] custom-scrollbar"
+                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[320px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-y-auto max-h-[60vh] md:max-h-[80vh] custom-scrollbar"
               >
                 <div className="space-y-2">
                   {(['SX', 'SO', 'PL'] as CompanyCode[]).map(company => (
@@ -169,10 +199,7 @@ export const Header: React.FC<HeaderProps> = ({
                           w-full flex items-center justify-between p-3 rounded-xl text-sm font-black transition-all
                           ${currentCompany === company ? 'bg-blue-50 text-[var(--primary)]' : 'text-gray-500 hover:bg-gray-50'}
                         `}
-                        onClick={() => {
-                          setCurrentCompany(company);
-                          setExpandedCompany(expandedCompany === company ? null : company);
-                        }}
+                        onClick={() => handleCompanyChange(company)}
                       >
                         <span>{company === 'SX' ? 'SIMEX' : company === 'SO' ? 'SOINCO' : 'PLASTINOVO'}</span>
                         {currentCompany === company && <div className="w-2 h-2 bg-[var(--primary)] rounded-full" />}
@@ -208,18 +235,18 @@ export const Header: React.FC<HeaderProps> = ({
           </AnimatePresence>
         </div>
 
-        {/* Dashboard Maquinas Dropdown */}
+        {/* Dashboard Máquinas Dropdown */}
         <div className="relative w-full md:w-auto">
           <button 
             className={`
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
               bg-white/10 text-white hover:bg-white/20 border border-white/20
             `}
-            onClick={() => setActiveDropdown(activeDropdown === 'DASHBOARD' ? null : 'DASHBOARD')}
+            onClick={() => toggleDropdown('DASHBOARD')}
           >
             <div className="flex items-center gap-2">
               <LayoutDashboard size={18} />
-              <span>Dashboard Maquinas</span>
+              <span>Dashboard Máquinas</span>
             </div>
             <ChevronDown size={16} className={`transition-transform duration-300 ${activeDropdown === 'DASHBOARD' ? 'rotate-180' : ''}`} />
           </button>
@@ -230,7 +257,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[300px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-visible"
+                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[300px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-y-auto max-h-[60vh] md:max-h-[80vh] custom-scrollbar"
               >
                 <div className="space-y-1">
                   {dashboardMaquinas.items.map(item => (
@@ -322,7 +349,7 @@ export const Header: React.FC<HeaderProps> = ({
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
               bg-white/10 text-white hover:bg-white/20 border border-white/20
             `}
-            onClick={() => setActiveDropdown(activeDropdown === 'SITIOS' ? null : 'SITIOS')}
+            onClick={() => toggleDropdown('SITIOS')}
           >
             <div className="flex items-center gap-2">
               <Globe size={18} />
@@ -337,7 +364,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 md:left-0 mt-3 w-full md:w-[240px] glass rounded-2xl shadow-2xl p-3 z-[1700]"
+                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[240px] glass rounded-2xl shadow-2xl p-3 z-[1700]"
               >
                 <div className="space-y-1">
                   <button 
@@ -390,16 +417,16 @@ export const Header: React.FC<HeaderProps> = ({
               setIsMobileMenuOpen(false);
             }}
           >
-            <Camera size={18} className="group-hover:scale-110 transition-transform" /> Fotos Fiesta 2025
+            <Camera size={18} className="group-hover:scale-110 transition-transform" /> Ver las fotos de la fiesta
           </button>
           <button 
             className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
             onClick={() => {
-              onRHVideoClick();
+              onVideosClick();
               setIsMobileMenuOpen(false);
             }}
           >
-            <Video size={18} className="group-hover:scale-110 transition-transform" /> Videos RH
+            <Video size={18} className="group-hover:scale-110 transition-transform" /> Vídeos
           </button>
           <button 
             className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all flex items-center gap-2 md:block group"

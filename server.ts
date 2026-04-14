@@ -12,12 +12,12 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 
 // Initial data structure
 const initialData = {
-  videos: [
-    { id: 1, title: 'Mensaje de Gerencia', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
-  ],
+  videos: [],
   announcements: [],
   heroBgs: [],
-  visitInfo: "Hoy nos visita Bancolombia para asesoría en crédito de vivienda",
+  visits: [
+    { id: '1', text: "Hoy nos visita Bancolombia para asesoría en crédito de vivienda" }
+  ],
   rhVideo: null,
   partyPhotos: []
 };
@@ -58,8 +58,12 @@ async function startServer() {
         return res.json(initialData);
       }
       const data = await fs.readJson(DATA_FILE);
-      // Ensure all keys exist
-      const safeData = { ...initialData, ...data };
+      // Ensure all keys exist and filter out the sample video if it persists
+      const safeData = { 
+        ...initialData, 
+        ...data,
+        videos: (data.videos || []).filter((v: any) => v.title !== 'Mensaje de Gerencia')
+      };
       res.json(safeData);
     } catch (error) {
       console.error('Error reading data:', error);

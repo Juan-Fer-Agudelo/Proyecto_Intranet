@@ -34,7 +34,7 @@ export const MODULES_BY_COMPANY: Record<CompanyCode, Module[]> = {
     { id: 'sview', name: 'Sview', icon: Search, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/sviewV2/' }
   ],
   SO: [
-    { id: 'inyeccion-soinco', name: 'Ajustes de inyeccion Soinco', icon: Factory, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/DataInyeccionsoinco/system/login.php' },
+    { id: 'inyeccion-soinco', name: 'Ajustes de Inyección Soinco', icon: Factory, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/DataInyeccionsoinco/system/login.php' },
     { id: 'ingreso-soinco', name: 'Control de Ingreso', icon: UserCheck, type: 'external', url: 'http://192.101.0.209/ControlIngreso_soinco/views/' },
     { id: 'directorio', name: 'Directorio', icon: Contact, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/directorioDinamicoV/' },
     { id: 'marcaciones-soinco', name: 'Marcaciones', icon: Clock, type: 'external', url: 'https://app.powerbi.com/view?r=eyJrIjoiYTZiNWFlY2EtMDQ4ZC00NDEwLWJkNGEtOWViNjM5YmE0OTQ2IiwidCI6IjUwMDI1MTNkLTcyNGEtNDc3NC1hYmEwLWMxZTZiNzI5YzhiNiIsImMiOjR9' },

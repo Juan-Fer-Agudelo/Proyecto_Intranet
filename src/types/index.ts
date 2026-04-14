@@ -9,7 +9,14 @@ export interface Module {
 export interface Video {
   id: string | number;
   title: string;
+  description?: string;
   url: string;
+  type: 'youtube' | 'local';
+}
+
+export interface Visit {
+  id: string;
+  text: string;
 }
 
 export interface Announcement {
@@ -36,4 +43,5 @@ export type CompanyCode = 'SX' | 'SO' | 'PL';
 export interface PartyPhoto {
   id: string | number;
   url: string;
+  year: string;
 }
