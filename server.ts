@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const DATA_FILE = path.join(__dirname, 'data.json');
 
-// Initial data structure
+// Estructura de datos inicial para la persistencia
 const initialData = {
   videos: [],
   announcements: [],
@@ -19,7 +19,15 @@ const initialData = {
     { id: '1', text: "Hoy nos visita Bancolombia para asesoría en crédito de vivienda" }
   ],
   rhVideo: null,
-  partyPhotos: []
+  partyPhotos: [],
+  // Boletín Quincenal: Independiente por empresa (SX, SO, PL)
+  bulletinQuincenal: {
+    SX: [],
+    SO: [],
+    PL: []
+  },
+  // Boletín Mensual: Global para todas las empresas
+  bulletinMensual: []
 };
 
 // Ensure data file exists and is valid
@@ -44,21 +52,28 @@ const ensureDataFile = () => {
 
 ensureDataFile();
 
+/**
+ * Servidor Express: Maneja la persistencia de datos en data.json y sirve la aplicación.
+ */
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   app.use(cors());
-  app.use(express.json({ limit: '50mb' }));
+  app.use(express.json({ limit: '50mb' })); // Límite aumentado para soportar carga de imágenes en base64
 
-  // API Routes
+  // --- RUTAS DE LA API ---
+
+  /**
+   * GET /api/data: Retorna todos los datos almacenados.
+   */
   app.get('/api/data', async (req, res) => {
     try {
       if (!fs.existsSync(DATA_FILE)) {
         return res.json(initialData);
       }
       const data = await fs.readJson(DATA_FILE);
-      // Ensure all keys exist and filter out the sample video if it persists
+      // Aseguramos que todas las claves existan mezclando con initialData
       const safeData = { 
         ...initialData, 
         ...data,
@@ -71,6 +86,9 @@ async function startServer() {
     }
   });
 
+  /**
+   * POST /api/data: Guarda actualizaciones en el archivo data.json.
+   */
   app.post('/api/data', async (req, res) => {
     try {
       let currentData = initialData;
@@ -81,6 +99,7 @@ async function startServer() {
           currentData = initialData;
         }
       }
+      // Mezclamos los datos actuales con los nuevos cambios recibidos
       const newData = { ...currentData, ...req.body };
       await fs.writeJson(DATA_FILE, newData);
       res.json({ success: true, data: newData });

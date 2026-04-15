@@ -45,3 +45,9 @@ export interface PartyPhoto {
   url: string;
   year: string;
 }
+
+export interface BulletinImage {
+  id: string;
+  url: string;
+  order: number;
+}

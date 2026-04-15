@@ -31,6 +31,10 @@ function IntranetContent({
   setRhVideo,
   partyPhotos,
   setPartyPhotos,
+  bulletinQuincenal,
+  setBulletinQuincenal,
+  bulletinMensual,
+  setBulletinMensual,
   saveData
 }: any) {
   const { companyName } = useParams();
@@ -151,6 +155,8 @@ function IntranetContent({
         onAdminClick={() => isAdminLoggedIn ? setShowAdminModal(true) : setShowLoginModal(true)}
         onVideosClick={() => setShowVideosModal(true)}
         onPartyPhotosClick={() => window.open('/fotos-fiesta', '_blank')}
+        bulletinQuincenal={bulletinQuincenal}
+        bulletinMensual={bulletinMensual}
         handleModuleClick={handleModuleClick}
       />
 
@@ -229,6 +235,18 @@ function IntranetContent({
           partyPhotos={partyPhotos}
           addPartyPhotos={addPartyPhotos}
           deletePartyPhoto={deletePartyPhoto}
+          bulletinQuincenal={bulletinQuincenal}
+          setBulletinQuincenal={(val: any) => {
+            const newValue = typeof val === 'function' ? val(bulletinQuincenal) : val;
+            setBulletinQuincenal(newValue);
+            saveData({ bulletinQuincenal: newValue });
+          }}
+          bulletinMensual={bulletinMensual}
+          setBulletinMensual={(val: any) => {
+            const newValue = typeof val === 'function' ? val(bulletinMensual) : val;
+            setBulletinMensual(newValue);
+            saveData({ bulletinMensual: newValue });
+          }}
         />
 
         <VideosModal 
@@ -265,13 +283,17 @@ function IntranetContent({
   );
 }
 
+/**
+ * Componente principal App: Gestiona el estado global de la aplicación,
+ * la carga de datos desde el backend y el enrutamiento.
+ */
 export default function App() {
-  // --- STATE ---
+  // --- ESTADOS GLOBALES ---
   const [currentCompany, setCurrentCompany] = useState<CompanyCode>(CONFIG.DEFAULT_COMPANY);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Data from Backend
+  // Datos persistidos en el Backend (data.json)
   const [videos, setVideos] = useState<VideoType[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [heroBgs, setHeroBgs] = useState<string[]>([]);
@@ -279,18 +301,28 @@ export default function App() {
   const [visits, setVisits] = useState<Visit[]>([]);
   const [rhVideo, setRhVideo] = useState<string | null>(null);
   const [partyPhotos, setPartyPhotos] = useState<PartyPhoto[]>([]);
+  const [bulletinQuincenal, setBulletinQuincenal] = useState<any>({ SX: [], SO: [], PL: [] });
+  const [bulletinMensual, setBulletinMensual] = useState<any[]>([]);
   
-  // --- API FETCHING ---
+  // --- COMUNICACIÓN CON EL BACKEND ---
+
+  /**
+   * Obtiene todos los datos de la intranet desde el servidor.
+   */
   const fetchData = async () => {
     try {
       const response = await fetch('/api/data');
       const data = await response.json();
+      
+      // Actualizamos los estados con la información recibida
       setVideos(data.videos || []);
       setAnnouncements(data.announcements || []);
       setHeroBgs(data.heroBgs || []);
       setVisits(data.visits || []);
       setRhVideo(data.rhVideo || null);
       setPartyPhotos(data.partyPhotos || []);
+      setBulletinQuincenal(data.bulletinQuincenal || { SX: [], SO: [], PL: [] });
+      setBulletinMensual(data.bulletinMensual || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -298,6 +330,10 @@ export default function App() {
     }
   };
 
+  /**
+   * Envía actualizaciones al servidor para persistir cambios en data.json.
+   * @param updates Objeto con los campos a actualizar.
+   */
   const saveData = async (updates: any) => {
     try {
       await fetch('/api/data', {
@@ -362,6 +398,10 @@ export default function App() {
           setRhVideo={setRhVideo}
           partyPhotos={partyPhotos}
           setPartyPhotos={setPartyPhotos}
+          bulletinQuincenal={bulletinQuincenal}
+          setBulletinQuincenal={setBulletinQuincenal}
+          bulletinMensual={bulletinMensual}
+          setBulletinMensual={setBulletinMensual}
           saveData={saveData}
         />
       } />
@@ -384,6 +424,10 @@ export default function App() {
           setRhVideo={setRhVideo}
           partyPhotos={partyPhotos}
           setPartyPhotos={setPartyPhotos}
+          bulletinQuincenal={bulletinQuincenal}
+          setBulletinQuincenal={setBulletinQuincenal}
+          bulletinMensual={bulletinMensual}
+          setBulletinMensual={setBulletinMensual}
           saveData={saveData}
         />
       } />

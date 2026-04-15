@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Menu, X, Camera, Video, User, Settings, ChevronDown, Building2, LayoutDashboard, ChevronRight, Globe } from 'lucide-react';
+import { Menu, X, Camera, Video, User, Settings, ChevronDown, Building2, LayoutDashboard, ChevronRight, Globe, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CONFIG, MODULES_BY_COMPANY } from '../constants/config';
@@ -15,9 +15,15 @@ interface HeaderProps {
   onVideosClick: () => void;
   onRHVideoClick: () => void;
   onPartyPhotosClick: () => void;
+  bulletinQuincenal: { SX: any[]; SO: any[]; PL: any[] };
+  bulletinMensual: any[];
   handleModuleClick: (mod: Module) => void;
 }
 
+/**
+ * Componente Header: Maneja la navegación principal, el cambio de empresa,
+ * los accesos directos a módulos y la visualización del boletín semanal.
+ */
 export const Header: React.FC<HeaderProps> = ({
   currentCompany,
   setCurrentCompany,
@@ -28,17 +34,26 @@ export const Header: React.FC<HeaderProps> = ({
   onVideosClick,
   onRHVideoClick,
   onPartyPhotosClick,
+  bulletinQuincenal,
+  bulletinMensual,
   handleModuleClick
 }) => {
+  // --- ESTADOS LOCALES ---
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
   const [activeSubSubMenu, setActiveSubSubMenu] = useState<string | null>(null);
   const [expandedCompany, setExpandedCompany] = useState<CompanyCode | null>(null);
+  const [showBulletin, setShowBulletin] = useState(false);
+  const [viewingBulletinType, setViewingBulletinType] = useState<'quincenal' | 'mensual' | null>(null);
+  
+  // Referencia para detectar clics fuera de los menús desplegables
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Click outside logic
+  /**
+   * Efecto para cerrar los menús desplegables al hacer clic fuera de ellos.
+   */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -51,12 +66,18 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  /**
+   * Alterna la visibilidad de los menús desplegables superiores.
+   */
   const toggleDropdown = (name: string | null) => {
     setActiveDropdown(activeDropdown === name ? null : name);
     setActiveSubMenu(null);
     setActiveSubSubMenu(null);
   };
 
+  /**
+   * Maneja el cambio de empresa y actualiza la URL.
+   */
   const handleCompanyChange = (company: CompanyCode) => {
     setCurrentCompany(company);
     const companyName = company === 'SX' ? 'Simex' : company === 'SO' ? 'Soinco' : 'Plastinovo';
@@ -64,6 +85,9 @@ export const Header: React.FC<HeaderProps> = ({
     setExpandedCompany(expandedCompany === company ? null : company);
   };
 
+  /**
+   * Configuración de los Dashboards de Máquinas por empresa.
+   */
   const dashboardMaquinas = {
     name: "Dashboard Maquinas",
     items: [
@@ -122,6 +146,9 @@ export const Header: React.FC<HeaderProps> = ({
     ]
   };
 
+  /**
+   * Abre un enlace de dashboard en una nueva pestaña.
+   */
   const handleDashboardClick = (url?: string) => {
     if (url && url !== '#') {
       window.open(url, '_blank');
@@ -131,6 +158,19 @@ export const Header: React.FC<HeaderProps> = ({
       setIsMobileMenuOpen(false);
     } else if (url === '#') {
       alert('Este enlace aún no ha sido configurado.');
+    }
+  };
+
+  /**
+   * Determina el color del icono del boletín basado en la empresa actual.
+   * Mantiene la identidad visual sin romper el estilo uniforme de los botones.
+   */
+  const getBulletinIconColor = () => {
+    switch(currentCompany) {
+      case 'SX': return 'text-blue-400';
+      case 'SO': return 'text-red-400';
+      case 'PL': return 'text-orange-400';
+      default: return 'text-orange-400';
     }
   };
 
@@ -189,7 +229,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[320px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-y-auto max-h-[60vh] md:max-h-[80vh] custom-scrollbar"
+                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[320px] glass rounded-2xl shadow-2xl p-3 z-[1700] md:overflow-visible overflow-y-auto max-h-[60vh] md:max-h-none custom-scrollbar"
               >
                 <div className="space-y-2">
                   {(['SX', 'SO', 'PL'] as CompanyCode[]).map(company => (
@@ -257,7 +297,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[300px] glass rounded-2xl shadow-2xl p-3 z-[1700] overflow-y-auto max-h-[60vh] md:max-h-[80vh] custom-scrollbar"
+                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[300px] glass rounded-2xl shadow-2xl p-3 z-[1700] md:overflow-visible overflow-y-auto max-h-[60vh] md:max-h-none custom-scrollbar"
               >
                 <div className="space-y-1">
                   {dashboardMaquinas.items.map(item => (
@@ -428,6 +468,37 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Video size={18} className="group-hover:scale-110 transition-transform" /> Vídeos
           </button>
+          
+          {/* Botón del Boletín Quincenal: Específico por empresa */}
+          {bulletinQuincenal[currentCompany] && bulletinQuincenal[currentCompany].length > 0 && (
+            <button 
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+              onClick={() => {
+                setViewingBulletinType('quincenal');
+                setShowBulletin(true);
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <FileText size={18} className={`${getBulletinIconColor()} group-hover:scale-110 transition-transform`} /> 
+              <span>Boletín Quincenal</span>
+            </button>
+          )}
+
+          {/* Botón del Boletín Mensual: Global para todos */}
+          {bulletinMensual && bulletinMensual.length > 0 && (
+            <button 
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+              onClick={() => {
+                setViewingBulletinType('mensual');
+                setShowBulletin(true);
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <FileText size={18} className="text-purple-400 group-hover:scale-110 transition-transform" /> 
+              <span>Boletín Mensual</span>
+            </button>
+          )}
+
           <button 
             className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all flex items-center gap-2 md:block group"
             onClick={() => {
@@ -440,6 +511,89 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
       </nav>
+
+      {/* Visualizador de Boletines: Diseño elegante para fotos verticales */}
+      <AnimatePresence>
+        {showBulletin && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[3000] bg-black/90 backdrop-blur-xl flex flex-col"
+          >
+            {/* Barra superior minimalista */}
+            <div className="flex justify-between items-center p-6 md:px-12">
+              <div className="flex flex-col">
+                <h2 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
+                  {viewingBulletinType === 'quincenal' ? 'Boletín Quincenal' : 'Boletín Mensual'}
+                </h2>
+                <p className="text-white/40 text-xs font-bold uppercase tracking-widest">
+                  {viewingBulletinType === 'quincenal' 
+                    ? `${bulletinQuincenal[currentCompany].length} Páginas • ${currentCompany === 'SX' ? 'Simex' : currentCompany === 'SO' ? 'Soinco' : 'Plastinovo'}`
+                    : `${bulletinMensual.length} Páginas • Corporativo Global`
+                  }
+                </p>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowBulletin(false);
+                  setViewingBulletinType(null);
+                }}
+                className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white transition-all hover:scale-110 active:scale-95"
+              >
+                <X size={28} />
+              </button>
+            </div>
+            
+            {/* Contenedor de imágenes: Enfoque en fotos verticales y scroll suave */}
+            <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar flex justify-center scroll-smooth">
+              <div className="w-full max-w-2xl space-y-12 py-8">
+                {(viewingBulletinType === 'quincenal' ? bulletinQuincenal[currentCompany] : bulletinMensual).map((img: any, idx: number) => (
+                  <motion.div 
+                    key={img.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="relative group"
+                  >
+                    {/* Sombra suave y bordes redondeados elegantes */}
+                    <div className="absolute -inset-4 bg-white/5 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    
+                    <div className="relative rounded-2xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] border border-white/5">
+                      <img 
+                        src={img.url} 
+                        alt={`Página ${idx + 1}`} 
+                        className="w-full h-auto block"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+
+                    {/* Indicador de página elegante y discreto */}
+                    <div className="absolute -left-12 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-2">
+                      <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                      <span className="text-[10px] font-black text-white/20 rotate-180 [writing-mode:vertical-lr]">
+                        PÁG {idx + 1}
+                      </span>
+                      <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                    </div>
+                  </motion.div>
+                ))}
+                
+                {/* Final del boletín */}
+                <div className="py-20 text-center space-y-4">
+                  <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto">
+                    <FileText size={20} className="text-white/20" />
+                  </div>
+                  <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">
+                    Has llegado al final
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

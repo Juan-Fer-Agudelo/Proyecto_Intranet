@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon } from 'lucide-react';
+import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Announcement, Video, PartyPhoto, Visit } from '../types';
 
@@ -22,9 +22,17 @@ interface AdminModalProps {
   partyPhotos: PartyPhoto[];
   addPartyPhotos: (urls: string[], year: string) => void;
   deletePartyPhoto: (id: string) => void;
+  bulletinQuincenal: { SX: any[]; SO: any[]; PL: any[] };
+  setBulletinQuincenal: (val: any | ((prev: any) => any)) => void;
+  bulletinMensual: any[];
+  setBulletinMensual: (val: any[] | ((prev: any[]) => any[])) => void;
   addAnnouncement: (ann: Omit<Announcement, 'id' | 'active'>) => void;
 }
 
+/**
+ * Componente AdminModal: Panel de control para administradores.
+ * Permite gestionar visitas, anuncios, videos, imágenes de fondo y el boletín semanal.
+ */
 export const AdminModal: React.FC<AdminModalProps> = ({
   isOpen,
   onClose,
@@ -44,8 +52,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   partyPhotos,
   addPartyPhotos,
   deletePartyPhoto,
+  bulletinQuincenal,
+  setBulletinQuincenal,
+  bulletinMensual,
+  setBulletinMensual,
   addAnnouncement
 }) => {
+  // --- ESTADOS LOCALES PARA FORMULARIOS ---
   const [newAnn, setNewAnn] = useState<{ title: string; content: string; image: string; company: 'SX' | 'SO' | 'PL' | 'Global' }>({ 
     title: '', 
     content: '', 
@@ -55,9 +68,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [newVideo, setNewVideo] = useState<{ title: string; description: string; url: string; type: 'youtube' | 'local' }>({ title: '', description: '', url: '', type: 'youtube' });
   const [photoYear, setPhotoYear] = useState(new Date().getFullYear().toString());
   const [newVisit, setNewVisit] = useState('');
+  const [selectedQuincenalCompany, setSelectedQuincenalCompany] = useState<'SX' | 'SO' | 'PL'>('SX');
 
   if (!isOpen) return null;
 
+  /**
+   * Maneja la creación de un nuevo anuncio.
+   */
   const handleAddAnn = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAnn.title || !newAnn.content) return;
@@ -65,6 +82,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     setNewAnn({ title: '', content: '', image: '', company: 'Global' });
   };
 
+  /**
+   * Maneja la adición de un nuevo video corporativo.
+   */
   const handleAddVideo = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newVideo.title || !newVideo.url) return;
@@ -72,6 +92,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     setNewVideo({ title: '', description: '', url: '', type: 'youtube' });
   };
 
+  /**
+   * Maneja la adición de una nueva visita rotativa.
+   */
   const handleAddVisit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newVisit.trim()) return;
@@ -79,10 +102,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     setNewVisit('');
   };
 
+  /**
+   * Elimina una visita específica.
+   */
   const deleteVisit = (id: string) => {
     setVisits(visits.filter(v => v.id !== id));
   };
 
+  /**
+   * Maneja la carga masiva de fotos de la fiesta.
+   */
   const handleBulkPhotos = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -96,6 +125,63 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           processed++;
           if (processed === files.length) {
             addPartyPhotos(urls, photoYear);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  /**
+   * Maneja la carga del boletín quincenal por empresa.
+   */
+  const handleQuincenalUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files).slice(0, 30);
+      const newImages: any[] = [];
+      let processed = 0;
+
+      files.forEach((file: File, index: number) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          newImages.push({
+            id: Math.random().toString(36).substr(2, 9),
+            url: ev.target?.result as string,
+            order: index
+          });
+          processed++;
+          if (processed === files.length) {
+            setBulletinQuincenal((prev: any) => ({
+              ...prev,
+              [selectedQuincenalCompany]: newImages
+            }));
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  /**
+   * Maneja la carga del boletín mensual (global).
+   */
+  const handleMensualUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files).slice(0, 30);
+      const newImages: any[] = [];
+      let processed = 0;
+
+      files.forEach((file: File, index: number) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          newImages.push({
+            id: Math.random().toString(36).substr(2, 9),
+            url: ev.target?.result as string,
+            order: index
+          });
+          processed++;
+          if (processed === files.length) {
+            setBulletinMensual(newImages);
           }
         };
         reader.readAsDataURL(file);
@@ -490,6 +576,116 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* Boletín Quincenal (Por Empresa) */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+              <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">7</span>
+              Boletín Quincenal (Por Empresa)
+            </h3>
+            
+            <div className="flex gap-2 mb-4">
+              {['SX', 'SO', 'PL'].map((comp) => (
+                <button
+                  key={comp}
+                  onClick={() => setSelectedQuincenalCompany(comp as any)}
+                  className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+                    selectedQuincenalCompany === comp 
+                      ? 'bg-blue-600 text-white shadow-lg' 
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                >
+                  {comp === 'SX' ? 'SIMEX' : comp === 'SO' ? 'SOINCO' : 'PLASTINOVO'}
+                </button>
+              ))}
+            </div>
+
+            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
+              <input 
+                type="file" 
+                accept="image/*"
+                multiple
+                onChange={handleQuincenalUpload}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              <div className="space-y-2">
+                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                  <FileText size={24} />
+                </div>
+                <p className="text-sm font-bold text-gray-600">Subir Boletín Quincenal para {selectedQuincenalCompany}</p>
+                <p className="text-xs text-gray-400">Máximo 30 imágenes</p>
+              </div>
+            </div>
+
+            {bulletinQuincenal[selectedQuincenalCompany].length > 0 && (
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-4 bg-blue-50 rounded-2xl border-2 border-blue-100">
+                  <span className="text-sm font-bold text-blue-800">{bulletinQuincenal[selectedQuincenalCompany].length} imágenes cargadas</span>
+                  <button 
+                    onClick={() => setBulletinQuincenal((prev: any) => ({ ...prev, [selectedQuincenalCompany]: [] }))} 
+                    className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-5 gap-2 max-h-[150px] overflow-y-auto p-2 border rounded-xl custom-scrollbar">
+                  {bulletinQuincenal[selectedQuincenalCompany].map((img: any, idx: number) => (
+                    <div key={img.id} className="relative aspect-[3/4] rounded-lg overflow-hidden border">
+                      <img src={img.url} className="w-full h-full object-cover" alt="" />
+                      <div className="absolute top-1 left-1 bg-black/50 text-white text-[8px] px-1 rounded">{idx + 1}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+
+          {/* Boletín Mensual (Global) */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+              <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">8</span>
+              Boletín Mensual (Todas las Empresas)
+            </h3>
+            
+            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-orange-400 transition-colors cursor-pointer relative group">
+              <input 
+                type="file" 
+                accept="image/*"
+                multiple
+                onChange={handleMensualUpload}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              <div className="space-y-2">
+                <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                  <FileText size={24} />
+                </div>
+                <p className="text-sm font-bold text-gray-600">Subir Boletín Mensual Global</p>
+                <p className="text-xs text-gray-400">Máximo 30 imágenes</p>
+              </div>
+            </div>
+
+            {bulletinMensual.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl border-2 border-orange-100">
+                  <span className="text-sm font-bold text-orange-800">{bulletinMensual.length} imágenes cargadas</span>
+                  <button 
+                    onClick={() => setBulletinMensual([])} 
+                    className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-5 gap-2 max-h-[150px] overflow-y-auto p-2 border rounded-xl custom-scrollbar">
+                  {bulletinMensual.map((img, idx) => (
+                    <div key={img.id} className="relative aspect-[3/4] rounded-lg overflow-hidden border">
+                      <img src={img.url} className="w-full h-full object-cover" alt="" />
+                      <div className="absolute top-1 left-1 bg-black/50 text-white text-[8px] px-1 rounded">{idx + 1}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
 
           <div className="pt-6 border-t">
