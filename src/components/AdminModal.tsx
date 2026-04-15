@@ -134,26 +134,29 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   /**
    * Maneja la carga del boletín quincenal por empresa.
+   * Soporta imágenes y archivos PDF.
    */
   const handleQuincenalUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files).slice(0, 30);
-      const newImages: any[] = [];
+      const newFiles: any[] = [];
       let processed = 0;
 
       files.forEach((file: File, index: number) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
-          newImages.push({
+          newFiles.push({
             id: Math.random().toString(36).substr(2, 9),
             url: ev.target?.result as string,
+            type: file.type,
+            name: file.name,
             order: index
           });
           processed++;
           if (processed === files.length) {
             setBulletinQuincenal((prev: any) => ({
               ...prev,
-              [selectedQuincenalCompany]: newImages
+              [selectedQuincenalCompany]: newFiles
             }));
           }
         };
@@ -164,24 +167,27 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   /**
    * Maneja la carga del boletín mensual (global).
+   * Soporta imágenes y archivos PDF.
    */
   const handleMensualUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files).slice(0, 30);
-      const newImages: any[] = [];
+      const newFiles: any[] = [];
       let processed = 0;
 
       files.forEach((file: File, index: number) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
-          newImages.push({
+          newFiles.push({
             id: Math.random().toString(36).substr(2, 9),
             url: ev.target?.result as string,
+            type: file.type,
+            name: file.name,
             order: index
           });
           processed++;
           if (processed === files.length) {
-            setBulletinMensual(newImages);
+            setBulletinMensual(newFiles);
           }
         };
         reader.readAsDataURL(file);
@@ -604,7 +610,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
               <input 
                 type="file" 
-                accept="image/*"
+                accept="image/*,application/pdf"
                 multiple
                 onChange={handleQuincenalUpload}
                 className="absolute inset-0 opacity-0 cursor-pointer"
@@ -614,14 +620,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   <FileText size={24} />
                 </div>
                 <p className="text-sm font-bold text-gray-600">Subir Boletín Quincenal para {selectedQuincenalCompany}</p>
-                <p className="text-xs text-gray-400">Máximo 30 imágenes</p>
+                <p className="text-xs text-gray-400">Imágenes o PDFs (Máx 30 archivos)</p>
               </div>
             </div>
 
             {bulletinQuincenal[selectedQuincenalCompany].length > 0 && (
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-4 bg-blue-50 rounded-2xl border-2 border-blue-100">
-                  <span className="text-sm font-bold text-blue-800">{bulletinQuincenal[selectedQuincenalCompany].length} imágenes cargadas</span>
+                  <span className="text-sm font-bold text-blue-800">{bulletinQuincenal[selectedQuincenalCompany].length} archivos cargados</span>
                   <button 
                     onClick={() => setBulletinQuincenal((prev: any) => ({ ...prev, [selectedQuincenalCompany]: [] }))} 
                     className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
@@ -630,9 +636,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   </button>
                 </div>
                 <div className="grid grid-cols-5 gap-2 max-h-[150px] overflow-y-auto p-2 border rounded-xl custom-scrollbar">
-                  {bulletinQuincenal[selectedQuincenalCompany].map((img: any, idx: number) => (
-                    <div key={img.id} className="relative aspect-[3/4] rounded-lg overflow-hidden border">
-                      <img src={img.url} className="w-full h-full object-cover" alt="" />
+                  {bulletinQuincenal[selectedQuincenalCompany].map((file: any, idx: number) => (
+                    <div key={file.id} className="relative aspect-[3/4] rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
+                      {file.type?.includes('pdf') || file.url?.startsWith('data:application/pdf') ? (
+                        <div className="flex flex-col items-center gap-1 p-2">
+                          <FileText size={24} className="text-red-500" />
+                          <span className="text-[8px] font-bold text-gray-500 truncate w-full text-center">{file.name || 'PDF'}</span>
+                        </div>
+                      ) : (
+                        <img src={file.url} className="w-full h-full object-cover" alt="" />
+                      )}
                       <div className="absolute top-1 left-1 bg-black/50 text-white text-[8px] px-1 rounded">{idx + 1}</div>
                     </div>
                   ))}
@@ -651,7 +664,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-orange-400 transition-colors cursor-pointer relative group">
               <input 
                 type="file" 
-                accept="image/*"
+                accept="image/*,application/pdf"
                 multiple
                 onChange={handleMensualUpload}
                 className="absolute inset-0 opacity-0 cursor-pointer"
@@ -661,14 +674,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   <FileText size={24} />
                 </div>
                 <p className="text-sm font-bold text-gray-600">Subir Boletín Mensual Global</p>
-                <p className="text-xs text-gray-400">Máximo 30 imágenes</p>
+                <p className="text-xs text-gray-400">Imágenes o PDFs (Máx 30 archivos)</p>
               </div>
             </div>
 
             {bulletinMensual.length > 0 && (
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl border-2 border-orange-100">
-                  <span className="text-sm font-bold text-orange-800">{bulletinMensual.length} imágenes cargadas</span>
+                  <span className="text-sm font-bold text-orange-800">{bulletinMensual.length} archivos cargados</span>
                   <button 
                     onClick={() => setBulletinMensual([])} 
                     className="text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors"
@@ -677,9 +690,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   </button>
                 </div>
                 <div className="grid grid-cols-5 gap-2 max-h-[150px] overflow-y-auto p-2 border rounded-xl custom-scrollbar">
-                  {bulletinMensual.map((img, idx) => (
-                    <div key={img.id} className="relative aspect-[3/4] rounded-lg overflow-hidden border">
-                      <img src={img.url} className="w-full h-full object-cover" alt="" />
+                  {bulletinMensual.map((file: any, idx: number) => (
+                    <div key={file.id} className="relative aspect-[3/4] rounded-lg overflow-hidden border bg-gray-100 flex items-center justify-center">
+                      {file.type?.includes('pdf') || file.url?.startsWith('data:application/pdf') ? (
+                        <div className="flex flex-col items-center gap-1 p-2">
+                          <FileText size={24} className="text-red-500" />
+                          <span className="text-[8px] font-bold text-gray-500 truncate w-full text-center">{file.name || 'PDF'}</span>
+                        </div>
+                      ) : (
+                        <img src={file.url} className="w-full h-full object-cover" alt="" />
+                      )}
                       <div className="absolute top-1 left-1 bg-black/50 text-white text-[8px] px-1 rounded">{idx + 1}</div>
                     </div>
                   ))}

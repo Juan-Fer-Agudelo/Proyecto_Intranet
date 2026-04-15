@@ -479,7 +479,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMobileMenuOpen(false);
               }}
             >
-              <FileText size={18} className={`${getBulletinIconColor()} group-hover:scale-110 transition-transform`} /> 
+              <FileText size={18} className="text-white group-hover:scale-110 transition-transform" /> 
               <span>Boletín Quincenal</span>
             </button>
           )}
@@ -494,7 +494,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMobileMenuOpen(false);
               }}
             >
-              <FileText size={18} className="text-purple-400 group-hover:scale-110 transition-transform" /> 
+              <FileText size={18} className="text-white group-hover:scale-110 transition-transform" /> 
               <span>Boletín Mensual</span>
             </button>
           )}
@@ -560,13 +560,40 @@ export const Header: React.FC<HeaderProps> = ({
                     {/* Sombra suave y bordes redondeados elegantes */}
                     <div className="absolute -inset-4 bg-white/5 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     
-                    <div className="relative rounded-2xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] border border-white/5">
-                      <img 
-                        src={img.url} 
-                        alt={`Página ${idx + 1}`} 
-                        className="w-full h-auto block"
-                        referrerPolicy="no-referrer"
-                      />
+                    <div className="relative rounded-2xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] border border-white/10 bg-white/5">
+                      {img.type?.includes('pdf') || img.url?.startsWith('data:application/pdf') ? (
+                        <div className="flex flex-col w-full">
+                          <div className="bg-white/10 p-4 flex justify-between items-center border-b border-white/10">
+                            <div className="flex items-center gap-3">
+                              <FileText className="text-red-400" size={20} />
+                              <span className="text-xs font-bold text-white truncate max-w-[200px]">{img.name || 'Documento PDF'}</span>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = img.url;
+                                link.download = img.name || 'boletin.pdf';
+                                link.click();
+                              }}
+                              className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors"
+                            >
+                              Descargar / Ver Completo
+                            </button>
+                          </div>
+                          <iframe 
+                            src={`${img.url}#toolbar=0&navpanes=0&scrollbar=1`} 
+                            title={`Página ${idx + 1}`}
+                            className="w-full h-[70vh] md:h-[85vh] block border-none bg-white"
+                          />
+                        </div>
+                      ) : (
+                        <img 
+                          src={img.url} 
+                          alt={`Página ${idx + 1}`} 
+                          className="w-full h-auto block"
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
                     </div>
 
                     {/* Indicador de página elegante y discreto */}
