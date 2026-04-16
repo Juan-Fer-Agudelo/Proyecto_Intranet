@@ -365,7 +365,7 @@ export default function App() {
 
   // Background rotation effect
   useEffect(() => {
-    const defaultBgsCount = 3; // El número de imágenes por defecto definidas en Hero.tsx
+    const defaultBgsCount = 2; // El número de imágenes por defecto definidas en Hero.tsx
     const totalBgs = heroBgs.length > 0 ? heroBgs.length : defaultBgsCount;
 
     if (totalBgs <= 1) return;

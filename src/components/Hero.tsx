@@ -11,8 +11,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => {
   const defaultBgs = [
-    'https://www.simex.com.co/wp-content/uploads/2024/07/imagen-carrusel-cosmetico-3.jpg',
-    'https://media.licdn.com/dms/image/v2/D4E22AQEHwzfGeSxHBw/feedshare-shrink_800/feedshare-shrink_800/0/1695137474368?e=2147483647&v=beta&t=BiNC-90SFI-XDRnx3mLozDMV10DYHxW1RFrlbeiwYsM',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9tqopYIUH-nhmL2vLq16YiLGWOSFs2KKwwudN4mQhUx9Yx0BR',
     'https://www.simex.com.co/wp-content/uploads/2024/07/imagen-carrusel-cosmetico-3.jpg'
   ];
   const displayBgs = heroBgs.length > 0 ? heroBgs : defaultBgs;
