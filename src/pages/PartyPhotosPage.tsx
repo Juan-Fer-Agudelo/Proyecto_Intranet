@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Image as ImageIcon, Search, Filter, ArrowLeft, Download, ZoomIn, X } from 'lucide-react';
+import { Image as ImageIcon, Search, Filter, ArrowLeft, ArrowRight, Download, ZoomIn, X } from 'lucide-react';
 import { PartyPhoto } from '../types';
 
 export default function PartyPhotosPage() {
@@ -199,9 +199,7 @@ export default function PartyPhotosPage() {
                   onClick={nextPhoto}
                   className="p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all pointer-events-auto backdrop-blur-md border border-white/10"
                 >
-                  <motion.div rotate={180}>
-                    <ArrowLeft size={32} />
-                  </motion.div>
+                  <ArrowRight size={32} />
                 </button>
               </div>
 
@@ -246,9 +244,7 @@ export default function PartyPhotosPage() {
                   onClick={nextPhoto}
                   className="md:hidden p-3 bg-white/10 text-white rounded-full"
                 >
-                  <motion.div rotate={180}>
-                    <ArrowLeft size={20} />
-                  </motion.div>
+                  <ArrowRight size={20} />
                 </button>
               </div>
 
