@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText } from 'lucide-react';
+import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText, ArrowUp, ArrowDown } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Announcement, Video, PartyPhoto, Visit } from '../types';
 
@@ -20,6 +20,7 @@ interface AdminModalProps {
   rhVideo: string | null;
   setRhVideo: (url: string | null) => void;
   partyPhotos: PartyPhoto[];
+  setPartyPhotos: (val: PartyPhoto[] | ((prev: PartyPhoto[]) => PartyPhoto[])) => void;
   addPartyPhotos: (urls: string[], year: string) => void;
   deletePartyPhoto: (id: string) => void;
   bulletinQuincenal: { SX: any[]; SO: any[]; PL: any[] };
@@ -56,7 +57,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   setBulletinQuincenal,
   bulletinMensual,
   setBulletinMensual,
-  addAnnouncement
+  addAnnouncement,
+  setPartyPhotos
 }) => {
   // --- ESTADOS LOCALES PARA FORMULARIOS ---
   const [newAnn, setNewAnn] = useState<{ title: string; content: string; image: string; company: 'SX' | 'SO' | 'PL' | 'Global' }>({ 
@@ -72,12 +74,39 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   if (!isOpen) return null;
 
+  const relevantAnnouncements = announcements.filter(a => 
+    a.active && (a.company === 'Global' || a.company === newAnn.company)
+  );
+  const isAnnLimitReached = relevantAnnouncements.length >= 5;
+
+  const getCompanyName = (code: string) => {
+    switch (code) {
+      case 'SX': return 'Simex';
+      case 'SO': return 'Soinco';
+      case 'PL': return 'Plastinovo';
+      default: return 'todas las empresas';
+    }
+  };
+
   /**
    * Maneja la creación de un nuevo anuncio.
+   * Valida que no se superen los 5 anuncios activos por empresa.
    */
   const handleAddAnn = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAnn.title || !newAnn.content) return;
+    
+    // Calcular anuncios actuales para la empresa seleccionada
+    // (Anuncios globales + Anuncios específicos de la empresa)
+    const relevantAnnouncements = announcements.filter(a => 
+      a.active && (a.company === 'Global' || a.company === newAnn.company)
+    );
+
+    if (relevantAnnouncements.length >= 5) {
+      alert(`Límite alcanzado: Ya hay 5 noticias flotantes activas para ${newAnn.company === 'Global' ? 'todas las empresas' : newAnn.company} (incluyendo las generales).`);
+      return;
+    }
+
     addAnnouncement(newAnn);
     setNewAnn({ title: '', content: '', image: '', company: 'Global' });
   };
@@ -273,7 +302,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">2</span>
-              Anuncios Flotantes (Máx 5)
+              Anuncios Flotantes (Máx 5 por empresa)
             </h3>
             
             <form onSubmit={handleAddAnn} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
@@ -308,6 +337,15 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     </button>
                   ))}
                 </div>
+                {isAnnLimitReached && (
+                  <motion.p 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="text-[10px] font-black text-red-600 bg-red-50 p-2 rounded-lg border border-red-100 uppercase tracking-tight"
+                  >
+                    ⚠️ Se llenó el espacio de noticias para {getCompanyName(newAnn.company)}
+                  </motion.p>
+                )}
               </div>
 
               <input 
@@ -324,10 +362,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               />
               <button 
                 type="submit"
-                disabled={announcements.length >= 5}
-                className="w-full py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+                disabled={isAnnLimitReached}
+                className={`w-full py-2 rounded-xl font-bold transition-all ${
+                  isAnnLimitReached 
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
               >
-                {announcements.length >= 5 ? 'Límite alcanzado (5)' : 'Agregar Anuncio'}
+                {isAnnLimitReached ? 'Límite alcanzado' : 'Agregar Anuncio'}
               </button>
             </form>
 
@@ -500,7 +542,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           <section className="space-y-4">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
               <span className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center text-sm">5</span>
-              Imágenes de Bienvenida Dinámicas (Máx 4)
+              Imágenes de Bienvenida Dinámicas (Máx 10)
             </h3>
             
             <div className="grid grid-cols-2 gap-4">
@@ -516,7 +558,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 </div>
               ))}
               
-              {heroBgs.length < 4 && (
+              {heroBgs.length < 10 && (
                 <div className="p-4 border-2 border-dashed border-gray-200 rounded-2xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group flex flex-col items-center justify-center aspect-video">
                   <input 
                     type="file" 
@@ -566,19 +608,52 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-2 border rounded-2xl custom-scrollbar">
-              {partyPhotos.map(photo => (
-                <div key={photo.id} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-100">
+            <div className="grid grid-cols-4 gap-2 max-h-[400px] overflow-y-auto p-2 border rounded-2xl custom-scrollbar">
+              {partyPhotos.map((photo, index) => (
+                <div key={photo.id} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                   <img src={photo.url} className="w-full h-full object-cover" alt="" />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[8px] font-bold text-center py-0.5">
-                    {photo.year}
+                  
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                    <div className="flex gap-1">
+                      <button 
+                        onClick={() => {
+                          if (index > 0) {
+                            const newPhotos = [...partyPhotos];
+                            [newPhotos[index-1], newPhotos[index]] = [newPhotos[index], newPhotos[index-1]];
+                            setPartyPhotos(newPhotos);
+                          }
+                        }}
+                        className="p-1.5 bg-white text-gray-900 rounded-lg hover:bg-gray-200 transition-colors"
+                        title="Mover arriba"
+                      >
+                        <ArrowUp size={14} />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          if (index < partyPhotos.length - 1) {
+                            const newPhotos = [...partyPhotos];
+                            [newPhotos[index+1], newPhotos[index]] = [newPhotos[index], newPhotos[index+1]];
+                            setPartyPhotos(newPhotos);
+                          }
+                        }}
+                        className="p-1.5 bg-white text-gray-900 rounded-lg hover:bg-gray-200 transition-colors"
+                        title="Mover abajo"
+                      >
+                        <ArrowDown size={14} />
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => deletePartyPhoto(photo.id.toString())}
+                      className="p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      title="Eliminar"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                  <button 
-                    onClick={() => deletePartyPhoto(photo.id.toString())}
-                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 size={12} />
-                  </button>
+
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[8px] font-black text-center py-1 backdrop-blur-sm">
+                    {photo.year} • #{index + 1}
+                  </div>
                 </div>
               ))}
             </div>

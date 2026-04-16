@@ -10,7 +10,7 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => {
-  const defaultBg = 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=2070&auto=format&fit=crop';
+  const defaultBg = 'https://images.unsplash.com/photo-1565151540134-972166315579?q=80&w=2070&auto=format&fit=crop';
   const displayBgs = heroBgs.length > 0 ? heroBgs : [defaultBg];
   
   return (

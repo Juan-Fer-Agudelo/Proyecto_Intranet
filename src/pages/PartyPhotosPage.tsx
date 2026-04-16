@@ -7,7 +7,7 @@ export default function PartyPhotosPage() {
   const [photos, setPhotos] = useState<PartyPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState<string>('Todos');
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,6 +30,31 @@ export default function PartyPhotosPage() {
     const matchesYear = selectedYear === 'Todos' || photo.year === selectedYear;
     return matchesYear;
   });
+
+  const nextPhoto = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (selectedPhotoIndex !== null) {
+      setSelectedPhotoIndex((selectedPhotoIndex + 1) % filteredPhotos.length);
+    }
+  };
+
+  const prevPhoto = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (selectedPhotoIndex !== null) {
+      setSelectedPhotoIndex((selectedPhotoIndex - 1 + filteredPhotos.length) % filteredPhotos.length);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedPhotoIndex === null) return;
+      if (e.key === 'ArrowRight') nextPhoto();
+      if (e.key === 'ArrowLeft') prevPhoto();
+      if (e.key === 'Escape') setSelectedPhotoIndex(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPhotoIndex, filteredPhotos.length]);
 
   if (isLoading) {
     return (
@@ -94,7 +119,7 @@ export default function PartyPhotosPage() {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3, delay: idx * 0.05 }}
                     className="group relative aspect-square bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-zoom-in border border-gray-100"
-                    onClick={() => setSelectedPhoto(photo.url)}
+                    onClick={() => setSelectedPhotoIndex(idx)}
                   >
                     <img 
                       src={photo.url} 
@@ -138,40 +163,100 @@ export default function PartyPhotosPage() {
 
       {/* Lightbox Overlay */}
       <AnimatePresence>
-        {selectedPhoto && (
+        {selectedPhotoIndex !== null && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/90 backdrop-blur-sm"
-              onClick={() => setSelectedPhoto(null)}
+              className="absolute inset-0 bg-black/95 backdrop-blur-md"
+              onClick={() => setSelectedPhotoIndex(null)}
             />
+            
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-4xl max-h-[85vh] z-10 flex flex-col items-center"
+              className="relative w-full max-w-5xl max-h-[85vh] z-10 flex flex-col items-center"
             >
+              {/* Close Button */}
               <button 
-                onClick={() => setSelectedPhoto(null)}
-                className="absolute -top-12 right-0 p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all"
+                onClick={() => setSelectedPhotoIndex(null)}
+                className="absolute -top-16 right-0 p-3 bg-white/10 hover:bg-white/30 text-white rounded-full transition-all z-20"
               >
-                <X size={32} />
+                <X size={28} />
               </button>
-              <div className="w-full h-full overflow-hidden rounded-2xl shadow-2xl border-4 border-white/10 bg-black flex items-center justify-center">
-                <img 
-                  src={selectedPhoto} 
-                  className="w-full h-full object-contain"
-                  alt="Zoom"
-                />
+
+              {/* Navigation Arrows */}
+              <div className="absolute inset-y-0 -left-16 -right-16 hidden md:flex items-center justify-between pointer-events-none">
+                <button 
+                  onClick={prevPhoto}
+                  className="p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all pointer-events-auto backdrop-blur-md border border-white/10"
+                >
+                  <ArrowLeft size={32} />
+                </button>
+                <button 
+                  onClick={nextPhoto}
+                  className="p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all pointer-events-auto backdrop-blur-md border border-white/10"
+                >
+                  <motion.div rotate={180}>
+                    <ArrowLeft size={32} />
+                  </motion.div>
+                </button>
               </div>
-              <button 
-                onClick={() => window.open(selectedPhoto, '_blank')}
-                className="mt-6 px-6 py-3 bg-white text-black rounded-2xl font-black flex items-center gap-2 hover:bg-gray-100 transition-all shadow-xl"
-              >
-                <Download size={20} /> Abrir original
-              </button>
+
+              {/* Image Container */}
+              <div className="w-full h-full overflow-hidden rounded-3xl shadow-2xl border-2 border-white/10 bg-black/50 flex items-center justify-center relative">
+                <AnimatePresence mode="wait">
+                  <motion.img 
+                    key={filteredPhotos[selectedPhotoIndex].url}
+                    src={filteredPhotos[selectedPhotoIndex].url} 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="w-full h-full object-contain"
+                    alt="Zoom"
+                  />
+                </AnimatePresence>
+                
+                {/* Mobile Navigation info */}
+                <div className="absolute top-4 right-4 bg-black/50 px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-widest md:hidden">
+                  {selectedPhotoIndex + 1} / {filteredPhotos.length}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 mt-8">
+                <button 
+                  onClick={prevPhoto}
+                  className="md:hidden p-3 bg-white/10 text-white rounded-full"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+
+                <button 
+                  onClick={() => window.open(filteredPhotos[selectedPhotoIndex].url, '_blank')}
+                  className="px-8 py-4 bg-white text-black rounded-2xl font-black flex items-center gap-2 hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all shadow-xl"
+                >
+                  <Download size={20} /> 
+                  <span className="hidden md:inline">Descargar Foto Original</span>
+                  <span className="md:hidden">Descargar</span>
+                </button>
+
+                <button 
+                  onClick={nextPhoto}
+                  className="md:hidden p-3 bg-white/10 text-white rounded-full"
+                >
+                  <motion.div rotate={180}>
+                    <ArrowLeft size={20} />
+                  </motion.div>
+                </button>
+              </div>
+
+              <div className="mt-4 text-center">
+                <p className="text-white/40 text-xs font-black uppercase tracking-[0.3em]">
+                  {filteredPhotos[selectedPhotoIndex].year || 'Recuerdo Sin Fecha'} • {selectedPhotoIndex + 1} de {filteredPhotos.length}
+                </p>
+              </div>
             </motion.div>
           </div>
         )}

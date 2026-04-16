@@ -233,6 +233,11 @@ function IntranetContent({
             saveData({ rhVideo: newValue });
           }}
           partyPhotos={partyPhotos}
+          setPartyPhotos={(val: any) => {
+            const newValue = typeof val === 'function' ? val(partyPhotos) : val;
+            setPartyPhotos(newValue);
+            saveData({ partyPhotos: newValue });
+          }}
           addPartyPhotos={addPartyPhotos}
           deletePartyPhoto={deletePartyPhoto}
           bulletinQuincenal={bulletinQuincenal}
@@ -349,6 +354,9 @@ export default function App() {
   // --- EFFECTS ---
   useEffect(() => {
     fetchData();
+    // Real-time polling every 10 seconds
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
