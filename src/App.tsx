@@ -365,10 +365,13 @@ export default function App() {
 
   // Background rotation effect
   useEffect(() => {
-    if (heroBgs.length <= 1) return;
+    const defaultBgsCount = 3; // El número de imágenes por defecto definidas en Hero.tsx
+    const totalBgs = heroBgs.length > 0 ? heroBgs.length : defaultBgsCount;
+
+    if (totalBgs <= 1) return;
     
     const interval = setInterval(() => {
-      setCurrentBgIndex((prev) => (prev + 1) % heroBgs.length);
+      setCurrentBgIndex((prev) => (prev + 1) % totalBgs);
     }, 5000);
     
     return () => clearInterval(interval);

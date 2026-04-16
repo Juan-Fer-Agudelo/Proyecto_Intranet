@@ -10,8 +10,12 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => {
-  const defaultBg = 'https://images.unsplash.com/photo-1565151540134-972166315579?q=80&w=2070&auto=format&fit=crop';
-  const displayBgs = heroBgs.length > 0 ? heroBgs : [defaultBg];
+  const defaultBgs = [
+    'https://www.simex.com.co/wp-content/uploads/2024/07/imagen-carrusel-cosmetico-3.jpg',
+    'https://media.licdn.com/dms/image/v2/D4E22AQEHwzfGeSxHBw/feedshare-shrink_800/feedshare-shrink_800/0/1695137474368?e=2147483647&v=beta&t=BiNC-90SFI-XDRnx3mLozDMV10DYHxW1RFrlbeiwYsM',
+    'https://www.simex.com.co/wp-content/uploads/2024/07/imagen-carrusel-cosmetico-3.jpg'
+  ];
+  const displayBgs = heroBgs.length > 0 ? heroBgs : defaultBgs;
   
   return (
     <section className="relative min-h-[500px] md:min-h-[calc(100vh-120px)] flex flex-col items-center justify-start p-6 md:p-12 text-center overflow-hidden">
