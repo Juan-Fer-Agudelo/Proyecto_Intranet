@@ -198,7 +198,7 @@ export default function DirectoryPage() {
         </div>
       </div>
 
-      <main className="flex-grow p-6 md:p-10">
+      <main className="flex-grow p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {error ? (
             <div className="bg-red-50 border-2 border-red-100 rounded-[2.5rem] p-12 text-center max-w-2xl mx-auto">
@@ -216,97 +216,82 @@ export default function DirectoryPage() {
               </button>
             </div>
           ) : filteredContacts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
-                {filteredContacts.map((contact) => (
-                  <motion.div
-                    key={contact.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="group bg-white rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 relative overflow-hidden"
-                  >
-                    {/* Indicador de empresa lateral */}
-                    <div className={`absolute top-0 right-0 w-16 h-16 bg-slate-50 flex items-center justify-center rounded-bl-[2rem] border-l border-b border-slate-100 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500`}>
-                      <span className="text-xs font-black uppercase tracking-tighter">{contact.empresa?.substring(0, 3)}</span>
-                    </div>
-
-                    <div className="flex items-start gap-4 mb-6">
-                      <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500 shrink-0">
-                        <User size={28} />
-                      </div>
-                      <div className="pr-12">
-                        <h4 className="text-lg font-black text-slate-800 leading-tight group-hover:text-blue-600 transition-colors uppercase">{contact.nombre}</h4>
-                        <div className="flex items-center gap-1.5 text-slate-400 mt-1">
-                          <Briefcase size={12} />
-                          <p className="text-[11px] font-bold uppercase tracking-wider">{contact.cargo}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-4 border-t border-slate-50 group-hover:border-blue-50 transition-colors">
-                      <div className="flex items-center justify-between pb-3 border-b border-slate-50 last:border-none">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                            <Hash size={16} />
-                          </div>
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Extensión</span>
-                        </div>
-                        <span className="text-xl font-black text-blue-600 tracking-tighter">{contact.extension || '---'}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between pb-3 border-b border-slate-50 last:border-none">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                            <Building2 size={16} />
-                          </div>
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Área</span>
-                        </div>
-                        <span className="text-xs font-bold text-slate-700 text-right uppercase truncate max-w-[150px]">{contact.area || 'General'}</span>
-                      </div>
-
-                      {contact.celular && (
-                        <div className="flex items-center justify-between pb-3 border-b border-slate-50 last:border-none">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                              <Phone size={16} />
+            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-slate-100">
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Usuario</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Empresa / Área</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Cargo</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Extensión</th>
+                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Contacto</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    <AnimatePresence mode="popLayout">
+                      {filteredContacts.map((contact) => (
+                        <motion.tr
+                          key={contact.id}
+                          layout
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="group hover:bg-blue-50/30 transition-colors"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 font-black text-xs shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                {contact.nombre?.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{contact.nombre}</p>
+                                <p className="text-[10px] font-bold text-slate-400 lowercase">{contact.correo || 'sin correo'}</p>
+                              </div>
                             </div>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Celular</span>
-                          </div>
-                          <a href={`tel:${contact.celular}`} className="text-sm font-bold text-slate-700 hover:text-blue-600 transition-colors">{contact.celular}</a>
-                        </div>
-                      )}
-
-                      {contact.correo && (
-                        <div className="flex items-center justify-between pb-3 border-b border-slate-50 last:border-none">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                              <Mail size={16} />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-col">
+                              <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">{contact.empresa}</span>
+                              <span className="text-xs font-bold text-slate-500 uppercase">{contact.area}</span>
                             </div>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</span>
-                          </div>
-                          <a href={`mailto:${contact.correo}`} className="text-[11px] font-bold text-blue-600 hover:underline truncate max-w-[150px]" title={contact.correo}>
-                            {contact.correo}
-                          </a>
-                        </div>
-                      )}
-
-                      {contact.sede && (
-                        <div className="flex items-center justify-between pb-3 border-b border-slate-50 last:border-none">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                              <MapPin size={16} />
+                          </td>
+                          <td className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            {contact.cargo}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-lg font-black text-lg tracking-tighter">
+                              {contact.extension || '---'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              {contact.celular && (
+                                <a 
+                                  href={`tel:${contact.celular}`} 
+                                  className="p-2 bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
+                                  title={`Llamar a ${contact.celular}`}
+                                >
+                                  <Phone size={14} />
+                                </a>
+                              )}
+                              {contact.correo && (
+                                <a 
+                                  href={`mailto:${contact.correo}`} 
+                                  className="p-2 bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
+                                  title={`Enviar correo a ${contact.correo}`}
+                                >
+                                  <Mail size={14} />
+                                </a>
+                              )}
                             </div>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sede</span>
-                          </div>
-                          <span className="text-xs font-bold text-slate-700 uppercase">{contact.sede}</span>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-32 text-center bg-white rounded-[4rem] shadow-sm border border-slate-100">
