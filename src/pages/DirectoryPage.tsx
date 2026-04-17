@@ -258,7 +258,7 @@ export default function DirectoryPage() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
-                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Empresa</th>
+                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 w-56">Empresa</th>
                       <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Usuario</th>
                       <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Cargo</th>
                       <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Área (Gestión)</th>
@@ -277,7 +277,7 @@ export default function DirectoryPage() {
                           className="group hover:bg-slate-50/80 transition-colors"
                         >
                           <td className="px-6 py-4">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${getCompanyBadge(contact.empresa)}`}>
+                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter border block text-center ${getCompanyBadge(contact.empresa)}`}>
                               {contact.empresa}
                             </span>
                           </td>
@@ -286,7 +286,7 @@ export default function DirectoryPage() {
                               <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0 border ${getCompanyBadge(contact.empresa)}`}>
                                 {contact.nombre?.charAt(0)}
                               </div>
-                              <p className={`text-sm font-black uppercase tracking-tight ${getCompanyStyle(contact.empresa)}`}>
+                              <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">
                                 {contact.nombre}
                               </p>
                             </div>
