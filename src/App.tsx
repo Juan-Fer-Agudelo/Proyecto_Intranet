@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Routes, Route, useParams, useNavigate } from 'react-router-dom';
+import { Calendar } from 'lucide-react';
 import { CONFIG } from './constants/config';
 import { Announcement, Video as VideoType, NewsItem, CompanyCode, Module, PartyPhoto, Visit } from './types';
 
@@ -169,24 +170,42 @@ function IntranetContent({
       <main className="flex-grow relative overflow-hidden flex flex-col">
         <Hero news={[]} heroBgs={heroBgs} currentBgIndex={currentBgIndex} />
 
-        {/* Visit Banner - Absolute positioning to allow background visibility below it */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md text-white py-4 px-8 text-center font-bold text-sm md:text-base z-20 border-t border-white/5 tracking-wide overflow-hidden h-14 flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            {visits.length > 0 ? (
-              <motion.div
-                key={currentVisitIndex}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-                className="absolute"
-              >
-                {visits[currentVisitIndex]?.text}
-              </motion.div>
-            ) : (
-              <div className="text-white/40 italic">No hay visitas programadas</div>
-            )}
-          </AnimatePresence>
+        {/* Visit Banner - Aesthetic Dark Footer */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 footer-aesthetic h-16 md:h-14">
+          <div className="container-custom h-full flex items-center justify-between">
+            <div className="hidden md:flex items-center gap-2 text-white/30 font-black text-[10px] uppercase tracking-[0.2em]">
+              <Calendar size={14} />
+              <span>Programación de Visitas</span>
+            </div>
+
+            <div className="flex-grow flex items-center justify-center relative h-full">
+              <AnimatePresence mode="wait">
+                {visits.length > 0 ? (
+                  <motion.div
+                    key={currentVisitIndex}
+                    initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 1.02, y: -10 }}
+                    transition={{ duration: 0.5, ease: "circOut" }}
+                    className="absolute text-center"
+                  >
+                    <span className="text-white font-bold text-xs md:text-sm tracking-wide bg-white/5 px-6 py-2 rounded-full border border-white/10 uppercase">
+                      {visits[currentVisitIndex]?.text}
+                    </span>
+                  </motion.div>
+                ) : (
+                  <div className="text-white/20 italic text-xs uppercase tracking-widest font-black">Sin visitas programadas hoy</div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Live Updates</span>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 

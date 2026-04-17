@@ -26,12 +26,21 @@
 body {
     margin: 0;
     font-family: var(--font-opensans);
-    background-color: #f0f2f5;
-    color: var(--text-main);
+    background-color: #0b111a; /* Deep elegant dark background */
+    color: var(--text-light); /* Better contrast with light text */
     overflow-x: hidden;
     transition: var(--transition);
     line-height: 1.6;
     min-height: 100vh;
+}
+
+/* Redefined Glass Footer */
+.footer-aesthetic {
+  background: rgba(11, 17, 26, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Custom Scrollbar */
