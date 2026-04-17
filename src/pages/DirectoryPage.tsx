@@ -50,7 +50,6 @@ export default function DirectoryPage() {
       }
 
       const data = await response.json();
-      // Asumimos que la respuesta es un arreglo directo o viene en una propiedad (basado en la descripción del jefe)
       const directoryData = Array.isArray(data) ? data : data.data || [];
       setContacts(directoryData);
     } catch (err) {
@@ -65,9 +64,9 @@ export default function DirectoryPage() {
     fetchDirectory();
   }, []);
 
-  // Extraemos áreas y empresas únicas para los filtros
+  // Extraemos áreas (gestión) y empresas únicas para los filtros
   const areas = useMemo(() => {
-    const set = new Set(contacts.map(c => c.area).filter(Boolean));
+    const set = new Set(contacts.map(c => c.gestion).filter(Boolean));
     return ['Todas', ...Array.from(set).sort()];
   }, [contacts]);
 
@@ -79,18 +78,36 @@ export default function DirectoryPage() {
   // Filtrado de la lista basado en búsqueda y selects
   const filteredContacts = useMemo(() => {
     return contacts.filter(contact => {
+      const search = searchTerm.toLowerCase();
       const matchesSearch = 
-        contact.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.cargo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.extension?.toString().includes(searchTerm) ||
-        contact.correo?.toLowerCase().includes(searchTerm.toLowerCase());
+        contact.nombre?.toLowerCase().includes(search) ||
+        contact.cargo?.toLowerCase().includes(search) ||
+        contact.extencion?.toString().includes(search) ||
+        contact.gestion?.toLowerCase().includes(search);
       
-      const matchesArea = selectedArea === 'Todas' || contact.area === selectedArea;
+      const matchesArea = selectedArea === 'Todas' || contact.gestion === selectedArea;
       const matchesEmpresa = selectedEmpresa === 'Todas' || contact.empresa === selectedEmpresa;
 
       return matchesSearch && matchesArea && matchesEmpresa;
     });
   }, [contacts, searchTerm, selectedArea, selectedEmpresa]);
+
+  // Función para obtener colores corporativos
+  const getCompanyStyle = (empresa: string) => {
+    const emp = empresa?.toUpperCase() || '';
+    if (emp.includes('SIMEX')) return 'text-blue-600';
+    if (emp.includes('SOINCO')) return 'text-red-600';
+    if (emp.includes('PLASTINOVO')) return 'text-orange-600';
+    return 'text-slate-800';
+  };
+
+  const getCompanyBadge = (empresa: string) => {
+    const emp = empresa?.toUpperCase() || '';
+    if (emp.includes('SIMEX')) return 'bg-blue-50 text-blue-700 border-blue-100';
+    if (emp.includes('SOINCO')) return 'bg-red-50 text-red-700 border-red-100';
+    if (emp.includes('PLASTINOVO')) return 'bg-orange-50 text-orange-700 border-orange-100';
+    return 'bg-slate-50 text-slate-700 border-slate-100';
+  };
 
   if (isLoading) {
     return (
@@ -221,70 +238,49 @@ export default function DirectoryPage() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Usuario</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Empresa / Área</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Cargo</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Extensión</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Contacto</th>
+                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Empresa</th>
+                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Usuario</th>
+                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Cargo</th>
+                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Área (Gestión)</th>
+                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Extensión</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
                     <AnimatePresence mode="popLayout">
                       {filteredContacts.map((contact) => (
                         <motion.tr
-                          key={contact.id}
+                          key={contact.id_directorio}
                           layout
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="group hover:bg-blue-50/30 transition-colors"
+                          className="group hover:bg-slate-50/80 transition-colors"
                         >
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 font-black text-xs shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                {contact.nombre?.charAt(0)}
-                              </div>
-                              <div>
-                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{contact.nombre}</p>
-                                <p className="text-[10px] font-bold text-slate-400 lowercase">{contact.correo || 'sin correo'}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">{contact.empresa}</span>
-                              <span className="text-xs font-bold text-slate-500 uppercase">{contact.area}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
-                            {contact.cargo}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-lg font-black text-lg tracking-tighter">
-                              {contact.extension || '---'}
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${getCompanyBadge(contact.empresa)}`}>
+                              {contact.empresa}
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              {contact.celular && (
-                                <a 
-                                  href={`tel:${contact.celular}`} 
-                                  className="p-2 bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
-                                  title={`Llamar a ${contact.celular}`}
-                                >
-                                  <Phone size={14} />
-                                </a>
-                              )}
-                              {contact.correo && (
-                                <a 
-                                  href={`mailto:${contact.correo}`} 
-                                  className="p-2 bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
-                                  title={`Enviar correo a ${contact.correo}`}
-                                >
-                                  <Mail size={14} />
-                                </a>
-                              )}
+                            <div className="flex items-center gap-3">
+                              <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0 border ${getCompanyBadge(contact.empresa)}`}>
+                                {contact.nombre?.charAt(0)}
+                              </div>
+                              <p className={`text-sm font-black uppercase tracking-tight ${getCompanyStyle(contact.empresa)}`}>
+                                {contact.nombre}
+                              </p>
                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">{contact.cargo || '---'}</p>
+                          </td>
+                          <td className="px-6 py-4">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">{contact.gestion || '---'}</p>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span className={`inline-block px-5 py-2 rounded-xl font-black text-xl tracking-tighter shadow-sm border ${getCompanyBadge(contact.empresa)}`}>
+                              {contact.extencion || '---'}
+                            </span>
                           </td>
                         </motion.tr>
                       ))}

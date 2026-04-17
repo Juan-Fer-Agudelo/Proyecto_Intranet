@@ -47,15 +47,14 @@ export interface PartyPhoto {
 }
 
 export interface DirectoryEntry {
-  id: string | number;
+  id_directorio: number;
   nombre: string;
   cargo: string;
   empresa: string;
-  extension: string;
-  celular: string;
-  correo: string;
-  area: string;
-  sede?: string;
+  extencion: string;
+  gestion: string;
+  telefono: string;
+  email: string;
 }
 
 export interface BulletinImage {
