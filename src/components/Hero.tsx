@@ -11,27 +11,28 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => {
   const defaultBgs = [
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9tqopYIUH-nhmL2vLq16YiLGWOSFs2KKwwudN4mQhUx9Yx0BR',
-    'https://www.simex.com.co/wp-content/uploads/2024/07/imagen-carrusel-cosmetico-3.jpg'
+    'https://www.simex.com.co/wp-content/uploads/2024/07/imagen-carrusel-cosmetico-3.jpg',
+    'https://media.licdn.com/dms/image/v2/C4D22AQFp83y2KccQng/feedshare-shrink_2048_1536/feedshare-shrink_2048_1536/0/1600198479440?e=1778112000&v=beta&t=nQ4Njty3VBhDq4BAnsLhTorIY7hddceRDWuB41TjQZ8'
   ];
   const displayBgs = heroBgs.length > 0 ? heroBgs : defaultBgs;
   
   return (
-    <section className="relative min-h-[500px] md:min-h-[calc(100vh-120px)] flex flex-col items-center justify-start p-6 md:p-12 text-center overflow-hidden">
+    <section className="relative min-h-[400px] md:min-h-[calc(100vh-140px)] flex flex-col items-center justify-start p-2 md:p-6 text-center overflow-hidden">
       {/* Background Images with Transitions */}
-      <AnimatePresence mode="wait">
-        <motion.div
+      <AnimatePresence mode="popLayout">
+        <motion.img
           key={currentBgIndex}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          src={displayBgs[currentBgIndex % displayBgs.length]}
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.5 }}
-          className="absolute inset-0 bg-cover bg-center z-0"
-          style={{ backgroundImage: `url(${displayBgs[currentBgIndex % displayBgs.length]})` }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          alt="Background"
         />
       </AnimatePresence>
 
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary-overlay)] to-[var(--secondary-overlay)] z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 z-[1]" />
       
       <div className="relative z-10 w-full container-custom flex flex-col gap-8 items-center pt-8 md:pt-16">
         {news.length > 0 ? (

@@ -175,7 +175,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-[1500] bg-[var(--primary)] text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
+    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/90 backdrop-blur-md text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
       <div className="flex items-center gap-3 md:gap-5">
         <img 
           src={CONFIG.LOGOS[currentCompany]} 

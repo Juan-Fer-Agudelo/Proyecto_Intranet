@@ -166,11 +166,11 @@ function IntranetContent({
         currentCompany={currentCompany}
       />
 
-      <main className="flex-grow flex flex-col">
+      <main className="flex-grow relative overflow-hidden flex flex-col">
         <Hero news={[]} heroBgs={heroBgs} currentBgIndex={currentBgIndex} />
 
-        {/* Visit Banner */}
-        <div className="bg-black text-white py-4 px-8 text-center font-bold text-sm md:text-base relative z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] tracking-wide overflow-hidden h-14 flex items-center justify-center">
+        {/* Visit Banner - Absolute positioning to allow background visibility below it */}
+        <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md text-white py-4 px-8 text-center font-bold text-sm md:text-base z-20 border-t border-white/5 tracking-wide overflow-hidden h-14 flex items-center justify-center">
           <AnimatePresence mode="wait">
             {visits.length > 0 ? (
               <motion.div
@@ -265,23 +265,23 @@ function IntranetContent({
       <style>{`
         :root {
           --primary: #1B4969;
-          --primary-overlay: rgba(0, 0, 0, 0.75);
-          --secondary-overlay: rgba(0, 0, 0, 0.6);
+          --primary-overlay: rgba(0, 0, 0, 0.15);
+          --secondary-overlay: rgba(0, 0, 0, 0.05);
         }
         .theme-sx {
           --primary: #264074;
-          --primary-overlay: rgba(0, 0, 0, 0.75);
-          --secondary-overlay: rgba(0, 0, 0, 0.6);
+          --primary-overlay: rgba(0, 0, 0, 0.15);
+          --secondary-overlay: rgba(0, 0, 0, 0.05);
         }
         .theme-so {
           --primary: #e2171b;
-          --primary-overlay: rgba(0, 0, 0, 0.75);
-          --secondary-overlay: rgba(0, 0, 0, 0.6);
+          --primary-overlay: rgba(0, 0, 0, 0.15);
+          --secondary-overlay: rgba(0, 0, 0, 0.05);
         }
         .theme-pl {
           --primary: #FF6600;
-          --primary-overlay: rgba(0, 0, 0, 0.75);
-          --secondary-overlay: rgba(0, 0, 0, 0.6);
+          --primary-overlay: rgba(0, 0, 0, 0.15);
+          --secondary-overlay: rgba(0, 0, 0, 0.05);
         }
       `}</style>
     </div>

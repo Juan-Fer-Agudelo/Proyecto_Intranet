@@ -16,8 +16,8 @@
     --primary: #1B4969;
     --secondary: #2A6F97;
     --accent: #61A5C2;
-    --primary-overlay: rgba(27, 73, 105, 0.8);
-    --secondary-overlay: rgba(1, 42, 74, 0.6);
+    --primary-overlay: rgba(27, 73, 105, 0.5);
+    --secondary-overlay: rgba(1, 42, 74, 0.3);
     --text-main: #2D2D2D;
     --text-light: #f8f9fa;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -26,9 +26,7 @@
 body {
     margin: 0;
     font-family: var(--font-opensans);
-    background-image: linear-gradient(rgba(240, 242, 245, 0.9), rgba(240, 242, 245, 0.9)), url('https://images.unsplash.com/photo-1565608414365-16244882d03c?q=80&w=2070&auto=format&fit=crop');
-    background-attachment: fixed;
-    background-size: cover;
+    background-color: #f0f2f5;
     color: var(--text-main);
     overflow-x: hidden;
     transition: var(--transition);
