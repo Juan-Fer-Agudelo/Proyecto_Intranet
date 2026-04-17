@@ -1,16 +1,28 @@
+// Importaciones de React y librerías necesarias
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+// Iconos de Lucide React para acciones y navegación
 import { Image as ImageIcon, Search, Filter, ArrowLeft, ArrowRight, Download, ZoomIn, X, RefreshCw } from 'lucide-react';
+// Interfaz de datos para las fotos
 import { PartyPhoto } from '../types';
 
+/**
+ * PartyPhotosPage: Galería de fotos corporativas.
+ * Permite visualizar recuerdos de eventos organizados por años, con un visor (lightbox) integrado.
+ */
 export default function PartyPhotosPage() {
   const navigate = useNavigate();
-  const [photos, setPhotos] = useState<PartyPhoto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedYear, setSelectedYear] = useState<string>('Todos');
-  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
+  
+  // Estados para datos y UI
+  const [photos, setPhotos] = useState<PartyPhoto[]>([]); // Almacena todas las fotos del API
+  const [isLoading, setIsLoading] = useState(true); // Controla el estado de carga inicial
+  const [selectedYear, setSelectedYear] = useState<string>('Todos'); // Filtro por año del evento
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null); // Índice de la foto abierta en zoom
 
+  /**
+   * Carga los datos de las fotos desde el endpoint central de datos.
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,15 +38,24 @@ export default function PartyPhotosPage() {
     fetchData();
   }, []);
 
+  /**
+   * useMemo para extraer y ordenar los años disponibles en la galería.
+   */
   const years = ['Todos', ...Array.from(new Set(photos.map(p => p.year || 'Sin fecha'))).sort((a, b) => String(b).localeCompare(String(a)))];
 
+  /**
+   * photos.filter: Filtra la colección de fotos según el año seleccionado por el usuario.
+   */
   const filteredPhotos = photos.filter(photo => {
     const matchesYear = selectedYear === 'Todos' || photo.year === selectedYear;
     return matchesYear;
   });
 
+  /**
+   * Funciones de navegación para el visor de fotos (Lightbox).
+   */
   const nextPhoto = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
+    e?.stopPropagation(); // Evita cerrar el visor al hacer clic en el botón
     if (selectedPhotoIndex !== null) {
       setSelectedPhotoIndex((selectedPhotoIndex + 1) % filteredPhotos.length);
     }
@@ -47,6 +68,9 @@ export default function PartyPhotosPage() {
     }
   };
 
+  /**
+   * Manejador de eventos de teclado para navegación fluida con flechas y tecla Escape.
+   */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selectedPhotoIndex === null) return;
@@ -58,6 +82,7 @@ export default function PartyPhotosPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPhotoIndex, filteredPhotos.length]);
 
+  // Pantalla de carga con estilo corporativo
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
@@ -79,7 +104,7 @@ export default function PartyPhotosPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header Corporativo */}
+      {/* HEADER CORPORATIVO (Identidad Unificada con el Directorio) */}
       <header className="sticky top-0 z-50 bg-[#1B4969] text-white px-6 py-6 shadow-2xl">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-5">
@@ -99,8 +124,8 @@ export default function PartyPhotosPage() {
         </div>
       </header>
 
-      {/* Filtros Secundarios */}
-      <div className="bg-white border-b border-slate-200 py-4 px-6 sticky top-[92px] md:top-[100px] z-40">
+      {/* BARRA DE FILTROS POR AÑO */}
+      <div className="bg-white border-b border-slate-200 py-4 px-6 sticky top-[92px] md:top-[100px] z-40 text-neutral-900">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-4 justify-between items-center">
           <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
             <div className="flex items-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest whitespace-nowrap">
@@ -129,7 +154,7 @@ export default function PartyPhotosPage() {
         </div>
       </div>
 
-      {/* Content */}
+      {/* GRID DE FOTOS: Cuadrícula responsive adaptable */}
       <main className="flex-grow p-6 md:p-10">
         <div className="max-w-7xl mx-auto">
           {filteredPhotos.length > 0 ? (
@@ -143,14 +168,16 @@ export default function PartyPhotosPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3, delay: idx * 0.05 }}
-                    className="group relative aspect-square bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-zoom-in border border-gray-100"
+                    className="group relative aspect-square bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-zoom-in border border-slate-100"
                     onClick={() => setSelectedPhotoIndex(idx)}
                   >
                     <img 
                       src={photo.url} 
                       alt={`Fiesta ${photo.year}`} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      referrerPolicy="no-referrer"
                     />
+                    {/* Overlay al pasar el mouse por encima */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                       <div className="flex justify-between items-end">
                         <div>
@@ -167,17 +194,18 @@ export default function PartyPhotosPage() {
               </AnimatePresence>
             </div>
           ) : (
+            /* Estado cuando no hay fotos para el filtro seleccionado */
             <div className="flex flex-col items-center justify-center py-32 text-center space-y-6">
-              <div className="w-24 h-24 bg-white shadow-xl rounded-[2rem] flex items-center justify-center text-gray-200">
+              <div className="w-24 h-24 bg-white shadow-xl rounded-[2rem] flex items-center justify-center text-slate-200">
                 <ImageIcon size={48} />
               </div>
               <div>
-                <h3 className="text-2xl font-black text-gray-800">No se encontraron fotos</h3>
-                <p className="text-gray-500 mt-2">Intenta cambiar el filtro de año para ver más recuerdos.</p>
+                <h3 className="text-2xl font-black text-slate-800">No se encontraron fotos</h3>
+                <p className="text-slate-500 mt-2">Intenta cambiar el filtro de año para ver más recuerdos.</p>
               </div>
               <button 
                 onClick={() => setSelectedYear('Todos')}
-                className="px-6 py-3 bg-purple-600 text-white rounded-2xl font-black shadow-lg hover:shadow-purple-200 transition-all"
+                className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg hover:shadow-blue-200 transition-all font-sans"
               >
                 Ver todas las fotos
               </button>
@@ -186,10 +214,11 @@ export default function PartyPhotosPage() {
         </div>
       </main>
 
-      {/* Lightbox Overlay */}
+      {/* VISOR DE FOTOS (LIGHTBOX): Pantalla completa */}
       <AnimatePresence>
         {selectedPhotoIndex !== null && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
+            {/* Fondo oscuro con desenfoque */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -204,7 +233,7 @@ export default function PartyPhotosPage() {
               exit={{ scale: 0.9, opacity: 0 }}
               className="relative w-full max-w-5xl max-h-[85vh] z-10 flex flex-col items-center"
             >
-              {/* Close Button */}
+              {/* Botón de cierre */}
               <button 
                 onClick={() => setSelectedPhotoIndex(null)}
                 className="absolute -top-16 right-0 p-3 bg-white/10 hover:bg-white/30 text-white rounded-full transition-all z-20"
@@ -212,7 +241,7 @@ export default function PartyPhotosPage() {
                 <X size={28} />
               </button>
 
-              {/* Navigation Arrows */}
+              {/* Controles de navegación laterales (solo en Desktop) */}
               <div className="absolute inset-y-0 -left-16 -right-16 hidden md:flex items-center justify-between pointer-events-none">
                 <button 
                   onClick={prevPhoto}
@@ -228,7 +257,7 @@ export default function PartyPhotosPage() {
                 </button>
               </div>
 
-              {/* Image Container */}
+              {/* Imagen central */}
               <div className="w-full h-full overflow-hidden rounded-3xl shadow-2xl border-2 border-white/10 bg-black/50 flex items-center justify-center relative">
                 <AnimatePresence mode="wait">
                   <motion.img 
@@ -239,15 +268,17 @@ export default function PartyPhotosPage() {
                     exit={{ opacity: 0, x: -20 }}
                     className="w-full h-full object-contain"
                     alt="Zoom"
+                    referrerPolicy="no-referrer"
                   />
                 </AnimatePresence>
                 
-                {/* Mobile Navigation info */}
+                {/* Contador de fotos en móvil */}
                 <div className="absolute top-4 right-4 bg-black/50 px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-widest md:hidden">
                   {selectedPhotoIndex + 1} / {filteredPhotos.length}
                 </div>
               </div>
 
+              {/* Botón de descarga y controles móviles */}
               <div className="flex items-center gap-4 mt-8">
                 <button 
                   onClick={prevPhoto}
@@ -258,7 +289,7 @@ export default function PartyPhotosPage() {
 
                 <button 
                   onClick={() => window.open(filteredPhotos[selectedPhotoIndex].url, '_blank')}
-                  className="px-8 py-4 bg-white text-black rounded-2xl font-black flex items-center gap-2 hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all shadow-xl"
+                  className="px-8 py-4 bg-white text-black rounded-2xl font-black flex items-center gap-2 hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all shadow-xl font-sans"
                 >
                   <Download size={20} /> 
                   <span className="hidden md:inline">Descargar Foto Original</span>
@@ -283,7 +314,7 @@ export default function PartyPhotosPage() {
         )}
       </AnimatePresence>
 
-      {/* Footer Minimalista */}
+      {/* FOOTER CORPORATIVO */}
       <footer className="bg-white border-t border-slate-100 py-10 px-6 text-center">
         <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Intranet Corporativa • Galería de Recuerdos Integrada</p>
       </footer>

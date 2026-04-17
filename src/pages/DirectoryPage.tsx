@@ -1,6 +1,8 @@
+// Importaciones necesarias de React y librerías externas
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+// Iconos de Lucide React para la interfaz
 import { 
   Search, 
   ArrowLeft, 
@@ -16,32 +18,40 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
+// Importamos la interfaz de datos
 import { DirectoryEntry } from '../types';
 
 /**
  * DirectorioPage: Pantalla de consulta de contactos y extensiones corporativas.
- * consume el microservicio de n8n con autenticación básica.
+ * Esta pantalla consume un microservicio de n8n con autenticación básica.
+ * Organiza los datos en una estructura de "árbol" por Empresa, Gestión, Cargo y Nombre.
  */
 export default function DirectoryPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook para navegación entre rutas
+  
+  // Estados para manejar los datos del directorio
   const [contacts, setContacts] = useState<DirectoryEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedArea, setSelectedArea] = useState<string>('Todas');
-  const [selectedEmpresa, setSelectedEmpresa] = useState<string>('Todas');
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState<string | null>(null); // Manejo de errores de conexión
+  
+  // Estados para los filtros y búsqueda
+  const [searchTerm, setSearchTerm] = useState(''); // Término de búsqueda de texto
+  const [selectedArea, setSelectedArea] = useState<string>('Todas'); // Filtro de área (Gestión)
+  const [selectedEmpresa, setSelectedEmpresa] = useState<string>('Todas'); // Filtro de empresa
 
   /**
-   * Obtiene los contactos desde el microservicio backend.
+   * fetchDirectory: Función asíncrona que obtiene los contactos desde el microservicio backend.
+   * Utiliza Fetch API con cabeceras de autenticación básica requeridas por n8n.
    */
   const fetchDirectory = async () => {
     setIsLoading(true);
     setError(null);
     try {
+      // URL del Webhook de n8n configurado en la red interna
       const response = await fetch('http://192.101.2.50:5678/webhook/directorio', {
         method: 'GET',
         headers: {
-          'Authorization': 'Basic ' + btoa('intranet:intranet')
+          'Authorization': 'Basic ' + btoa('intranet:intranet') // Autenticación básica codificada en Base64
         }
       });
 
@@ -50,6 +60,7 @@ export default function DirectoryPage() {
       }
 
       const data = await response.json();
+      // Verificamos si la data viene directamente como array o en una propiedad 'data'
       const directoryData = Array.isArray(data) ? data : data.data || [];
       setContacts(directoryData);
     } catch (err) {
@@ -60,23 +71,38 @@ export default function DirectoryPage() {
     }
   };
 
+  // Efecto inicial para cargar los datos al montar el componente
   useEffect(() => {
     fetchDirectory();
   }, []);
 
-  // Extraemos áreas (gestión) y empresas únicas para los filtros
+  /**
+   * useMemo para extraer áreas únicas (gestión) de los contactos cargados.
+   * Esto se usa para poblar dinámicamente el selector de filtros de área.
+   */
   const areas = useMemo(() => {
     const set = new Set(contacts.map(c => c.gestion).filter(Boolean));
     return ['Todas', ...Array.from(set).sort()];
   }, [contacts]);
 
+  /**
+   * useMemo para extraer empresas únicas de los contactos cargados.
+   * Esto se usa para poblar dinámicamente el selector de filtros de empresa.
+   */
   const empresas = useMemo(() => {
     const set = new Set(contacts.map(c => c.empresa).filter(Boolean));
     return ['Todas', ...Array.from(set).sort()];
   }, [contacts]);
 
-  // Filtrado de la lista basado en búsqueda y selects
+  /**
+   * filteredContacts: Lógica de filtrado y ordenamiento multinivel.
+   * 1. Filtra por búsqueda de texto (nombre, cargo, extensión, gestión).
+   * 2. Filtra por empresa y área (si están seleccionados).
+   * 3. Ordena los resultados por prioridad de empresa (SIMEX > SOINCO > PLASTINOVO),
+   *    luego por gestión, cargo y finalmente nombre de usuario.
+   */
   const filteredContacts = useMemo(() => {
+    // Definimos prioridades numéricas para las empresas principales
     const getCompanyPriority = (empresa: string) => {
       const emp = empresa?.toUpperCase() || '';
       if (emp.includes('SIMEX')) return 1;
@@ -88,36 +114,45 @@ export default function DirectoryPage() {
     return contacts
       .filter(contact => {
         const search = searchTerm.toLowerCase();
+        // Criterio de búsqueda en múltiples campos
         const matchesSearch = 
           contact.nombre?.toLowerCase().includes(search) ||
           contact.cargo?.toLowerCase().includes(search) ||
           contact.extencion?.toString().includes(search) ||
           contact.gestion?.toLowerCase().includes(search);
         
+        // Criterios de filtros por dropdown
         const matchesArea = selectedArea === 'Todas' || contact.gestion === selectedArea;
         const matchesEmpresa = selectedEmpresa === 'Todas' || contact.empresa === selectedEmpresa;
 
         return matchesSearch && matchesArea && matchesEmpresa;
       })
       .sort((a, b) => {
+        // Ordenamiento jerárquico multinivel
         const priorityA = getCompanyPriority(a.empresa);
         const priorityB = getCompanyPriority(b.empresa);
         
+        // 1er nivel: Prioridad por Empresa
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
 
+        // 2do nivel: Alfabético por Gestión (Área)
         const gestionSort = (a.gestion || '').localeCompare(b.gestion || '');
         if (gestionSort !== 0) return gestionSort;
 
+        // 3er nivel: Alfabético por Cargo
         const cargoSort = (a.cargo || '').localeCompare(b.cargo || '');
         if (cargoSort !== 0) return cargoSort;
         
+        // 4to nivel: Alfabético por Nombre de Usuario
         return (a.nombre || '').localeCompare(b.nombre || '');
       });
   }, [contacts, searchTerm, selectedArea, selectedEmpresa]);
 
-  // Función para obtener colores corporativos
+  /**
+   * getCompanyStyle: Devuelve la clase CSS de color de texto según la empresa.
+   */
   const getCompanyStyle = (empresa: string) => {
     const emp = empresa?.toUpperCase() || '';
     if (emp.includes('SIMEX')) return 'text-blue-600';
@@ -126,6 +161,9 @@ export default function DirectoryPage() {
     return 'text-slate-800';
   };
 
+  /**
+   * getCompanyBadge: Devuelve las clases CSS para el fondo y borde según la empresa.
+   */
   const getCompanyBadge = (empresa: string) => {
     const emp = empresa?.toUpperCase() || '';
     if (emp.includes('SIMEX')) return 'bg-blue-50 text-blue-700 border-blue-100';
@@ -134,6 +172,7 @@ export default function DirectoryPage() {
     return 'bg-slate-50 text-slate-700 border-slate-100';
   };
 
+  // Renderizado del estado de carga inicial
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
@@ -155,10 +194,11 @@ export default function DirectoryPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header Corporativo */}
+      {/* HEADER CORPORATIVO: Fijo en la parte superior con colores corporativos */}
       <header className="sticky top-0 z-50 bg-[#1B4969] text-white px-6 py-6 shadow-2xl">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-5">
+            {/* Botón de regreso */}
             <button 
               onClick={() => navigate(-1)}
               className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all group"
@@ -174,6 +214,7 @@ export default function DirectoryPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Botón manual para refrescar los datos desde el API */}
             <button 
               onClick={fetchDirectory}
               className="p-3.5 bg-white/10 hover:bg-white/20 rounded-2xl transition-all"
@@ -185,14 +226,17 @@ export default function DirectoryPage() {
         </div>
       </header>
 
-      <div className="bg-white border-b border-slate-200 py-4 px-6 sticky top-[92px] md:top-[100px] z-40">
+      {/* BARRA DE FILTROS Y BÚSQUEDA: Se mantiene visible al hacer scroll (sticky) */}
+      <div className="bg-white border-b border-slate-200 py-4 px-6 sticky top-[92px] md:top-[100px] z-40 text-neutral-900">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-4 justify-between items-center">
           <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
+            {/* Etiqueta de filtros */}
             <div className="flex items-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest whitespace-nowrap">
               <Filter size={14} />
               <span>Filtrar por:</span>
             </div>
 
+            {/* BUSCADOR OMNICANAL: Filtra por nombre, extensión, área o cargo */}
             <div className="relative w-full md:w-80 group">
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
               <input 
@@ -212,6 +256,7 @@ export default function DirectoryPage() {
               )}
             </div>
 
+            {/* DROPDOWNS PARA EMPRESA Y ÁREA */}
             <div className="flex gap-2">
               <select 
                 value={selectedEmpresa}
@@ -233,6 +278,7 @@ export default function DirectoryPage() {
             </div>
           </div>
 
+          {/* Contador de registros filtrados */}
           <div className="whitespace-nowrap">
             <span className="text-xs font-bold text-slate-400">
               Mostrando <span className="text-blue-600 font-black">{filteredContacts.length}</span> de {contacts.length} registros
@@ -241,8 +287,10 @@ export default function DirectoryPage() {
         </div>
       </div>
 
+      {/* CONTENIDO PRINCIPAL: La tabla de directorio */}
       <main className="flex-grow p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
+          {/* Pantalla de error si la conexión falla */}
           {error ? (
             <div className="bg-red-50 border-2 border-red-100 rounded-[2.5rem] p-12 text-center max-w-2xl mx-auto">
               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto text-red-500 mb-6">
@@ -259,6 +307,7 @@ export default function DirectoryPage() {
               </button>
             </div>
           ) : filteredContacts.length > 0 ? (
+            /* TABLA EJECUTIVA: Diseño responsive con scroll horizontal */
             <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -272,6 +321,7 @@ export default function DirectoryPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
+                    {/* AnimatePresence permite animar las filas cuando aparecen o desaparecen por el filtro */}
                     <AnimatePresence mode="popLayout">
                       {filteredContacts.map((contact) => (
                         <motion.tr
@@ -282,14 +332,17 @@ export default function DirectoryPage() {
                           exit={{ opacity: 0 }}
                           className="group hover:bg-slate-50/80 transition-colors"
                         >
+                          {/* Columna Empresa */}
                           <td className="px-6 py-4">
                             <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter border block text-center ${getCompanyBadge(contact.empresa)}`}>
                               {contact.empresa}
                             </span>
                           </td>
+                          {/* Columna Gesntión / Área */}
                           <td className="px-6 py-4">
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">{contact.gestion || '---'}</p>
                           </td>
+                          {/* Columna Usuario: Con inicial de nombre pintada con color corporativo */}
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
                               <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0 border ${getCompanyBadge(contact.empresa)}`}>
@@ -300,9 +353,11 @@ export default function DirectoryPage() {
                               </p>
                             </div>
                           </td>
+                          {/* Columna Cargo */}
                           <td className="px-6 py-4">
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">{contact.cargo || '---'}</p>
                           </td>
+                          {/* Columna Extensión: Resaltada con estilo de botón corporativo */}
                           <td className="px-6 py-4 text-center">
                             <span className={`inline-block px-5 py-2 rounded-xl font-black text-xl tracking-tighter shadow-sm border ${getCompanyBadge(contact.empresa)}`}>
                               {contact.extencion || '---'}
@@ -316,6 +371,7 @@ export default function DirectoryPage() {
               </div>
             </div>
           ) : (
+            /* Pantalla informativa cuando no hay resultados en la búsqueda */
             <div className="flex flex-col items-center justify-center py-32 text-center bg-white rounded-[4rem] shadow-sm border border-slate-100">
               <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
                 <Search size={48} />
@@ -326,8 +382,9 @@ export default function DirectoryPage() {
                 onClick={() => {
                   setSearchTerm('');
                   setSelectedArea('Todas');
+                  setSelectedEmpresa('Todas');
                 }}
-                className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all"
+                className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all font-sans"
               >
                 Limpiar filtros
               </button>
@@ -336,7 +393,7 @@ export default function DirectoryPage() {
         </div>
       </main>
 
-      {/* Footer Minimalista */}
+      {/* FOOTER CORPORATIVO: Información legal y de sistema */}
       <footer className="bg-white border-t border-slate-100 py-10 px-6 text-center">
         <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Intranet Corporativa Directorio Corporativo Integrado</p>
       </footer>
