@@ -36,27 +36,27 @@ export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => 
       
       <div className="relative z-10 w-full container-custom flex flex-col gap-8 items-center pt-8 md:pt-16">
         {news.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12 w-full max-w-7xl">
             {news.map((item, idx) => (
               <motion.article 
                 key={item.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className="bg-white/95 backdrop-blur-md rounded-[24px] overflow-hidden shadow-2xl text-left border border-white/30 hover:-translate-y-2 transition-all duration-300 group"
+                className="bg-white/95 backdrop-blur-md rounded-[32px] overflow-hidden shadow-2xl text-left border border-white/40 hover:-translate-y-2 transition-all duration-300 group max-w-[450px] mx-auto w-full"
               >
                 {item.image && (
-                  <div className="overflow-hidden h-48">
+                  <div className="overflow-hidden h-60 md:h-64">
                     <img src={item.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   </div>
                 )}
-                <div className="p-6">
-                  <div className="flex justify-between text-[10px] text-gray-500 mb-3 uppercase tracking-widest font-bold">
+                <div className="p-8">
+                  <div className="flex justify-between text-[11px] text-gray-500 mb-4 uppercase tracking-[0.15em] font-bold">
                     <span>{item.category} • {item.author}</span>
                     <span>{item.date}</span>
                   </div>
-                  <h3 className="text-xl font-extrabold text-[var(--primary)] mb-3 leading-tight group-hover:text-blue-700 transition-colors">{item.title}</h3>
-                  <p className="text-sm text-gray-700 line-clamp-4 leading-relaxed">{item.content}</p>
+                  <h3 className="text-2xl font-black text-[var(--primary)] mb-4 leading-[1.1] group-hover:text-blue-700 transition-colors uppercase tracking-tight">{item.title}</h3>
+                  <p className="text-base text-gray-700 line-clamp-5 leading-relaxed">{item.content}</p>
                 </div>
               </motion.article>
             ))}
