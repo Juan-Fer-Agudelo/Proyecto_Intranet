@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Image as ImageIcon, Search, Filter, ArrowLeft, ArrowRight, Download, ZoomIn, X } from 'lucide-react';
+import { Image as ImageIcon, Search, Filter, ArrowLeft, ArrowRight, Download, ZoomIn, X, RefreshCw } from 'lucide-react';
 import { PartyPhoto } from '../types';
 
 export default function PartyPhotosPage() {
@@ -60,51 +60,74 @@ export default function PartyPhotosPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-500 font-bold animate-pulse">Cargando galería...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
+        <div className="p-8 rounded-[2.5rem] bg-white shadow-2xl flex flex-col items-center gap-6">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <RefreshCw size={24} className="text-blue-600/50" />
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-xl font-black text-slate-800 tracking-tight">Cargando Galería</p>
+            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">Recuerdos Corporativos</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Header Corporativo */}
+      <header className="sticky top-0 z-50 bg-[#1B4969] text-white px-6 py-6 shadow-2xl">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-5">
             <button 
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-bold transition-all group"
+              className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all group"
+              title="Volver"
             >
-              <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-              <span>Volver al Inicio</span>
+              <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
             </button>
-            <div className="h-8 w-px bg-gray-200 mx-2 hidden md:block" />
+            <div className="h-10 w-px bg-white/10" />
             <div>
-              <h1 className="text-2xl font-black text-gray-900 tracking-tight">Galería de la Fiesta</h1>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Recuerdos Corporativos</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="relative flex-grow md:w-48">
-              <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select 
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-xl text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-purple-500 transition-all appearance-none"
-              >
-                {years.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
+              <h1 className="text-2xl md:text-3xl font-black tracking-tighter leading-none">Galería de la Fiesta</h1>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-200/60 mt-1">Recuerdos Corporativos</p>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Filtros Secundarios */}
+      <div className="bg-white border-b border-slate-200 py-4 px-6 sticky top-[92px] md:top-[100px] z-40">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
+            <div className="flex items-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest whitespace-nowrap">
+              <Filter size={14} />
+              <span>Filtrar por:</span>
+            </div>
+
+            <div className="flex gap-2">
+              <select 
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="px-4 py-2 bg-slate-100 border-none rounded-xl text-xs font-black text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+              >
+                {years.map(year => (
+                  <option key={year} value={year}>Año: {year}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="whitespace-nowrap">
+            <span className="text-xs font-bold text-slate-400">
+              Mostrando <span className="text-blue-600 font-black">{filteredPhotos.length}</span> registros de recuerdos
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Content */}
       <main className="flex-grow p-6 md:p-10">
@@ -260,9 +283,9 @@ export default function PartyPhotosPage() {
         )}
       </AnimatePresence>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-8 px-6 text-center">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Intranet Corporativa • Galería de Recuerdos</p>
+      {/* Footer Minimalista */}
+      <footer className="bg-white border-t border-slate-100 py-10 px-6 text-center">
+        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Intranet Corporativa • Galería de Recuerdos Integrada</p>
       </footer>
     </div>
   );

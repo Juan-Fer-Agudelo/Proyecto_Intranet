@@ -197,7 +197,7 @@ export default function DirectoryPage() {
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
               <input 
                 type="text" 
-                placeholder="Buscar extensiones..."
+                placeholder="Buscar por nombre, área, cargo o extensión..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-xs font-bold text-slate-700 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -338,7 +338,7 @@ export default function DirectoryPage() {
 
       {/* Footer Minimalista */}
       <footer className="bg-white border-t border-slate-100 py-10 px-6 text-center">
-        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Simex SAS • Directorio Integrado n8n</p>
+        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Intranet Corporativa Directorio Corporativo Integrado</p>
       </footer>
     </div>
   );
