@@ -58,6 +58,7 @@ function IntranetContent({
   const [showVideosModal, setShowVideosModal] = useState(false);
   const [currentVisitIndex, setCurrentVisitIndex] = useState(0);
   
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginMessage, setLoginMessage] = useState({ text: '', color: '' });
@@ -79,16 +80,45 @@ function IntranetContent({
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === CONFIG.SECURITY_TOKEN) {
-      setIsAdminLoggedIn(true);
-      setShowLoginModal(false);
-      setShowAdminModal(true);
-      setPassword('');
-      setLoginMessage({ text: '', color: '' });
-    } else {
-      setLoginMessage({ text: 'contraseña incorrecta', color: 'text-red-500' });
+    setLoginMessage({ text: 'Validando credenciales...', color: 'text-blue-600' });
+
+    try {
+      // Consumo del servicio de autenticación proporcionado por el jefe
+      const response = await fetch('http://192.101.2.50:5678/webhook/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa('intranet:intranet')
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'success') {
+        setIsAdminLoggedIn(true);
+        setShowLoginModal(false);
+        setShowAdminModal(true);
+        setPassword('');
+        setUsername('');
+        setLoginMessage({ text: '', color: '' });
+      } else {
+        setLoginMessage({ 
+          text: data.message || 'Usuario o contraseña incorrectos', 
+          color: 'text-red-500' 
+        });
+      }
+    } catch (error) {
+      console.error('Error de autenticación:', error);
+      setLoginMessage({ 
+        text: 'No se pudo conectar con el servidor de autenticación local. Verifique su red.', 
+        color: 'text-red-600' 
+      });
     }
   };
 
@@ -155,7 +185,7 @@ function IntranetContent({
         isAdminLoggedIn={isAdminLoggedIn}
         onAdminClick={() => isAdminLoggedIn ? setShowAdminModal(true) : setShowLoginModal(true)}
         onVideosClick={() => setShowVideosModal(true)}
-        onPartyPhotosClick={() => window.open('/fotos-fiesta', '_blank')}
+        onPartyPhotosClick={() => navigate('/fotos-fiesta')}
         bulletinQuincenal={bulletinQuincenal}
         bulletinMensual={bulletinMensual}
         handleModuleClick={handleModuleClick}
@@ -210,6 +240,8 @@ function IntranetContent({
           isOpen={showLoginModal}
           onClose={() => setShowLoginModal(false)}
           onLogin={handleLogin}
+          username={username}
+          setUsername={setUsername}
           password={password}
           setPassword={setPassword}
           showPassword={showPassword}

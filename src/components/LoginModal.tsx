@@ -6,6 +6,8 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLogin: (e: React.FormEvent) => void;
+  username: string;
+  setUsername: (user: string) => void;
   password: string;
   setPassword: (pass: string) => void;
   showPassword: boolean;
@@ -17,6 +19,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClose,
   onLogin,
+  username,
+  setUsername,
   password,
   setPassword,
   showPassword,
@@ -46,6 +50,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </button>
         </div>
         <form onSubmit={onLogin} className="flex flex-col gap-6">
+          <div className="space-y-2">
+            <label className="block text-xs font-black text-gray-500 uppercase tracking-widest">Nombre de Usuario</label>
+            <input 
+              type="text"
+              className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 focus:border-[var(--primary)] outline-none transition-all font-semibold"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Ej: j.agudelo"
+              required
+            />
+          </div>
+
           <div className="space-y-2">
             <label className="block text-xs font-black text-gray-500 uppercase tracking-widest">Contraseña</label>
             <div className="relative">

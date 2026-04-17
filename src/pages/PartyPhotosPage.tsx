@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Image as ImageIcon, Search, Filter, ArrowLeft, ArrowRight, Download, ZoomIn, X } from 'lucide-react';
 import { PartyPhoto } from '../types';
 
 export default function PartyPhotosPage() {
+  const navigate = useNavigate();
   const [photos, setPhotos] = useState<PartyPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState<string>('Todos');
@@ -74,7 +76,7 @@ export default function PartyPhotosPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => window.location.href = '/'}
+              onClick={() => navigate(-1)}
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-bold transition-all group"
             >
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
