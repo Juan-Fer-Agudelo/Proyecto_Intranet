@@ -13,6 +13,7 @@ import { LoginModal } from './components/LoginModal';
 import { AdminModal } from './components/AdminModal';
 import { VideosModal } from './components/VideosModal';
 import PartyPhotosPage from './pages/PartyPhotosPage';
+import DirectoryPage from './pages/DirectoryPage';
 
 function IntranetContent({ 
   currentCompany, 
@@ -489,6 +490,7 @@ export default function App() {
         />
       } />
       <Route path="/fotos-fiesta" element={<PartyPhotosPage />} />
+      <Route path="/directorio" element={<DirectoryPage />} />
     </Routes>
   );
 }

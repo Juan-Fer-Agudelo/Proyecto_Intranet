@@ -446,7 +446,10 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto border-t md:border-none border-white/10 pt-6 md:pt-0">
           <button 
             className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
-            onClick={() => window.open('http://srvaplicaciones/desarrollos/archivos/apps/directorioDinamicoV/', '_blank')}
+            onClick={() => {
+              navigate('/directorio');
+              setIsMobileMenuOpen(false);
+            }}
           >
             <User size={18} className="group-hover:scale-110 transition-transform" /> Directorio
           </button>

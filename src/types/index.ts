@@ -46,6 +46,18 @@ export interface PartyPhoto {
   year: string;
 }
 
+export interface DirectoryEntry {
+  id: string | number;
+  nombre: string;
+  cargo: string;
+  empresa: string;
+  extension: string;
+  celular: string;
+  correo: string;
+  area: string;
+  sede?: string;
+}
+
 export interface BulletinImage {
   id: string;
   url: string;
