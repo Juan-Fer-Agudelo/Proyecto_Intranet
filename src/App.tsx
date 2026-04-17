@@ -169,45 +169,40 @@ function IntranetContent({
 
       <main className="flex-grow relative overflow-hidden flex flex-col">
         <Hero news={[]} heroBgs={heroBgs} currentBgIndex={currentBgIndex} />
-
-        {/* Visit Banner - Aesthetic Dark Footer */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 footer-aesthetic h-16 md:h-14">
-          <div className="container-custom h-full flex items-center justify-between">
-            <div className="hidden md:flex items-center gap-2 text-white/30 font-black text-[10px] uppercase tracking-[0.2em]">
-              <Calendar size={14} />
-              <span>Programación de Visitas</span>
-            </div>
-
-            <div className="flex-grow flex items-center justify-center relative h-full">
-              <AnimatePresence mode="wait">
-                {visits.length > 0 ? (
-                  <motion.div
-                    key={currentVisitIndex}
-                    initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.02, y: -10 }}
-                    transition={{ duration: 0.5, ease: "circOut" }}
-                    className="absolute text-center"
-                  >
-                    <span className="text-white font-bold text-xs md:text-sm tracking-wide bg-white/5 px-6 py-2 rounded-full border border-white/10 uppercase">
-                      {visits[currentVisitIndex]?.text}
-                    </span>
-                  </motion.div>
-                ) : (
-                  <div className="text-white/20 italic text-xs uppercase tracking-widest font-black">Sin visitas programadas hoy</div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <div className="hidden md:flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Live Updates</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </main>
+
+      {/* Visit Banner - Minimalist Corporate Footer */}
+      <footer className="z-20 bg-black py-4 border-t border-white/5">
+        <div className="container-custom flex items-center justify-between">
+          <div className="flex items-center gap-3 text-white/40 font-bold text-[10px] uppercase tracking-widest shrink-0">
+            <Calendar size={14} className="text-white/30" />
+            <span>Visitas</span>
+          </div>
+
+          <div className="flex-grow flex items-center justify-center relative min-h-[30px] overflow-hidden">
+            <AnimatePresence mode="wait">
+              {visits.length > 0 ? (
+                <motion.div
+                  key={currentVisitIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute text-center px-4"
+                >
+                  <span className="text-white text-[12px] md:text-sm font-medium tracking-wide">
+                    {visits[currentVisitIndex]?.text}
+                  </span>
+                </motion.div>
+              ) : (
+                <div className="text-white/10 italic text-[10px] tracking-widest uppercase">Sin registros</div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="w-[80px] hidden md:block" /> {/* Spacer to keep center alignment */}
+        </div>
+      </footer>
 
       {/* Modals */}
       <AnimatePresence>

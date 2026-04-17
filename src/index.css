@@ -34,13 +34,32 @@ body {
     min-height: 100vh;
 }
 
-/* Redefined Glass Footer */
-.footer-aesthetic {
-  background: rgba(11, 17, 26, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
+/* Corporate Professional Footer - Dark Theme */
+.footer-corporate {
+  background-color: #000000;
+  border-top: 1px solid #1f2937;
+  color: #f3f4f6;
+  box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+.visit-badge-dark {
+  background-color: #111827;
+  border: 1px solid #374151;
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-indicator-dark {
+  padding: 4px 14px;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid #10b981;
+  color: #34d399;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 /* Custom Scrollbar */
