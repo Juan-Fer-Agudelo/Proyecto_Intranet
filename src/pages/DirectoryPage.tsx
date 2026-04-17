@@ -106,6 +106,12 @@ export default function DirectoryPage() {
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
+
+        const gestionSort = (a.gestion || '').localeCompare(b.gestion || '');
+        if (gestionSort !== 0) return gestionSort;
+
+        const cargoSort = (a.cargo || '').localeCompare(b.cargo || '');
+        if (cargoSort !== 0) return cargoSort;
         
         return (a.nombre || '').localeCompare(b.nombre || '');
       });
@@ -259,9 +265,9 @@ export default function DirectoryPage() {
                   <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
                       <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 w-56">Empresa</th>
+                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Área (Gestión)</th>
                       <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Usuario</th>
                       <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Cargo</th>
-                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Área (Gestión)</th>
                       <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Extensión</th>
                     </tr>
                   </thead>
@@ -282,6 +288,9 @@ export default function DirectoryPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">{contact.gestion || '---'}</p>
+                          </td>
+                          <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
                               <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0 border ${getCompanyBadge(contact.empresa)}`}>
                                 {contact.nombre?.charAt(0)}
@@ -293,9 +302,6 @@ export default function DirectoryPage() {
                           </td>
                           <td className="px-6 py-4">
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">{contact.cargo || '---'}</p>
-                          </td>
-                          <td className="px-6 py-4">
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">{contact.gestion || '---'}</p>
                           </td>
                           <td className="px-6 py-4 text-center">
                             <span className={`inline-block px-5 py-2 rounded-xl font-black text-xl tracking-tighter shadow-sm border ${getCompanyBadge(contact.empresa)}`}>
