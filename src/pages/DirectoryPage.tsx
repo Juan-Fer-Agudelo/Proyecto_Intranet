@@ -77,19 +77,38 @@ export default function DirectoryPage() {
 
   // Filtrado de la lista basado en búsqueda y selects
   const filteredContacts = useMemo(() => {
-    return contacts.filter(contact => {
-      const search = searchTerm.toLowerCase();
-      const matchesSearch = 
-        contact.nombre?.toLowerCase().includes(search) ||
-        contact.cargo?.toLowerCase().includes(search) ||
-        contact.extencion?.toString().includes(search) ||
-        contact.gestion?.toLowerCase().includes(search);
-      
-      const matchesArea = selectedArea === 'Todas' || contact.gestion === selectedArea;
-      const matchesEmpresa = selectedEmpresa === 'Todas' || contact.empresa === selectedEmpresa;
+    const getCompanyPriority = (empresa: string) => {
+      const emp = empresa?.toUpperCase() || '';
+      if (emp.includes('SIMEX')) return 1;
+      if (emp.includes('SOINCO')) return 2;
+      if (emp.includes('PLASTINOVO')) return 3;
+      return 4;
+    };
 
-      return matchesSearch && matchesArea && matchesEmpresa;
-    });
+    return contacts
+      .filter(contact => {
+        const search = searchTerm.toLowerCase();
+        const matchesSearch = 
+          contact.nombre?.toLowerCase().includes(search) ||
+          contact.cargo?.toLowerCase().includes(search) ||
+          contact.extencion?.toString().includes(search) ||
+          contact.gestion?.toLowerCase().includes(search);
+        
+        const matchesArea = selectedArea === 'Todas' || contact.gestion === selectedArea;
+        const matchesEmpresa = selectedEmpresa === 'Todas' || contact.empresa === selectedEmpresa;
+
+        return matchesSearch && matchesArea && matchesEmpresa;
+      })
+      .sort((a, b) => {
+        const priorityA = getCompanyPriority(a.empresa);
+        const priorityB = getCompanyPriority(b.empresa);
+        
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+        
+        return (a.nombre || '').localeCompare(b.nombre || '');
+      });
   }, [contacts, searchTerm, selectedArea, selectedEmpresa]);
 
   // Función para obtener colores corporativos
@@ -148,26 +167,7 @@ export default function DirectoryPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <div className="relative flex-grow md:w-80 group">
-              <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors" />
-              <input 
-                type="text" 
-                placeholder="Buscar por nombre, cargo o extensión..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-white/10 border border-white/10 rounded-2xl text-sm font-bold placeholder:text-white/30 focus:bg-white/20 outline-none transition-all focus:ring-2 focus:ring-white/20"
-              />
-              {searchTerm && (
-                <button 
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
-                >
-                  <X size={18} />
-                </button>
-              )}
-            </div>
-            
+          <div className="flex items-center gap-3">
             <button 
               onClick={fetchDirectory}
               className="p-3.5 bg-white/10 hover:bg-white/20 rounded-2xl transition-all"
@@ -179,37 +179,57 @@ export default function DirectoryPage() {
         </div>
       </header>
 
-      {/* Filtros Secundarios */}
       <div className="bg-white border-b border-slate-200 py-4 px-6 sticky top-[92px] md:top-[100px] z-40">
-        <div className="max-w-7xl mx-auto flex flex-wrap gap-4 items-center">
-          <div className="flex items-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest">
-            <Filter size={14} />
-            <span>Filtrar por:</span>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
+            <div className="flex items-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest whitespace-nowrap">
+              <Filter size={14} />
+              <span>Filtrar por:</span>
+            </div>
+
+            <div className="relative w-full md:w-80 group">
+              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+              <input 
+                type="text" 
+                placeholder="Buscar extensiones..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-xs font-bold text-slate-700 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              />
+              {searchTerm && (
+                <button 
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <select 
+                value={selectedEmpresa}
+                onChange={(e) => setSelectedEmpresa(e.target.value)}
+                className="px-4 py-2 bg-slate-100 border-none rounded-xl text-xs font-black text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+              >
+                <option value="Todas">Empresa: Todas</option>
+                {empresas.filter(e => e !== 'Todas').map(e => <option key={e} value={e}>{e}</option>)}
+              </select>
+
+              <select 
+                value={selectedArea}
+                onChange={(e) => setSelectedArea(e.target.value)}
+                className="px-4 py-2 bg-slate-100 border-none rounded-xl text-xs font-black text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+              >
+                <option value="Todas">Área: Todas</option>
+                {areas.filter(a => a !== 'Todas').map(a => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </div>
           </div>
 
-          <div className="flex gap-3">
-            <select 
-              value={selectedEmpresa}
-              onChange={(e) => setSelectedEmpresa(e.target.value)}
-              className="px-4 py-2 bg-slate-100 border-none rounded-xl text-xs font-black text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
-            >
-              <option value="Todas">Empresa: Todas</option>
-              {empresas.filter(e => e !== 'Todas').map(e => <option key={e} value={e}>{e}</option>)}
-            </select>
-
-            <select 
-              value={selectedArea}
-              onChange={(e) => setSelectedArea(e.target.value)}
-              className="px-4 py-2 bg-slate-100 border-none rounded-xl text-xs font-black text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
-            >
-              <option value="Todas">Área: Todas</option>
-              {areas.filter(a => a !== 'Todas').map(a => <option key={a} value={a}>{a}</option>)}
-            </select>
-          </div>
-
-          <div className="flex-grow md:text-right">
+          <div className="whitespace-nowrap">
             <span className="text-xs font-bold text-slate-400">
-              Mostrando <span className="text-blue-600">{filteredContacts.length}</span> de {contacts.length} contactos
+              Mostrando <span className="text-blue-600 font-black">{filteredContacts.length}</span> de {contacts.length} registros
             </span>
           </div>
         </div>
