@@ -222,8 +222,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           });
           processed++;
           if (processed === files.length) {
-            setBulletinMensual(newFiles);
+            const sortedFiles = [...newFiles].sort((a, b) => a.order - b.order);
+            setBulletinMensual(sortedFiles);
           }
+        };
+        reader.onerror = () => {
+          console.error("Error leyendo archivo:", file.name);
+          processed++;
         };
         reader.readAsDataURL(file);
       });
@@ -273,7 +278,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             
             <form onSubmit={handleAddVisit} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <textarea 
-                className="w-full px-5 py-3 rounded-xl border-2 border-gray-100 focus:border-blue-500 outline-none font-semibold h-24 resize-none"
+                className="w-full px-5 py-3 rounded-xl border-2 border-gray-100 focus:border-blue-500 outline-none font-semibold h-24 resize-none text-gray-900 bg-white"
                 placeholder="Ej: Hoy nos visita Bancolombia para asesoría financiera"
                 value={newVisit}
                 onChange={(e) => setNewVisit(e.target.value)}
@@ -313,13 +318,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             
             <form onSubmit={handleAddAnn} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <input 
-                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 text-gray-900 bg-white font-bold"
                 placeholder="Título del anuncio"
                 value={newAnn.title}
                 onChange={e => setNewAnn({...newAnn, title: e.target.value})}
               />
               <textarea 
-                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 h-20 resize-none"
+                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 h-20 resize-none text-gray-900 bg-white font-medium"
                 placeholder="Contenido del anuncio"
                 value={newAnn.content}
                 onChange={e => setNewAnn({...newAnn, content: e.target.value})}
@@ -468,13 +473,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             
             <form onSubmit={handleAddVideo} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <input 
-                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 text-gray-900 bg-white font-bold"
                 placeholder="Título del vídeo"
                 value={newVideo.title}
                 onChange={e => setNewVideo({...newVideo, title: e.target.value})}
               />
               <textarea 
-                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 h-20 resize-none"
+                className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 h-20 resize-none text-gray-900 bg-white font-medium"
                 placeholder="Descripción del vídeo"
                 value={newVideo.description}
                 onChange={e => setNewVideo({...newVideo, description: e.target.value})}
@@ -497,7 +502,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               </div>
               {newVideo.type === 'youtube' ? (
                 <input 
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 text-gray-900 bg-white"
                   placeholder="URL de YouTube"
                   value={newVideo.url}
                   onChange={e => setNewVideo({...newVideo, url: e.target.value})}
