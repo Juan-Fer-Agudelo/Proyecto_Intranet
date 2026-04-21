@@ -73,7 +73,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
       </AnimatePresence>
 
       <div 
-        className={`fixed inset-x-0 bottom-12 md:bottom-28 pointer-events-none transition-all duration-500 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-4 z-[2000]' : 'z-[1450] h-64 md:h-72'}`}
+        className={`fixed inset-x-0 bottom-12 md:bottom-28 pointer-events-none transition-all duration-500 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-8 md:p-24 z-[2000]' : 'z-[1450] h-64 md:h-72'}`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
@@ -102,8 +102,8 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                   key={`${ann.id}-${idx}`}
                   layoutId={idx < activeAnnouncements.length ? `ann-${ann.id}` : `ann-dup-${ann.id}`}
                   onClick={() => setExpandedId(ann.id)}
-                  className={`w-[200px] md:w-[280px] h-[200px] md:h-[260px] flex-shrink-0 glass rounded-[24px] md:rounded-[28px] shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300 border bg-white/10 relative ${
-                    ann.isPriority ? 'border-orange-500/50 shadow-orange-500/20' : 'border-white/20'
+                  className={`w-[200px] md:w-[280px] h-[200px] md:h-[260px] flex-shrink-0 bg-white rounded-[24px] md:rounded-[28px] shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300 border relative ${
+                    ann.isPriority ? 'border-orange-500/50 shadow-orange-500/20' : 'border-gray-100'
                   }`}
                 >
                   {ann.isPriority && (
@@ -127,7 +127,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                       </div>
                     )}
                   </div>
-                  <div className="p-4 md:p-5 flex flex-col h-full bg-white/5 backdrop-blur-sm">
+                  <div className="p-4 md:p-5 flex flex-col h-full bg-white">
                     <h4 className="font-black text-gray-900 text-xs md:text-sm mb-1 line-clamp-2 leading-tight tracking-tight uppercase">
                       {ann.title}
                     </h4>
@@ -140,7 +140,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
             </motion.div>
           </div>
         ) : (
-          <div className="flex justify-center w-full max-w-7xl mx-auto pointer-events-auto">
+          <div className="flex justify-center w-full max-w-7xl mx-auto pointer-events-auto h-full items-center">
             {activeAnnouncements.filter(ann => ann.id === expandedId).map(ann => (
               <motion.div 
                 key={`expanded-${ann.id}`}
@@ -148,7 +148,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="w-full max-w-[600px] max-h-[85vh] glass rounded-[32px] md:rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-y-auto custom-scrollbar border border-white/30"
+                className={`w-full ${ann.isPriority ? 'max-w-[850px]' : 'max-w-[600px]'} max-h-full bg-white rounded-[32px] md:rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-y-auto custom-scrollbar border border-gray-100`}
               >
                 <div className="shrink-0 h-48 md:h-96 relative">
                   {ann.isPriority && (
@@ -180,7 +180,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                     <X size={24} />
                   </button>
                 </div>
-                <div className="p-8 md:p-12 pb-24 md:pb-32 bg-white/80 backdrop-blur-xl">
+                <div className="p-8 md:p-12 pb-24 md:pb-32 bg-white">
                   <div className="flex items-center gap-3 mb-6">
                     <span className="px-3 py-1 bg-blue-600 text-[10px] font-black text-white rounded-full uppercase tracking-widest">
                       {ann.company === 'Global' ? 'Corporativo' : ann.company}
