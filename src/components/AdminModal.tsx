@@ -1,3 +1,9 @@
+/**
+ * Proyecto: Intranet Corporativa - Grupo Simex
+ * Autor: Juan Fernando Agudelo
+ * Descripción: Panel de administración avanzado para la gestión de contenidos, 
+ * carga de medios y configuración de la intranet.
+ */
 import React, { useState } from 'react';
 import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';

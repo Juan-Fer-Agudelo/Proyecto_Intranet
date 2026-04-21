@@ -1,3 +1,9 @@
+/**
+ * Proyecto: Intranet Corporativa - Grupo Simex
+ * Autor: Juan Fernando Agudelo
+ * Descripción: Componente principal que orquestra la navegación, el estado global 
+ * y la persistencia de datos de toda la plataforma.
+ */
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Routes, Route, useParams, useNavigate } from 'react-router-dom';

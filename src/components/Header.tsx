@@ -1,3 +1,9 @@
+/**
+ * Proyecto: Intranet Corporativa - Grupo Simex
+ * Autor: Juan Fernando Agudelo
+ * Descripción: Encabezado dinámico con sistema de navegación inteligente, 
+ * gestión de empresas y visualizador inmersivo de boletines.
+ */
 import React, { useRef, useState, useEffect } from 'react';
 import { Menu, X, Camera, Video, User, Settings, ChevronDown, Building2, LayoutDashboard, ChevronRight, Globe, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -522,105 +528,109 @@ export const Header: React.FC<HeaderProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[3000] bg-black/90 backdrop-blur-xl flex flex-col"
+            className="fixed inset-0 z-[3000] bg-black/40 backdrop-blur-md flex items-center justify-center p-4 md:p-10"
           >
-            {/* Barra superior minimalista */}
-            <div className="flex justify-between items-center p-6 md:px-12">
-              <div className="flex flex-col">
-                <h2 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
-                  {viewingBulletinType === 'quincenal' ? 'Boletín Quincenal' : 'Boletín Mensual'}
-                </h2>
-                <p className="text-white/40 text-xs font-bold uppercase tracking-widest">
-                  {viewingBulletinType === 'quincenal' 
-                    ? `${(bulletinQuincenal?.[currentCompany] || []).length} Páginas • ${currentCompany === 'SX' ? 'Simex' : currentCompany === 'SO' ? 'Soinco' : 'Plastinovo'}`
-                    : `${(bulletinMensual || []).length} Páginas • Corporativo Global`
-                  }
-                </p>
-              </div>
-              <button 
-                onClick={() => {
-                  setShowBulletin(false);
-                  setViewingBulletinType(null);
-                }}
-                className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white transition-all hover:scale-110 active:scale-95"
-              >
-                <X size={28} />
-              </button>
-            </div>
-            
-            {/* Contenedor de imágenes: Enfoque en fotos verticales y scroll suave */}
-            <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar flex justify-center scroll-smooth">
-              <div className="w-full max-w-7xl space-y-12 py-8">
-                {(viewingBulletinType === 'quincenal' ? (bulletinQuincenal?.[currentCompany] || []) : (bulletinMensual || [])).map((img: any, idx: number) => (
-                  <motion.div 
-                    key={img.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="relative group"
-                  >
-                    {/* Sombra suave y bordes redondeados elegantes */}
-                    <div className="absolute -inset-4 bg-white/5 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    
-                    <div className="relative rounded-2xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] border border-white/10 bg-white/5">
-                      {img.type?.includes('pdf') || img.url?.startsWith('data:application/pdf') ? (
-                        <div className="flex flex-col w-full">
-                          <div className="bg-white/10 p-4 flex justify-between items-center border-b border-white/10">
-                            <div className="flex items-center gap-3">
-                              <FileText className="text-red-400" size={20} />
-                              <span className="text-xs font-bold text-white truncate max-w-[200px]">{img.name || 'Documento PDF'}</span>
-                            </div>
-                            <button 
-                              onClick={() => {
-                                const link = document.createElement('a');
-                                link.href = img.url;
-                                link.download = img.name || 'boletin.pdf';
-                                link.click();
-                              }}
-                              className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors"
-                            >
-                              Descargar / Ver Completo
-                            </button>
-                          </div>
-                          <iframe 
-                            src={`${img.url}#toolbar=0&navpanes=0&scrollbar=1`} 
-                            title={`Página ${idx + 1}`}
-                            className="w-full h-[70vh] md:h-[85vh] block border-none bg-white"
-                          />
-                        </div>
-                      ) : (
-                        <img 
-                          src={img.url} 
-                          alt={`Página ${idx + 1}`} 
-                          className="w-full h-auto block"
-                          referrerPolicy="no-referrer"
-                        />
-                      )}
-                    </div>
-
-                    {/* Indicador de página elegante y discreto */}
-                    <div className="absolute -left-12 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-2">
-                      <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-                      <span className="text-[10px] font-black text-white/20 rotate-180 [writing-mode:vertical-lr]">
-                        PÁG {idx + 1}
-                      </span>
-                      <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-                    </div>
-                  </motion.div>
-                ))}
-                
-                {/* Final del boletín */}
-                <div className="py-20 text-center space-y-4">
-                  <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto">
-                    <FileText size={20} className="text-white/20" />
-                  </div>
-                  <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">
-                    Has llegado al final
+            <motion.div 
+              initial={{ scaleY: 0, opacity: 0 }}
+              animate={{ scaleY: 1, opacity: 1 }}
+              exit={{ scaleY: 0, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="w-full h-full bg-black/95 backdrop-blur-3xl rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col overflow-hidden origin-top"
+            >
+              {/* Barra superior minimalista */}
+              <div className="flex justify-between items-center p-6 md:px-12 border-b border-white/5 bg-white/5">
+                <div className="flex flex-col">
+                  <h2 className="text-2xl font-black text-white tracking-tighter">
+                    {viewingBulletinType === 'quincenal' ? 'Boletín Quincenal' : 'Boletín Mensual'}
+                  </h2>
+                  <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1">
+                    {viewingBulletinType === 'quincenal' 
+                      ? `${(bulletinQuincenal?.[currentCompany] || []).length} PÁGINAS • ${currentCompany === 'SX' ? 'SIMEX' : currentCompany === 'SO' ? 'SOINCO' : 'PLASTINOVO'}`
+                      : `${(bulletinMensual || []).length} PÁGINAS • CORPORATIVO GLOBAL`
+                    }
                   </p>
                 </div>
+                <button 
+                  onClick={() => {
+                    setShowBulletin(false);
+                    setViewingBulletinType(null);
+                  }}
+                  className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl text-white transition-all hover:rotate-90"
+                >
+                  <X size={24} />
+                </button>
               </div>
-            </div>
+              
+              {/* Contenedor de imágenes: Enfoque en fotos verticales y scroll suave */}
+              <div className="flex-grow overflow-y-auto p-4 md:p-12 custom-scrollbar flex justify-center scroll-smooth bg-gradient-to-b from-transparent via-black/20 to-transparent">
+                <div className="w-full max-w-7xl space-y-16 py-10">
+                  {(viewingBulletinType === 'quincenal' ? (bulletinQuincenal?.[currentCompany] || []) : (bulletinMensual || [])).map((img: any, idx: number) => (
+                    <motion.div 
+                      key={img.id}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative"
+                    >
+                      <div className="relative rounded-3xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)] border border-white/10 bg-white/5 group">
+                        {img.type?.includes('pdf') || img.url?.startsWith('data:application/pdf') ? (
+                          <div className="flex flex-col w-full">
+                            <div className="bg-white/5 p-4 flex justify-between items-center border-b border-white/10 backdrop-blur-sm">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center text-red-400">
+                                  <FileText size={18} />
+                                </div>
+                                <span className="text-xs font-bold text-white tracking-wide truncate max-w-[200px]">{img.name || 'Documento PDF'}</span>
+                              </div>
+                              <button 
+                                onClick={() => {
+                                  const link = document.createElement('a');
+                                  link.href = img.url;
+                                  link.download = img.name || 'boletin.pdf';
+                                  link.click();
+                                }}
+                                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                              >
+                                Descargar Completo
+                              </button>
+                            </div>
+                            <iframe 
+                              src={`${img.url}#toolbar=0&navpanes=0&scrollbar=1`} 
+                              title={`Página ${idx + 1}`}
+                              className="w-full h-[80vh] md:h-[90vh] block border-none bg-white"
+                            />
+                          </div>
+                        ) : (
+                          <img 
+                            src={img.url} 
+                            alt={`Página ${idx + 1}`} 
+                            className="w-full h-auto block transition-transform duration-1000 group-hover:scale-[1.01]"
+                            referrerPolicy="no-referrer"
+                          />
+                        )}
+                      </div>
+
+                      {/* Indicador de página vertical elegante */}
+                      <div className="absolute -left-20 top-0 bottom-0 hidden xl:flex flex-col items-center justify-center gap-4 opacity-30 hover:opacity-100 transition-opacity">
+                        <div className="w-[1px] flex-grow bg-gradient-to-b from-transparent via-white to-transparent" />
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-[10px] font-black text-white rotate-180 [writing-mode:vertical-lr] tracking-[0.4em]">PÁGINA</span>
+                          <span className="text-2xl font-black text-white tabular-nums tracking-tighter">{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
+                        </div>
+                        <div className="w-[1px] flex-grow bg-gradient-to-b from-transparent via-white to-transparent" />
+                      </div>
+                    </motion.div>
+                  ))}
+                  <div className="py-32 text-center space-y-6">
+                    <div className="w-20 h-20 bg-white/5 rounded-[30px] flex items-center justify-center mx-auto border border-white/10 rotate-45 group hover:rotate-90 transition-transform duration-700">
+                      <FileText size={32} className="text-white/20 -rotate-45 group-hover:-rotate-90 transition-transform duration-700" />
+                    </div>
+                    <p className="text-white text-sm font-black uppercase tracking-[0.5em] opacity-30">Fin de la Edición</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
