@@ -20,6 +20,7 @@ import { AdminModal } from './components/AdminModal';
 import { VideosModal } from './components/VideosModal';
 import PartyPhotosPage from './pages/PartyPhotosPage';
 import DirectoryPage from './pages/DirectoryPage';
+import BulletinPage from './pages/BulletinPage';
 
 function IntranetContent({ 
   currentCompany, 
@@ -536,6 +537,22 @@ export default function App() {
       } />
       <Route path="/fotos-fiesta" element={<PartyPhotosPage />} />
       <Route path="/directorio" element={<DirectoryPage />} />
+      <Route path="/boletin-quincenal" element={
+        <BulletinPage 
+          type="quincenal" 
+          bulletinQuincenal={bulletinQuincenal} 
+          bulletinMensual={bulletinMensual} 
+          currentCompany={currentCompany} 
+        />
+      } />
+      <Route path="/boletin-mensual" element={
+        <BulletinPage 
+          type="mensual" 
+          bulletinQuincenal={bulletinQuincenal} 
+          bulletinMensual={bulletinMensual} 
+          currentCompany={currentCompany} 
+        />
+      } />
     </Routes>
   );
 }
