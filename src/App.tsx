@@ -261,9 +261,11 @@ function IntranetContent({
           onLogout={() => { setIsAdminLoggedIn(false); setShowAdminModal(false); }}
           visits={visits}
           setVisits={(val: any) => {
-            const newValue = typeof val === 'function' ? val(visits) : val;
-            setVisits(newValue);
-            saveData({ visits: newValue });
+            setVisits((prev) => {
+              const newValue = typeof val === 'function' ? val(prev) : val;
+              saveData({ visits: newValue });
+              return newValue;
+            });
           }}
           announcements={announcements}
           deleteAnnouncement={deleteAnnouncement}
@@ -274,35 +276,45 @@ function IntranetContent({
           addVideo={addVideo}
           heroBgs={heroBgs}
           setHeroBgs={(val: any) => {
-            const newValue = typeof val === 'function' ? val(heroBgs) : val;
-            setHeroBgs(newValue);
-            saveData({ heroBgs: newValue });
+            setHeroBgs((prev) => {
+              const newValue = typeof val === 'function' ? val(prev) : val;
+              saveData({ heroBgs: newValue });
+              return newValue;
+            });
           }}
           rhVideo={rhVideo}
           setRhVideo={(val: any) => {
-            const newValue = typeof val === 'function' ? val(rhVideo) : val;
-            setRhVideo(newValue);
-            saveData({ rhVideo: newValue });
+            setRhVideo((prev) => {
+              const newValue = typeof val === 'function' ? val(prev) : val;
+              saveData({ rhVideo: newValue });
+              return newValue;
+            });
           }}
           partyPhotos={partyPhotos}
           setPartyPhotos={(val: any) => {
-            const newValue = typeof val === 'function' ? val(partyPhotos) : val;
-            setPartyPhotos(newValue);
-            saveData({ partyPhotos: newValue });
+            setPartyPhotos((prev) => {
+              const newValue = typeof val === 'function' ? val(prev) : val;
+              saveData({ partyPhotos: newValue });
+              return newValue;
+            });
           }}
           addPartyPhotos={addPartyPhotos}
           deletePartyPhoto={deletePartyPhoto}
           bulletinQuincenal={bulletinQuincenal}
           setBulletinQuincenal={(val: any) => {
-            const newValue = typeof val === 'function' ? val(bulletinQuincenal) : val;
-            setBulletinQuincenal(newValue);
-            saveData({ bulletinQuincenal: newValue });
+            setBulletinQuincenal((prev) => {
+              const newValue = typeof val === 'function' ? val(prev) : val;
+              saveData({ bulletinQuincenal: newValue });
+              return newValue;
+            });
           }}
           bulletinMensual={bulletinMensual}
           setBulletinMensual={(val: any) => {
-            const newValue = typeof val === 'function' ? val(bulletinMensual) : val;
-            setBulletinMensual(newValue);
-            saveData({ bulletinMensual: newValue });
+            setBulletinMensual((prev) => {
+              const newValue = typeof val === 'function' ? val(prev) : val;
+              saveData({ bulletinMensual: newValue });
+              return newValue;
+            });
           }}
         />
 

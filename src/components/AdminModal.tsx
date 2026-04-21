@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText, ArrowUp, ArrowDown } from 'lucide-react';
+import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Announcement, Video, PartyPhoto, Visit } from '../types';
 
@@ -71,6 +71,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [photoYear, setPhotoYear] = useState(new Date().getFullYear().toString());
   const [newVisit, setNewVisit] = useState('');
   const [selectedQuincenalCompany, setSelectedQuincenalCompany] = useState<'SX' | 'SO' | 'PL'>('SX');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   if (!isOpen) return null;
 
@@ -167,6 +169,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
    */
   const handleQuincenalUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      setIsUploading(true);
+      setUploadProgress(0);
       const files = Array.from(e.target.files).slice(0, 30);
       const newFiles: any[] = [];
       let processed = 0;
@@ -182,18 +186,21 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             order: index
           });
           processed++;
+          setUploadProgress(Math.round((processed / files.length) * 100));
           if (processed === files.length) {
-            // Ordenar por el índice original para mantener el orden de selección
             const sortedFiles = [...newFiles].sort((a, b) => a.order - b.order);
             setBulletinQuincenal((prev: any) => ({
               ...prev,
               [selectedQuincenalCompany]: sortedFiles
             }));
+            setIsUploading(false);
           }
         };
         reader.onerror = () => {
           console.error("Error leyendo archivo:", file.name);
           processed++;
+          setUploadProgress(Math.round((processed / files.length) * 100));
+          if (processed === files.length) setIsUploading(false);
         };
         reader.readAsDataURL(file);
       });
@@ -206,6 +213,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
    */
   const handleMensualUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      setIsUploading(true);
+      setUploadProgress(0);
       const files = Array.from(e.target.files).slice(0, 30);
       const newFiles: any[] = [];
       let processed = 0;
@@ -221,14 +230,18 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             order: index
           });
           processed++;
+          setUploadProgress(Math.round((processed / files.length) * 100));
           if (processed === files.length) {
             const sortedFiles = [...newFiles].sort((a, b) => a.order - b.order);
             setBulletinMensual(sortedFiles);
+            setIsUploading(false);
           }
         };
         reader.onerror = () => {
           console.error("Error leyendo archivo:", file.name);
           processed++;
+          setUploadProgress(Math.round((processed / files.length) * 100));
+          if (processed === files.length) setIsUploading(false);
         };
         reader.readAsDataURL(file);
       });
@@ -693,19 +706,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               ))}
             </div>
 
-            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-blue-400 transition-colors cursor-pointer relative group">
-              <input 
-                type="file" 
-                accept="image/*,application/pdf"
-                multiple
-                onChange={handleQuincenalUpload}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
+            <div className={`p-6 border-2 border-dashed rounded-3xl text-center transition-colors relative group ${isUploading ? 'bg-gray-50 border-blue-400 cursor-wait' : 'border-gray-200 hover:border-blue-400 cursor-pointer'}`}>
+              {!isUploading && (
+                <input 
+                  type="file" 
+                  accept="image/*,application/pdf"
+                  multiple
+                  onChange={handleQuincenalUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              )}
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                  <FileText size={24} />
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto transition-transform ${isUploading ? 'bg-blue-100 text-blue-600 animate-pulse' : 'bg-blue-50 text-blue-600 group-hover:scale-110'}`}>
+                  {isUploading ? <Loader2 className="animate-spin" size={24} /> : <FileText size={24} />}
                 </div>
-                <p className="text-sm font-bold text-gray-600">Subir Boletín Quincenal para {selectedQuincenalCompany}</p>
+                <p className="text-sm font-bold text-gray-600">
+                  {isUploading ? `Procesando archivos (${uploadProgress}%)...` : `Subir Boletín Quincenal para ${selectedQuincenalCompany}`}
+                </p>
                 <p className="text-xs text-gray-400">Imágenes o PDFs (Máx 30 archivos)</p>
               </div>
             </div>
@@ -747,19 +764,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               Boletín Mensual (Todas las Empresas)
             </h3>
             
-            <div className="p-6 border-2 border-dashed border-gray-200 rounded-3xl text-center hover:border-orange-400 transition-colors cursor-pointer relative group">
-              <input 
-                type="file" 
-                accept="image/*,application/pdf"
-                multiple
-                onChange={handleMensualUpload}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
+            <div className={`p-6 border-2 border-dashed rounded-3xl text-center transition-colors relative group ${isUploading ? 'bg-gray-50 border-orange-400 cursor-wait' : 'border-gray-200 hover:border-orange-400 cursor-pointer'}`}>
+              {!isUploading && (
+                <input 
+                  type="file" 
+                  accept="image/*,application/pdf"
+                  multiple
+                  onChange={handleMensualUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              )}
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                  <FileText size={24} />
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto transition-transform ${isUploading ? 'bg-orange-100 text-orange-600 animate-pulse' : 'bg-orange-50 text-orange-600 group-hover:scale-110'}`}>
+                  {isUploading ? <Loader2 className="animate-spin" size={24} /> : <FileText size={24} />}
                 </div>
-                <p className="text-sm font-bold text-gray-600">Subir Boletín Mensual Global</p>
+                <p className="text-sm font-bold text-gray-600">
+                  {isUploading ? `Procesando archivos (${uploadProgress}%)...` : 'Subir Boletín Mensual Global'}
+                </p>
                 <p className="text-xs text-gray-400">Imágenes o PDFs (Máx 30 archivos)</p>
               </div>
             </div>

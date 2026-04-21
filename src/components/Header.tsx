@@ -550,7 +550,7 @@ export const Header: React.FC<HeaderProps> = ({
             
             {/* Contenedor de imágenes: Enfoque en fotos verticales y scroll suave */}
             <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar flex justify-center scroll-smooth">
-              <div className="w-full max-w-5xl space-y-12 py-8">
+              <div className="w-full max-w-7xl space-y-12 py-8">
                 {(viewingBulletinType === 'quincenal' ? (bulletinQuincenal?.[currentCompany] || []) : (bulletinMensual || [])).map((img: any, idx: number) => (
                   <motion.div 
                     key={img.id}
