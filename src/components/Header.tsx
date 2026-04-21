@@ -473,7 +473,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           
           {/* Botón del Boletín Quincenal: Específico por empresa */}
-          {bulletinQuincenal[currentCompany] && bulletinQuincenal[currentCompany].length > 0 && (
+          {bulletinQuincenal?.[currentCompany] && bulletinQuincenal[currentCompany].length > 0 && (
             <button 
               className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
               onClick={() => {
@@ -532,8 +532,8 @@ export const Header: React.FC<HeaderProps> = ({
                 </h2>
                 <p className="text-white/40 text-xs font-bold uppercase tracking-widest">
                   {viewingBulletinType === 'quincenal' 
-                    ? `${bulletinQuincenal[currentCompany].length} Páginas • ${currentCompany === 'SX' ? 'Simex' : currentCompany === 'SO' ? 'Soinco' : 'Plastinovo'}`
-                    : `${bulletinMensual.length} Páginas • Corporativo Global`
+                    ? `${(bulletinQuincenal?.[currentCompany] || []).length} Páginas • ${currentCompany === 'SX' ? 'Simex' : currentCompany === 'SO' ? 'Soinco' : 'Plastinovo'}`
+                    : `${(bulletinMensual || []).length} Páginas • Corporativo Global`
                   }
                 </p>
               </div>
@@ -551,7 +551,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Contenedor de imágenes: Enfoque en fotos verticales y scroll suave */}
             <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar flex justify-center scroll-smooth">
               <div className="w-full max-w-2xl space-y-12 py-8">
-                {(viewingBulletinType === 'quincenal' ? bulletinQuincenal[currentCompany] : bulletinMensual).map((img: any, idx: number) => (
+                {(viewingBulletinType === 'quincenal' ? (bulletinQuincenal?.[currentCompany] || []) : (bulletinMensual || [])).map((img: any, idx: number) => (
                   <motion.div 
                     key={img.id}
                     initial={{ opacity: 0, scale: 0.95 }}

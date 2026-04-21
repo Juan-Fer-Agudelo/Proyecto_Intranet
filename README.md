@@ -50,6 +50,19 @@ La intranet adapta toda su apariencia visual (UI/UX) dependiendo de la empresa s
 - **Orquestación de Datos:** Microservicios construidos en **n8n**, permitiendo una capa de abstracción entre la base de datos SQL y el cliente web.
 - **Backend de Soporte:** Servidor Express nativo para la gestión de archivos estáticos, persistencia de datos local y gestión de rutas SPA.
 
+---
+
+## Guía de Activos y Optimización de Imágenes
+Para mantener la alta calidad visual y el rendimiento de la plataforma, se recomienda seguir las siguientes especificaciones técnicas para las imágenes:
+
+| Elemento | Medida Recomendada (Px) | Proporción | Uso |
+| :--- | :--- | :--- | :--- |
+| **Fondo Principal (Hero)** | 1920 x 1080 | 16:9 | Imágenes rotativas de fondo |
+| **Noticias Flotantes** | 1200 x 500 | Panorámica | Comunicados en el banner superior |
+| **Boletines (Vertical)** | 1080 x 1920 | 9:16 | Formato "historia" para lectura vertical |
+
+**Recomendación de Performance:** Antes de cargar cualquier imagen al administrador, se recomienda procesarla a través de [Squoosh.app](https://squoosh.app/). Esto permite comprimir los archivos (idealmente formato .webp o .jpg) para asegurar que la intranet cargue de manera instantánea sin perder calidad visual.
+
 ## Documentación de Desarrollo
 Tanto los componentes (`src/components`) como las páginas especializadas (`src/pages`) cuentan con una documentación interna exhaustiva. Cada bloque de código está comentado explicando la integración con n8n, la gestión de estados globales y la lógica de renderizado condicional.
 

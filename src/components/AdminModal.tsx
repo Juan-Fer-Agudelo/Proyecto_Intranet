@@ -183,11 +183,17 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           });
           processed++;
           if (processed === files.length) {
+            // Ordenar por el índice original para mantener el orden de selección
+            const sortedFiles = [...newFiles].sort((a, b) => a.order - b.order);
             setBulletinQuincenal((prev: any) => ({
               ...prev,
-              [selectedQuincenalCompany]: newFiles
+              [selectedQuincenalCompany]: sortedFiles
             }));
           }
+        };
+        reader.onerror = () => {
+          console.error("Error leyendo archivo:", file.name);
+          processed++;
         };
         reader.readAsDataURL(file);
       });

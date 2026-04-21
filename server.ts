@@ -60,7 +60,7 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(cors());
-  app.use(express.json({ limit: '50mb' })); // Límite aumentado para soportar carga de imágenes en base64
+  app.use(express.json({ limit: '100mb' })); // Límite aumentado para soportar carga de imágenes en base64
 
   // --- RUTAS DE LA API ---
 
