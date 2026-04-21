@@ -5,7 +5,7 @@ export interface Module {
   id: string;      // Identificador único del módulo
   name: string;    // Nombre visible para el usuario
   icon: any;       // Componente de icono de Lucide
-  type: 'external' | 'secure'; // Tipo de enlace (Abierto o Protegido por Login)
+  type: 'external' | 'secure' | 'internal'; // Tipo de enlace (Abierto, Protegido o Interno)
   url: string;     // URL o ruta de navegación
 }
 

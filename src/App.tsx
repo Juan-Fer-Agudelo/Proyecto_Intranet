@@ -65,6 +65,10 @@ function IntranetContent({
   const [loginMessage, setLoginMessage] = useState({ text: '', color: '' });
 
   const handleModuleClick = (mod: Module) => {
+    if (mod.type === 'internal') {
+      navigate(mod.url);
+      return;
+    }
     if (mod.url && mod.url !== '#') {
       window.open(mod.url, '_blank');
       return;

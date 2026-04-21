@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  name: 'Default' # Usa tu computadora local como agente
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Instalar Node.js'
+
+- script: |
+    npm install
+  displayName: 'Instalar dependencias'
+
+- script: |
+    npm run lint
+  displayName: 'Verificar errores (Lint)'
+
+- script: |
+    npm run build
+  displayName: 'Compilar proyecto (Build)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'dist'
+    ArtifactName: 'prod-build'
+    publishLocation: 'Container'
+  displayName: 'Publicar resultados de compilación'

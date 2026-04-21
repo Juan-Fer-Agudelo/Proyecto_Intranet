@@ -17,7 +17,7 @@ export const MODULES_BY_COMPANY: Record<CompanyCode, Module[]> = {
     { id: 'bitacora', name: 'Bitácora', icon: Book, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/Appsint2/bitacoraV/' },
     { id: 'circulares', name: 'Circulares', icon: Layers, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/appsLoadFiles/circularesV/login.php' },
     { id: 'ingreso', name: 'Control Ingreso', icon: UserCheck, type: 'external', url: 'http://192.101.0.209/ControlIngreso/views/' },
-    { id: 'directorio', name: 'Directorio', icon: Contact, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/directorioDinamicoV/' },
+    { id: 'directorio', name: 'Directorio', icon: Contact, type: 'internal', url: '/directorio' },
     { id: 'formatos-financieros', name: 'Formatos financieros', icon: FileSpreadsheet, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/Ffinanciera/' },
     { id: 'marcaciones', name: 'Marcaciones', icon: Clock, type: 'external', url: 'https://app.powerbi.com/view?r=eyJrIjoiMjAyODc0NmMtZTE4Ny00MTYyLWE5MDMtZDJkY2RhZDVjZDk4IiwidCI6IjUwMDI1MTNkLTcyNGEtNDc3NC1hYmEwLWMxZTZiNzI5YzhiNiIsImMiOjR9' },
     { id: 'rotulos', name: 'Rótulos', icon: Tag, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/etiquetas/' },
@@ -36,7 +36,7 @@ export const MODULES_BY_COMPANY: Record<CompanyCode, Module[]> = {
   SO: [
     { id: 'inyeccion-soinco', name: 'Ajustes de Inyección Soinco', icon: Factory, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/DataInyeccionsoinco/system/login.php' },
     { id: 'ingreso-soinco', name: 'Control de Ingreso', icon: UserCheck, type: 'external', url: 'http://192.101.0.209/ControlIngreso_soinco/views/' },
-    { id: 'directorio', name: 'Directorio', icon: Contact, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/directorioDinamicoV/' },
+    { id: 'directorio', name: 'Directorio', icon: Contact, type: 'internal', url: '/directorio' },
     { id: 'marcaciones-soinco', name: 'Marcaciones', icon: Clock, type: 'external', url: 'https://app.powerbi.com/view?r=eyJrIjoiYTZiNWFlY2EtMDQ4ZC00NDEwLWJkNGEtOWViNjM5YmE0OTQ2IiwidCI6IjUwMDI1MTNkLTcyNGEtNDc3NC1hYmEwLWMxZTZiNzI5YzhiNiIsImMiOjR9' },
     { id: 'rotulos', name: 'Rótulos', icon: Tag, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/etiquetas/' },
     { id: 'cajero', name: 'Cajero', icon: Banknote, type: 'external', url: 'https://srvnomina.simex.corp/SelfService/frmLogin.aspx' },
@@ -47,7 +47,7 @@ export const MODULES_BY_COMPANY: Record<CompanyCode, Module[]> = {
   PL: [
     { id: 'inyeccion-pl', name: 'Ajuste de inyección', icon: Factory, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/DataInyeccionplast/system/login.php' },
     { id: 'ingreso-pl', name: 'Control Ingreso', icon: UserCheck, type: 'external', url: 'http://192.101.0.209/ControlIngreso_pl/views/' },
-    { id: 'directorio', name: 'Directorio', icon: Contact, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/directorioDinamicoV/' },
+    { id: 'directorio', name: 'Directorio', icon: Contact, type: 'internal', url: '/directorio' },
     { id: 'marcaciones-pl', name: 'Marcaciones', icon: Clock, type: 'external', url: 'https://app.powerbi.com/view?r=eyJrIjoiOTA2NmRmYWMtNjU0NC00ZDliLTllMjUtZDYyMmJmNDkwOGQyIiwidCI6IjUwMDI1MTNkLTcyNGEtNDc3NC1hYmEwLWMxZTZiNzI5YzhiNiIsImMiOjR9' },
     { id: 'cajero', name: 'Cajero', icon: Banknote, type: 'external', url: 'https://srvnomina.simex.corp/SelfService/frmLogin.aspx' },
     { id: 'remisiones', name: 'Remisiones', icon: FileText, type: 'external', url: 'http://srvaplicaciones/desarrollos/archivos/apps/Remisiones_webv1.0/sistema/login.php' },
