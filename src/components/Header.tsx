@@ -97,6 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
     items: [
       {
         name: "Simex",
+        code: 'SX',
         subItems: [
           { name: "Estado Planta", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Planta&rs:Command=Render" },
           {
@@ -135,6 +136,7 @@ export const Header: React.FC<HeaderProps> = ({
       },
       {
         name: "Soinco",
+        code: 'SO',
         subItems: [
           { name: "Estado Planta", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Planta_SO&rs:Command=Render" },
           { name: "P-Inyección", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquina_Inyeccion_Soinco_TODO&rs:Command=Render" },
@@ -143,11 +145,12 @@ export const Header: React.FC<HeaderProps> = ({
       },
       { 
         name: "Plastinovo",
+        code: 'PL',
         subItems: [
           { name: "Estado Planta", url: "http://epicordb10/ReportServer/Pages/ReportViewer.aspx?%2fReportsCustom%2fMES_Produccion%2fEstado_Maquinas_Planta_PL&rs:Command=Render" }
         ]
       }
-    ]
+    ].filter(item => item.code === currentCompany)
   };
 
   /**
@@ -457,24 +460,53 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <User size={18} className="group-hover:scale-110 transition-transform" /> Directorio
           </button>
-          <button 
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
-            onClick={() => {
-              onPartyPhotosClick();
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            <Camera size={18} className="group-hover:scale-110 transition-transform" /> Ver las fotos de la fiesta
-          </button>
-          <button 
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
-            onClick={() => {
-              onVideosClick();
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            <Video size={18} className="group-hover:scale-110 transition-transform" /> Vídeos
-          </button>
+
+          {/* Menú Desplegable Galería */}
+          <div className="relative w-full md:w-auto">
+            <button 
+              className="w-full flex items-center justify-between md:justify-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+              onClick={() => toggleDropdown('GALERIA')}
+            >
+              <div className="flex items-center gap-2">
+                <Camera size={18} className="group-hover:scale-110 transition-transform" /> 
+                <span>Galería</span>
+              </div>
+              <ChevronDown size={14} className={`transition-transform duration-300 ${activeDropdown === 'GALERIA' ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {activeDropdown === 'GALERIA' && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                  className="md:absolute md:top-full md:left-0 mt-2 w-full md:w-32 glass rounded-xl shadow-2xl p-2 z-[2000]"
+                >
+                  <button 
+                    className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-[var(--primary)] rounded-lg text-xs font-bold text-gray-700 transition-colors flex items-center justify-between"
+                    onClick={() => {
+                      onPartyPhotosClick();
+                      setActiveDropdown(null);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <span>Fotos</span>
+                    <Camera size={14} />
+                  </button>
+                  <button 
+                    className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-[var(--primary)] rounded-lg text-xs font-bold text-gray-700 transition-colors flex items-center justify-between"
+                    onClick={() => {
+                      onVideosClick();
+                      setActiveDropdown(null);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <span>Videos</span>
+                    <Video size={14} />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           
           {/* Botón del Boletín Quincenal: Específico por empresa */}
           {bulletinQuincenal?.[currentCompany] && bulletinQuincenal[currentCompany].length > 0 && (

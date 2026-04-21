@@ -11,11 +11,40 @@ interface AnnouncementsProps {
 
 export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnouncements, currentCompany }) => {
   const [expandedId, setExpandedId] = React.useState<string | number | null>(null);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
+  const now = new Date();
   const activeAnnouncements = announcements
-    .filter(a => a.active && (a.company === currentCompany || a.company === 'Global'))
-    .slice(-5);
+    .filter(a => {
+      const isCompanyMatch = a.company === currentCompany || a.company === 'Global';
+      if (!a.active || !isCompanyMatch) return false;
+      
+      const start = a.startDate ? new Date(a.startDate) : null;
+      const end = a.endDate ? new Date(a.endDate) : null;
+      
+      if (start && now < start) return false;
+      if (end && now > end) return false;
+      
+      return true;
+    });
+
   const isAnyExpanded = expandedId !== null;
+
+  // Carousel controls
+  const variants = {
+    animate: {
+      x: [0, -1000], // Will be calculated based on content
+      transition: {
+        x: {
+          repeat: Infinity,
+          repeatType: "loop" as const,
+          duration: 30,
+          ease: "linear",
+        },
+      },
+    },
+  };
 
   return (
     <>
@@ -31,80 +60,118 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
         )}
       </AnimatePresence>
 
-      <div className={`fixed inset-0 flex justify-center px-4 md:px-6 pointer-events-none transition-all duration-500 ${isAnyExpanded ? 'items-center z-[2000]' : 'items-end pb-6 md:pb-24 z-[1450]'}`}>
-        <div className="flex flex-row justify-center flex-wrap gap-3 md:gap-4 w-full max-w-7xl mx-auto">
-          <AnimatePresence mode="popLayout">
-            {activeAnnouncements.map(ann => {
-              const isExpanded = expandedId === ann.id;
-              
-              // If any card is expanded, we hide the others to keep the UI clean
-              if (isAnyExpanded && !isExpanded) return null;
-
-              return (
+      <div 
+        className={`fixed inset-x-0 bottom-12 md:bottom-28 pointer-events-none transition-all duration-500 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-4 z-[2000]' : 'z-[1450] h-64 md:h-72'}`}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {!isAnyExpanded ? (
+          <div className="w-full relative h-full overflow-hidden pointer-events-auto flex items-center">
+            {/* Ticker Container */}
+            <motion.div
+              ref={containerRef}
+              className="flex gap-4 md:gap-6 px-10 whitespace-nowrap cursor-grab active:cursor-grabbing"
+              drag="x"
+              dragConstraints={{ left: -2000, right: 0 }} // Approximate
+              animate={isPaused ? {} : { x: ["0%", "-50%"] }}
+              transition={{
+                x: {
+                  repeat: Infinity,
+                  repeatType: "loop" as const,
+                  duration: 25,
+                  ease: "linear",
+                },
+              }}
+              style={{ width: 'max-content' }}
+            >
+              {/* Duplicate contents for seamless loop */}
+              {[...activeAnnouncements, ...activeAnnouncements].map((ann, idx) => (
                 <motion.div 
-                  key={ann.id}
-                  layoutId={`ann-${ann.id}`}
-                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1, 
-                    y: 0,
-                  }}
-                  exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                  onClick={() => setExpandedId(isExpanded ? null : ann.id)}
-                  className={`
-                    pointer-events-auto glass rounded-[24px] md:rounded-[28px] shadow-2xl overflow-hidden relative cursor-pointer transition-all duration-500
-                    ${isExpanded 
-                      ? 'w-[92vw] md:w-[95vw] max-w-[550px] max-h-[80vh] flex flex-col shadow-blue-500/40 ring-4 ring-blue-500/10 overflow-y-auto custom-scrollbar' 
-                      : 'w-[calc(50%-12px)] sm:w-[200px] md:w-[240px] h-[220px] md:h-[280px] flex flex-col hover:shadow-xl hover:-translate-y-2'}
-                  `}
+                  key={`${ann.id}-${idx}`}
+                  layoutId={idx < activeAnnouncements.length ? `ann-${ann.id}` : `ann-dup-${ann.id}`}
+                  onClick={() => setExpandedId(ann.id)}
+                  className="w-[200px] md:w-[280px] h-[200px] md:h-[260px] flex-shrink-0 glass rounded-[24px] md:rounded-[28px] shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300 border border-white/20 bg-white/10"
                 >
-                  <div className={`shrink-0 overflow-hidden transition-all duration-700 ${isExpanded ? 'h-48 md:h-64' : 'h-24 md:h-32 bg-gray-50'}`}>
+                  <div className="h-24 md:h-32 overflow-hidden bg-gray-50/50">
                     {ann.image ? (
                       <img src={ann.image} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <span className="text-blue-600 font-black text-xs">i</span>
+                        <div className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                          <span className="text-blue-600 font-black text-xs">!</span>
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className={`transition-all duration-500 ${isExpanded ? 'p-6 md:p-10' : 'p-4 md:p-5'}`}>
-                    <h4 className={`font-black text-gray-900 mb-2 md:mb-4 transition-all leading-tight break-words ${isExpanded ? 'text-2xl md:text-4xl' : 'text-xs md:text-sm'}`}>
+                  <div className="p-4 md:p-5 flex flex-col h-full bg-white/5 backdrop-blur-sm">
+                    <h4 className="font-black text-gray-900 text-xs md:text-sm mb-1 line-clamp-2 leading-tight tracking-tight uppercase">
                       {ann.title}
                     </h4>
-                    <div className={`text-gray-600 leading-relaxed transition-all break-words ${isExpanded ? 'text-base md:text-lg' : 'text-[10px] md:text-xs line-clamp-2 md:line-clamp-3'}`}>
+                    <p className="text-gray-600 text-[10px] md:text-xs line-clamp-2 leading-relaxed opacity-60">
                       {ann.content}
-                    </div>
-                    {isExpanded && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }} 
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="mt-6 md:mt-10 pt-6 md:pt-8 border-t border-gray-100 flex justify-between items-center sticky bottom-0 bg-white/50 backdrop-blur-sm -mx-6 -mb-6 p-6 md:-mx-10 md:-mb-10 md:p-10"
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-[9px] md:text-[10px] font-black text-blue-600 uppercase tracking-widest">Comunicado Oficial</span>
-                          <span className="text-[10px] md:text-xs text-gray-400 font-bold">Intranet Corporativa</span>
-                        </div>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedId(null);
-                          }}
-                          className="text-[9px] md:text-[10px] font-bold text-white uppercase tracking-widest bg-blue-600 px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
-                        >
-                          Cerrar
-                        </button>
-                      </motion.div>
-                    )}
+                    </p>
                   </div>
                 </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
+              ))}
+            </motion.div>
+          </div>
+        ) : (
+          <div className="flex justify-center w-full max-w-7xl mx-auto pointer-events-auto">
+            {activeAnnouncements.filter(ann => ann.id === expandedId).map(ann => (
+              <motion.div 
+                key={`expanded-${ann.id}`}
+                layoutId={`ann-${ann.id}`}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="w-full max-w-[600px] max-h-[85vh] glass rounded-[32px] md:rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-y-auto custom-scrollbar border border-white/30"
+              >
+                <div className="shrink-0 h-64 md:h-96 relative">
+                  {ann.image ? (
+                    <img src={ann.image} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500/10 to-blue-600/5 flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center">
+                        <span className="text-blue-600 font-black text-4xl">!</span>
+                      </div>
+                    </div>
+                  )}
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedId(null);
+                    }}
+                    className="absolute top-6 right-6 p-3 bg-white/80 hover:bg-white backdrop-blur-md rounded-2xl text-gray-900 shadow-xl transition-all hover:rotate-90"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+                <div className="p-8 md:p-12 pb-24 md:pb-32 bg-white/80 backdrop-blur-xl">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="px-3 py-1 bg-blue-600 text-[10px] font-black text-white rounded-full uppercase tracking-widest">
+                      {ann.company === 'Global' ? 'Corporativo' : ann.company}
+                    </span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Comunicado Oficial</span>
+                  </div>
+                  <h4 className="font-black text-gray-900 text-3xl md:text-5xl mb-6 leading-[1.1] tracking-tight">
+                    {ann.title}
+                  </h4>
+                  <div className="text-gray-700 text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
+                    {ann.content}
+                  </div>
+                </div>
+                <div className="sticky bottom-0 p-8 md:p-12 pt-0 bg-gradient-to-t from-white via-white/90 to-transparent flex justify-end">
+                  <button 
+                    onClick={() => setExpandedId(null)}
+                    className="px-10 py-4 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl hover:bg-black transition-all hover:scale-105 active:scale-95"
+                  >
+                    Cerrar Detalle
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

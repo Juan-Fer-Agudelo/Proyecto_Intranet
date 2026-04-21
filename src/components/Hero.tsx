@@ -67,7 +67,6 @@ export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => 
             animate={{ opacity: 1 }}
             className="text-white/80 mt-20"
           >
-            <p className="max-w-md mx-auto mt-2">Selecciona una empresa para ver sus módulos específicos o espera a las próximas noticias.</p>
           </motion.div>
         )}
       </div>

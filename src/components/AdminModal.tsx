@@ -67,11 +67,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   setPartyPhotos
 }) => {
   // --- ESTADOS LOCALES PARA FORMULARIOS ---
-  const [newAnn, setNewAnn] = useState<{ title: string; content: string; image: string; company: 'SX' | 'SO' | 'PL' | 'Global' }>({ 
+  const [newAnn, setNewAnn] = useState<{ 
+    title: string; 
+    content: string; 
+    image: string; 
+    company: 'SX' | 'SO' | 'PL' | 'Global';
+    startDate: string;
+    endDate: string;
+  }>({ 
     title: '', 
     content: '', 
     image: '', 
-    company: 'Global' 
+    company: 'Global',
+    startDate: '',
+    endDate: ''
   });
   const [newVideo, setNewVideo] = useState<{ title: string; description: string; url: string; type: 'youtube' | 'local' }>({ title: '', description: '', url: '', type: 'youtube' });
   const [photoYear, setPhotoYear] = useState(new Date().getFullYear().toString());
@@ -116,7 +125,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     }
 
     addAnnouncement(newAnn);
-    setNewAnn({ title: '', content: '', image: '', company: 'Global' });
+    setNewAnn({ title: '', content: '', image: '', company: 'Global', startDate: '', endDate: '' });
   };
 
   /**
@@ -348,6 +357,27 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 value={newAnn.content}
                 onChange={e => setNewAnn({...newAnn, content: e.target.value})}
               />
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase text-gray-400">Publicar el día:</label>
+                  <input 
+                    type="date"
+                    className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 text-gray-900 bg-white font-bold text-xs"
+                    value={newAnn.startDate}
+                    onChange={e => setNewAnn({...newAnn, startDate: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black uppercase text-gray-400">Quitar el día (Opcional):</label>
+                  <input 
+                    type="date"
+                    className="w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 text-gray-900 bg-white font-bold text-xs"
+                    value={newAnn.endDate}
+                    onChange={e => setNewAnn({...newAnn, endDate: e.target.value})}
+                  />
+                </div>
+              </div>
               
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Mostrar en:</label>
@@ -410,11 +440,18 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     {ann.image && <img src={ann.image} className="w-10 h-10 rounded-lg object-cover" alt="" />}
                     <div className="flex flex-col">
                       <span className="text-sm font-bold text-gray-800 truncate max-w-[150px]">{ann.title}</span>
-                      <span className={`text-[8px] font-black px-2 py-0.5 rounded-full w-fit uppercase ${
-                        ann.company === 'Global' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
-                      }`}>
-                        {ann.company}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[8px] font-black px-2 py-0.5 rounded-full w-fit uppercase ${
+                          ann.company === 'Global' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
+                        }`}>
+                          {ann.company}
+                        </span>
+                        {(ann.startDate || ann.endDate) && (
+                          <span className="text-[7px] font-black text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded uppercase">
+                            {ann.startDate ? `Desde: ${ann.startDate}` : ''} {ann.endDate ? `Hasta: ${ann.endDate}` : ''}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

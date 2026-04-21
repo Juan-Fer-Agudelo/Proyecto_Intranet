@@ -38,6 +38,8 @@ export interface Announcement {
   image?: string;
   active: boolean;
   company: CompanyCode | 'Global';
+  startDate?: string;
+  endDate?: string;
 }
 
 /**
