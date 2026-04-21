@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/70 backdrop-blur-md text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
+    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/90 backdrop-blur-md text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
       <div className="flex items-center gap-3 md:gap-5">
         <img 
           src={CONFIG.LOGOS[currentCompany]} 
@@ -205,14 +205,15 @@ export const Header: React.FC<HeaderProps> = ({
         className={`
           fixed md:static top-0 right-0 bottom-0 w-[85%] max-w-[320px] md:w-auto
           bg-white md:bg-transparent
-          flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6
+          flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2
           p-8 md:p-0 transition-transform duration-500 z-[1600] ease-out
           ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
           shadow-[-10px_0_30px_rgba(0,0,0,0.15)] md:shadow-none
           md:pointer-events-auto overflow-y-auto md:overflow-visible
+          md:flex-nowrap md:justify-end md:ml-4
         `}
       >
-        <div className="flex md:hidden items-center justify-between w-full mb-8 pb-4 border-b border-gray-100">
+        <div className="flex md:hidden items-center justify-between w-full mb-8 pb-4 border-b border-gray-100 shrink-0">
            <span className="text-[var(--primary)] font-black tracking-tighter text-xl">MENU</span>
            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-gray-50 rounded-full text-gray-500">
              <X size={20} />
@@ -220,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Empresas Dropdown */}
-        <div className="relative w-full md:w-auto">
+        <div className="relative w-full md:w-auto shrink-0">
           <button 
             className={`
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
@@ -291,11 +292,11 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Dashboard Máquinas Dropdown */}
-        <div className="relative w-full md:w-auto">
+        <div className="relative w-full md:w-auto shrink-0">
           <button 
             className={`
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
-              bg-white/10 text-white hover:bg-white/20 border border-white/20
+              bg-gray-50 md:bg-white/10 text-gray-700 md:text-white hover:bg-gray-100 md:hover:bg-white/20 border border-gray-100 md:border-white/20
             `}
             onClick={() => toggleDropdown('DASHBOARD')}
           >
@@ -402,7 +403,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button 
             className={`
               w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
-              bg-white/10 text-white hover:bg-white/20 border border-white/20
+              bg-gray-50 md:bg-white/10 text-gray-700 md:text-white hover:bg-gray-100 md:hover:bg-white/20 border border-gray-100 md:border-white/20
             `}
             onClick={() => toggleDropdown('SITIOS')}
           >
@@ -458,103 +459,102 @@ export const Header: React.FC<HeaderProps> = ({
           </AnimatePresence>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto border-t md:border-none border-gray-100 md:border-transparent pt-6 md:pt-0">
-          <button 
-            className="flex items-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group lg:w-auto w-full"
-            onClick={() => {
-              navigate('/directorio');
-              setIsMobileMenuOpen(false);
-            }}
-          >
-            <User size={18} className="group-hover:scale-110 transition-transform" /> Directorio
-          </button>
+        <button 
+          className="flex items-center gap-2 px-3 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group w-full md:w-auto shrink-0"
+          onClick={() => {
+            navigate('/directorio');
+            setIsMobileMenuOpen(false);
+          }}
+        >
+          <User size={18} className="group-hover:scale-110 transition-transform" /> 
+          <span className="md:inline">Directorio</span>
+        </button>
 
-          {/* Menú Desplegable Galería */}
-          <div className="relative w-full md:w-auto">
-            <button 
-              className="w-full flex items-center justify-between md:justify-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group"
-              onClick={() => toggleDropdown('GALERIA')}
-            >
-              <div className="flex items-center gap-2">
-                <Camera size={18} className="group-hover:scale-110 transition-transform" /> 
-                <span>Galería</span>
-              </div>
-              <ChevronDown size={14} className={`transition-transform duration-300 ${activeDropdown === 'GALERIA' ? 'rotate-180' : ''}`} />
-            </button>
-            <AnimatePresence>
-              {activeDropdown === 'GALERIA' && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  className="md:absolute md:top-full md:left-0 mt-2 w-full md:w-40 bg-white rounded-xl shadow-2xl p-2 z-[2000] border border-gray-100"
+        {/* Menú Desplegable Galería */}
+        <div className="relative w-full md:w-auto shrink-0">
+          <button 
+            className="w-full flex items-center justify-between md:justify-center gap-2 px-3 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group"
+            onClick={() => toggleDropdown('GALERIA')}
+          >
+            <div className="flex items-center gap-2">
+              <Camera size={18} className="group-hover:scale-110 transition-transform" /> 
+              <span>Galería</span>
+            </div>
+            <ChevronDown size={14} className={`transition-transform duration-300 ${activeDropdown === 'GALERIA' ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {activeDropdown === 'GALERIA' && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className="md:absolute md:top-full md:left-0 mt-2 w-full md:w-40 bg-white rounded-xl shadow-2xl p-2 z-[2000] border border-gray-100"
+              >
+                <button 
+                  className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-[var(--primary)] rounded-lg text-xs font-bold text-gray-700 transition-colors flex items-center justify-between"
+                  onClick={() => {
+                    onPartyPhotosClick();
+                    setActiveDropdown(null);
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
-                  <button 
-                    className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-[var(--primary)] rounded-lg text-xs font-bold text-gray-700 transition-colors flex items-center justify-between"
-                    onClick={() => {
-                      onPartyPhotosClick();
-                      setActiveDropdown(null);
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    <span>Fotos</span>
-                    <Camera size={14} />
-                  </button>
-                  <button 
-                    className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-[var(--primary)] rounded-lg text-xs font-bold text-gray-700 transition-colors flex items-center justify-between"
-                    onClick={() => {
-                      onVideosClick();
-                      setActiveDropdown(null);
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    <span>Videos</span>
-                    <Video size={14} />
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          
-          {/* Botón del Boletín Quincenal: Específico por empresa */}
-          {bulletinQuincenal?.[currentCompany] && bulletinQuincenal[currentCompany].length > 0 && (
-            <button 
-              className="flex items-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group w-full lg:w-auto"
-              onClick={() => {
-                navigate('/boletin-quincenal');
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <FileText size={18} className="text-white group-hover:scale-110 transition-transform" /> 
-              <span>Boletín Quincenal</span>
-            </button>
-          )}
-
-          {/* Botón del Boletín Mensual: Global para todos */}
-          {bulletinMensual && bulletinMensual.length > 0 && (
-            <button 
-              className="flex items-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group w-full lg:w-auto"
-              onClick={() => {
-                navigate('/boletin-mensual');
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <FileText size={18} className="text-white group-hover:scale-110 transition-transform" /> 
-              <span>Boletín Mensual</span>
-            </button>
-          )}
-
+                  <span>Fotos</span>
+                  <Camera size={14} />
+                </button>
+                <button 
+                  className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-[var(--primary)] rounded-lg text-xs font-bold text-gray-700 transition-colors flex items-center justify-between"
+                  onClick={() => {
+                    onVideosClick();
+                    setActiveDropdown(null);
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <span>Videos</span>
+                  <Video size={14} />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        {/* Botón del Boletín Quincenal */}
+        {bulletinQuincenal?.[currentCompany] && bulletinQuincenal[currentCompany].length > 0 && (
           <button 
-            className="p-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl hover:bg-gray-100 md:hover:bg-white/20 transition-all flex items-center gap-2 md:block group w-full lg:w-auto"
+            className="flex items-center gap-2 px-3 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group w-full md:w-auto shrink-0"
             onClick={() => {
-              onAdminClick();
+              navigate('/boletin-quincenal');
               setIsMobileMenuOpen(false);
             }}
           >
-            <Settings size={24} className="transition-transform group-hover:rotate-90" />
-            <span className="md:hidden font-semibold">Administración</span>
+            <FileText size={18} className="group-hover:scale-110 transition-transform" /> 
+            <span>Boletín Quincenal</span>
           </button>
-        </div>
+        )}
+
+        {/* Botón del Boletín Mensual */}
+        {bulletinMensual && bulletinMensual.length > 0 && (
+          <button 
+            className="flex items-center gap-2 px-3 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group w-full md:w-auto shrink-0"
+            onClick={() => {
+              navigate('/boletin-mensual');
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <FileText size={18} className="group-hover:scale-110 transition-transform" /> 
+            <span>Boletín Mensual</span>
+          </button>
+        )}
+
+        <button 
+          className="p-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl hover:bg-gray-100 md:hover:bg-white/20 transition-all flex items-center gap-2 md:inline-flex group w-full md:w-auto shrink-0"
+          onClick={() => {
+            onAdminClick();
+            setIsMobileMenuOpen(false);
+          }}
+        >
+          <Settings size={24} className="transition-transform group-hover:rotate-90" />
+          <span className="md:hidden font-semibold">Administración</span>
+        </button>
       </nav>
     </header>
   );
