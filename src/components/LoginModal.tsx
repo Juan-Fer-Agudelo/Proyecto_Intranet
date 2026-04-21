@@ -57,7 +57,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 focus:border-[var(--primary)] outline-none transition-all font-semibold"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Ej: j.agudelo"
+              placeholder="Ej.Intranet"
               required
             />
           </div>
