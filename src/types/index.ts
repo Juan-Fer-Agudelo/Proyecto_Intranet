@@ -40,6 +40,7 @@ export interface Announcement {
   company: CompanyCode | 'Global';
   startDate?: string;
   endDate?: string;
+  isPriority?: boolean;
 }
 
 /**

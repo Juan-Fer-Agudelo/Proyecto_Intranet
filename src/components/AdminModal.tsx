@@ -34,6 +34,7 @@ interface AdminModalProps {
   bulletinMensual: any[];
   setBulletinMensual: (val: any[] | ((prev: any[]) => any[])) => void;
   addAnnouncement: (ann: Omit<Announcement, 'id' | 'active'>) => void;
+  togglePriority: (id: string | number) => void;
 }
 
 /**
@@ -64,7 +65,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   bulletinMensual,
   setBulletinMensual,
   addAnnouncement,
-  setPartyPhotos
+  setPartyPhotos,
+  togglePriority
 }) => {
   // --- ESTADOS LOCALES PARA FORMULARIOS ---
   const [newAnn, setNewAnn] = useState<{ 
@@ -74,13 +76,15 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     company: 'SX' | 'SO' | 'PL' | 'Global';
     startDate: string;
     endDate: string;
+    isPriority: boolean;
   }>({ 
     title: '', 
     content: '', 
     image: '', 
     company: 'Global',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    isPriority: false
   });
   const [newVideo, setNewVideo] = useState<{ title: string; description: string; url: string; type: 'youtube' | 'local' }>({ title: '', description: '', url: '', type: 'youtube' });
   const [photoYear, setPhotoYear] = useState(new Date().getFullYear().toString());
@@ -94,7 +98,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const relevantAnnouncements = announcements.filter(a => 
     a.active && (a.company === 'Global' || a.company === newAnn.company)
   );
-  const isAnnLimitReached = relevantAnnouncements.length >= 5;
+  const isAnnLimitReached = relevantAnnouncements.length >= 6; // Increased limit slightly for flexibility
 
   const getCompanyName = (code: string) => {
     switch (code) {
@@ -113,19 +117,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     e.preventDefault();
     if (!newAnn.title || !newAnn.content) return;
     
-    // Calcular anuncios actuales para la empresa seleccionada
-    // (Anuncios globales + Anuncios específicos de la empresa)
-    const relevantAnnouncements = announcements.filter(a => 
-      a.active && (a.company === 'Global' || a.company === newAnn.company)
-    );
-
-    if (relevantAnnouncements.length >= 5) {
-      alert(`Límite alcanzado: Ya hay 5 noticias flotantes activas para ${newAnn.company === 'Global' ? 'todas las empresas' : newAnn.company} (incluyendo las generales).`);
-      return;
-    }
-
     addAnnouncement(newAnn);
-    setNewAnn({ title: '', content: '', image: '', company: 'Global', startDate: '', endDate: '' });
+    setNewAnn({ title: '', content: '', image: '', company: 'Global', startDate: '', endDate: '', isPriority: false });
   };
 
   /**
@@ -379,6 +372,19 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 </div>
               </div>
               
+              <div className="flex items-center gap-2">
+                <input 
+                  type="checkbox" 
+                  id="priority-check"
+                  checked={newAnn.isPriority}
+                  onChange={e => setNewAnn({...newAnn, isPriority: e.target.checked})}
+                  className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                />
+                <label htmlFor="priority-check" className="text-xs font-black text-orange-600 uppercase">
+                  Marcar como Alta Prioridad (Emergente al abrir)
+                </label>
+              </div>
+              
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Mostrar en:</label>
                 <div className="flex flex-wrap gap-2">
@@ -455,6 +461,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => togglePriority(ann.id)}
+                      className={`p-2 rounded-xl transition-colors flex items-center gap-1 group/priority ${ann.isPriority ? 'bg-orange-500 text-white shadow-lg' : 'text-gray-400 hover:bg-orange-50 hover:text-orange-600'}`}
+                      title={ann.isPriority ? "Quitar prioridad" : "Marcar como prioridad"}
+                    >
+                      <span className="text-[9px] font-black opacity-0 group-hover/priority:opacity-100 transition-opacity">
+                        {ann.isPriority ? "Prioridad!" : "Prioridad"}
+                      </span>
+                      <ArrowUp size={18} className={ann.isPriority ? 'animate-bounce' : ''} />
+                    </button>
                     <button 
                       onClick={() => toggleAnnouncement(ann.id.toString(), ann.active)} 
                       className={`p-2 rounded-xl transition-colors flex items-center gap-1 group/toggle ${ann.active ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}

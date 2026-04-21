@@ -12,6 +12,7 @@ interface AnnouncementsProps {
 export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnouncements, currentCompany }) => {
   const [expandedId, setExpandedId] = React.useState<string | number | null>(null);
   const [isPaused, setIsPaused] = React.useState(false);
+  const [hasShownPriority, setHasShownPriority] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const now = new Date();
@@ -28,6 +29,17 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
       
       return true;
     });
+
+  // Auto-show priority announcement on load
+  React.useEffect(() => {
+    if (!hasShownPriority && activeAnnouncements.length > 0) {
+      const priority = activeAnnouncements.find(a => a.isPriority);
+      if (priority) {
+        setExpandedId(priority.id);
+        setHasShownPriority(true);
+      }
+    }
+  }, [activeAnnouncements, hasShownPriority]);
 
   const isAnyExpanded = expandedId !== null;
 
@@ -90,8 +102,20 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                   key={`${ann.id}-${idx}`}
                   layoutId={idx < activeAnnouncements.length ? `ann-${ann.id}` : `ann-dup-${ann.id}`}
                   onClick={() => setExpandedId(ann.id)}
-                  className="w-[200px] md:w-[280px] h-[200px] md:h-[260px] flex-shrink-0 glass rounded-[24px] md:rounded-[28px] shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300 border border-white/20 bg-white/10"
+                  className={`w-[200px] md:w-[280px] h-[200px] md:h-[260px] flex-shrink-0 glass rounded-[24px] md:rounded-[28px] shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300 border bg-white/10 relative ${
+                    ann.isPriority ? 'border-orange-500/50 shadow-orange-500/20' : 'border-white/20'
+                  }`}
                 >
+                  {ann.isPriority && (
+                    <motion.div 
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: [1, 1.1, 1], opacity: 1 }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute top-3 left-3 z-10 px-2 py-0.5 bg-orange-600 text-white text-[8px] font-black uppercase tracking-tighter rounded-full shadow-lg border border-orange-400"
+                    >
+                      Prioridad
+                    </motion.div>
+                  )}
                   <div className="h-24 md:h-32 overflow-hidden bg-gray-50/50">
                     {ann.image ? (
                       <img src={ann.image} alt="" className="w-full h-full object-cover" />
@@ -126,7 +150,17 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="w-full max-w-[600px] max-h-[85vh] glass rounded-[32px] md:rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-y-auto custom-scrollbar border border-white/30"
               >
-                <div className="shrink-0 h-64 md:h-96 relative">
+                <div className="shrink-0 h-48 md:h-96 relative">
+                  {ann.isPriority && (
+                    <div className="absolute top-6 left-6 z-10 px-4 py-1.5 bg-orange-600 text-white text-[10px] md:text-sm font-black uppercase tracking-widest rounded-full shadow-2xl border border-orange-400 flex items-center gap-2">
+                       <motion.div 
+                        animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }} 
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                        className="w-2 h-2 bg-white rounded-full" 
+                       />
+                       Importante / Prioridad
+                    </div>
+                  )}
                   {ann.image ? (
                     <img src={ann.image} alt="" className="w-full h-full object-cover" />
                   ) : (

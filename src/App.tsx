@@ -143,13 +143,32 @@ function IntranetContent({
 
   const addAnnouncement = (newAnn: Omit<Announcement, 'id' | 'active'>) => {
     const id = Date.now().toString();
-    const updated = [{ ...newAnn, id, active: true }, ...announcements];
+    let updated = [{ ...newAnn, id, active: true }, ...announcements];
+    
+    // If the new announcement is priority, uncheck all others
+    if (newAnn.isPriority) {
+      updated = updated.map(a => ({
+        ...a,
+        isPriority: a.id === id ? true : false
+      }));
+    }
+    
     setAnnouncements(updated);
     saveData({ announcements: updated });
   };
 
   const toggleAnnouncement = (id: string | number, currentActive: boolean) => {
     const updated = announcements.map((a: any) => a.id === id ? { ...a, active: !currentActive } : a);
+    setAnnouncements(updated);
+    saveData({ announcements: updated });
+  };
+
+  const togglePriority = (id: string | number) => {
+    // Only one can be priority, so we turn off others and toggle the target
+    const updated = announcements.map((a: any) => ({
+      ...a,
+      isPriority: a.id === id ? !a.isPriority : false
+    }));
     setAnnouncements(updated);
     saveData({ announcements: updated });
   };
@@ -277,6 +296,7 @@ function IntranetContent({
           announcements={announcements}
           deleteAnnouncement={deleteAnnouncement}
           toggleAnnouncement={toggleAnnouncement}
+          togglePriority={togglePriority}
           addAnnouncement={addAnnouncement}
           videos={videos}
           deleteVideo={deleteVideo}
