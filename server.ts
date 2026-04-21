@@ -60,7 +60,8 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(cors());
-  app.use(express.json({ limit: '100mb' })); // Límite aumentado para soportar carga de imágenes en base64
+  app.use(express.json({ limit: '200mb' })); // Límite aumentado aún más para evitar fallos con muchas fotos
+  app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
   // --- RUTAS DE LA API ---
 
@@ -91,20 +92,25 @@ async function startServer() {
    */
   app.post('/api/data', async (req, res) => {
     try {
+      console.log('--- RECIBIENDO ACTUALIZACIÓN DE DATOS ---');
+      console.log('Keys recibidas:', Object.keys(req.body));
+      
       let currentData = initialData;
       if (fs.existsSync(DATA_FILE)) {
         try {
           currentData = await fs.readJson(DATA_FILE);
         } catch (e) {
+          console.error('Error parsing data file, using initial data');
           currentData = initialData;
         }
       }
       // Mezclamos los datos actuales con los nuevos cambios recibidos
       const newData = { ...currentData, ...req.body };
       await fs.writeJson(DATA_FILE, newData);
+      console.log('Datos guardados correctamente en data.json');
       res.json({ success: true, data: newData });
     } catch (error) {
-      console.error('Error saving data:', error);
+      console.error('ERROR CRÍTICO AL GUARDAR DATOS:', error);
       res.status(500).json({ error: 'Failed to save data' });
     }
   });

@@ -37,7 +37,9 @@ function IntranetContent({
   setBulletinQuincenal,
   bulletinMensual,
   setBulletinMensual,
-  saveData
+  saveData,
+  showAdminModal,
+  setShowAdminModal
 }: any) {
   const { companyName } = useParams();
   const navigate = useNavigate();
@@ -55,7 +57,6 @@ function IntranetContent({
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
   const [showVideosModal, setShowVideosModal] = useState(false);
   const [currentVisitIndex, setCurrentVisitIndex] = useState(0);
   
@@ -348,6 +349,7 @@ export default function App() {
   const [currentCompany, setCurrentCompany] = useState<CompanyCode>(CONFIG.DEFAULT_COMPANY);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAdminModal, setShowAdminModal] = useState(false);
   
   // Datos persistidos en el Backend (data.json)
   const [videos, setVideos] = useState<VideoType[]>([]);
@@ -392,23 +394,40 @@ export default function App() {
    */
   const saveData = async (updates: any) => {
     try {
-      await fetch('/api/data', {
+      console.log('--- Iniciando guardado de datos ---', Object.keys(updates));
+      const response = await fetch('/api/data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      if (result.success) {
+        console.log('--- Datos guardados exitosamente en el servidor ---');
+      }
     } catch (error) {
-      console.error('Error saving data:', error);
+      console.error('Error crítico al guardar datos en el servidor:', error);
+      alert('Error al guardar los cambios en el servidor compartido. Es posible que el archivo sea demasiado grande o no haya conexión.');
     }
   };
 
   // --- EFFECTS ---
   useEffect(() => {
     fetchData();
-    // Real-time polling every 10 seconds
-    const interval = setInterval(fetchData, 10000);
+    // Real-time polling every 10 seconds - Bloqueado si el admin está abierto
+    const interval = setInterval(() => {
+      if (!showAdminModal) {
+        fetchData();
+      } else {
+        console.log('Polling detenido: Panel de administración activo');
+      }
+    }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [showAdminModal]);
 
   useEffect(() => {
     document.body.className = `theme-${currentCompany.toLowerCase()}`;
@@ -465,6 +484,8 @@ export default function App() {
           bulletinMensual={bulletinMensual}
           setBulletinMensual={setBulletinMensual}
           saveData={saveData}
+          showAdminModal={showAdminModal}
+          setShowAdminModal={setShowAdminModal}
         />
       } />
       <Route path="/:companyName" element={
@@ -491,6 +512,8 @@ export default function App() {
           bulletinMensual={bulletinMensual}
           setBulletinMensual={setBulletinMensual}
           saveData={saveData}
+          showAdminModal={showAdminModal}
+          setShowAdminModal={setShowAdminModal}
         />
       } />
       <Route path="/fotos-fiesta" element={<PartyPhotosPage />} />
