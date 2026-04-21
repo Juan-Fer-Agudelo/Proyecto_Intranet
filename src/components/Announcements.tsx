@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Announcement, CompanyCode } from '../types';
 
@@ -118,7 +118,14 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                   )}
                   <div className="h-24 md:h-32 overflow-hidden bg-gray-50/50">
                     {ann.image ? (
-                      <img src={ann.image} alt="" className="w-full h-full object-cover" />
+                      ann.image.startsWith('data:application/pdf') || ann.image.toLowerCase().endsWith('.pdf') ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-red-50 gap-2">
+                          <FileText className="text-red-500" size={32} />
+                          <span className="text-[8px] font-black text-red-600 uppercase tracking-tighter">Documento PDF</span>
+                        </div>
+                      ) : (
+                        <img src={ann.image} alt="" className="w-full h-full object-cover" />
+                      )
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <div className="w-8 md:w-10 h-8 md:h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
@@ -162,7 +169,35 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, set
                     </div>
                   )}
                   {ann.image ? (
-                    <img src={ann.image} alt="" className="w-full h-full object-cover" />
+                    ann.image.startsWith('data:application/pdf') || ann.image.toLowerCase().endsWith('.pdf') ? (
+                      <div className="w-full h-full bg-gray-100 flex flex-col">
+                         <div className="bg-white p-4 border-b flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              <FileText className="text-red-500" size={24} />
+                              <span className="text-xs font-black text-gray-900 uppercase">Vista Previa de Documento</span>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = ann.image!;
+                                link.download = 'anuncio.pdf';
+                                link.click();
+                              }}
+                              className="px-4 py-1.5 bg-gray-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all"
+                            >
+                              Descargar Documento
+                            </button>
+                         </div>
+                         <iframe 
+                           src={`${ann.image}#toolbar=0&navpanes=0&scrollbar=0`}
+                           className="w-full flex-grow border-none bg-white"
+                           title="Documento PDF"
+                           scrolling="no"
+                         />
+                      </div>
+                    ) : (
+                      <img src={ann.image} alt="" className="w-full h-full object-cover" />
+                    )
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-blue-500/10 to-blue-600/5 flex items-center justify-center">
                       <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center">

@@ -66,7 +66,7 @@ const BulletinPage: React.FC<BulletinPageProps> = ({
       </header>
 
       {/* Contenedor Principal de Lectura */}
-      <main className="max-w-7xl mx-auto p-4 md:p-12 custom-scrollbar">
+      <main className="max-w-7xl mx-auto p-4 md:p-12">
         {data.length === 0 ? (
           <div className="h-[60vh] flex flex-col items-center justify-center space-y-6">
             <div className="w-24 h-24 bg-white/5 rounded-[40px] flex items-center justify-center animate-pulse">
@@ -119,6 +119,7 @@ const BulletinPage: React.FC<BulletinPageProps> = ({
                         src={`${img.url}#toolbar=0&navpanes=0&scrollbar=0`} 
                         title={`Página ${idx + 1}`}
                         className="w-full h-[85vh] md:h-[90vh] block border-none bg-white overflow-hidden"
+                        scrolling="no"
                       />
                     </div>
                   ) : (

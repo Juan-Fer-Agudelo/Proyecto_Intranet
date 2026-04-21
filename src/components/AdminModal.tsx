@@ -416,7 +416,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
               <input 
                 type="file"
-                accept="image/*"
+                accept="image/*,application/pdf"
                 onChange={(e) => {
                   if (e.target.files?.[0]) {
                     const reader = new FileReader();
@@ -673,7 +673,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             <div className="flex gap-2 mb-4">
               <input 
                 type="number"
-                className="w-24 px-3 py-2 rounded-xl border-2 border-gray-100 outline-none focus:border-blue-500 font-bold"
+                className="w-24 px-3 py-2 rounded-xl border-2 border-gray-100 outline-none focus:border-blue-500 font-bold text-gray-900"
                 value={photoYear}
                 onChange={e => setPhotoYear(e.target.value)}
                 placeholder="Año"
