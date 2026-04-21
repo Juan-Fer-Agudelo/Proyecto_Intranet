@@ -238,7 +238,7 @@ function IntranetContent({
                   </span>
                 </motion.div>
               ) : (
-                <div className="text-white/10 italic text-[10px] tracking-widest uppercase">Sin registros</div>
+                <div className="text-white/10 italic text-[10px] tracking-widest uppercase">Aquí podrás ver las visitas cuando estén disponibles</div>
               )}
             </AnimatePresence>
           </div>

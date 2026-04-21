@@ -298,7 +298,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             <form onSubmit={handleAddVisit} className="space-y-3 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
               <textarea 
                 className="w-full px-5 py-3 rounded-xl border-2 border-gray-100 focus:border-blue-500 outline-none font-semibold h-24 resize-none text-gray-900 bg-white"
-                placeholder="Ej: Hoy nos visita Bancolombia para asesoría financiera"
+                placeholder="Ej: Aquí podrás ver las visitas cuando estén disponibles"
                 value={newVisit}
                 onChange={(e) => setNewVisit(e.target.value)}
               />

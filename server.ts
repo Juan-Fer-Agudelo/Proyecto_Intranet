@@ -16,7 +16,7 @@ const initialData = {
   announcements: [],
   heroBgs: [],
   visits: [
-    { id: '1', text: "Hoy nos visita Bancolombia para asesoría en crédito de vivienda" }
+    { id: '1', text: "Aquí podrás ver las visitas cuando estén disponibles." }
   ],
   rhVideo: null,
   partyPhotos: [],
