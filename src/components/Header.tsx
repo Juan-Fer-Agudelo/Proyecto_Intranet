@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/90 backdrop-blur-md text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
+    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/70 backdrop-blur-md text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
       <div className="flex items-center gap-3 md:gap-5">
         <img 
           src={CONFIG.LOGOS[currentCompany]} 
@@ -203,14 +203,22 @@ export const Header: React.FC<HeaderProps> = ({
       <nav 
         ref={dropdownRef}
         className={`
-          fixed md:static top-[60px] md:top-0 right-0 bottom-0 w-[280px] md:w-auto
-          bg-[var(--primary)] md:bg-transparent
-          flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-6
-          p-6 md:p-0 transition-transform duration-300 z-[1600]
+          fixed md:static top-0 right-0 bottom-0 w-[85%] max-w-[320px] md:w-auto
+          bg-white md:bg-transparent
+          flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6
+          p-8 md:p-0 transition-transform duration-500 z-[1600] ease-out
           ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
-          shadow-[-5px_0_20px_rgba(0,0,0,0.2)] md:shadow-none
+          shadow-[-10px_0_30px_rgba(0,0,0,0.15)] md:shadow-none
+          md:pointer-events-auto overflow-y-auto md:overflow-visible
         `}
       >
+        <div className="flex md:hidden items-center justify-between w-full mb-8 pb-4 border-b border-gray-100">
+           <span className="text-[var(--primary)] font-black tracking-tighter text-xl">MENU</span>
+           <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-gray-50 rounded-full text-gray-500">
+             <X size={20} />
+           </button>
+        </div>
+
         {/* Empresas Dropdown */}
         <div className="relative w-full md:w-auto">
           <button 
@@ -411,7 +419,7 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[240px] glass rounded-2xl shadow-2xl p-3 z-[1700]"
+                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[240px] bg-white rounded-2xl shadow-2xl p-3 z-[1700] border border-gray-100"
               >
                 <div className="space-y-1">
                   <button 
@@ -450,9 +458,9 @@ export const Header: React.FC<HeaderProps> = ({
           </AnimatePresence>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto border-t md:border-none border-white/10 pt-6 md:pt-0">
+        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto border-t md:border-none border-gray-100 md:border-transparent pt-6 md:pt-0">
           <button 
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group lg:w-auto w-full"
             onClick={() => {
               navigate('/directorio');
               setIsMobileMenuOpen(false);
@@ -464,7 +472,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Menú Desplegable Galería */}
           <div className="relative w-full md:w-auto">
             <button 
-              className="w-full flex items-center justify-between md:justify-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+              className="w-full flex items-center justify-between md:justify-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group"
               onClick={() => toggleDropdown('GALERIA')}
             >
               <div className="flex items-center gap-2">
@@ -479,7 +487,7 @@ export const Header: React.FC<HeaderProps> = ({
                   initial={{ opacity: 0, scale: 0.95, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  className="md:absolute md:top-full md:left-0 mt-2 w-full md:w-32 glass rounded-xl shadow-2xl p-2 z-[2000]"
+                  className="md:absolute md:top-full md:left-0 mt-2 w-full md:w-40 bg-white rounded-xl shadow-2xl p-2 z-[2000] border border-gray-100"
                 >
                   <button 
                     className="w-full text-left px-4 py-2 hover:bg-blue-50 hover:text-[var(--primary)] rounded-lg text-xs font-bold text-gray-700 transition-colors flex items-center justify-between"
@@ -511,7 +519,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Botón del Boletín Quincenal: Específico por empresa */}
           {bulletinQuincenal?.[currentCompany] && bulletinQuincenal[currentCompany].length > 0 && (
             <button 
-              className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group w-full lg:w-auto"
               onClick={() => {
                 navigate('/boletin-quincenal');
                 setIsMobileMenuOpen(false);
@@ -525,7 +533,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Botón del Boletín Mensual: Global para todos */}
           {bulletinMensual && bulletinMensual.length > 0 && (
             <button 
-              className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all group"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl text-sm font-semibold hover:bg-gray-100 md:hover:bg-white/20 transition-all group w-full lg:w-auto"
               onClick={() => {
                 navigate('/boletin-mensual');
                 setIsMobileMenuOpen(false);
@@ -537,7 +545,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           <button 
-            className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all flex items-center gap-2 md:block group"
+            className="p-2 bg-gray-50 md:bg-white/10 text-gray-700 md:text-white rounded-xl hover:bg-gray-100 md:hover:bg-white/20 transition-all flex items-center gap-2 md:block group w-full lg:w-auto"
             onClick={() => {
               onAdminClick();
               setIsMobileMenuOpen(false);

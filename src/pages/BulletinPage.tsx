@@ -116,9 +116,9 @@ const BulletinPage: React.FC<BulletinPageProps> = ({
                         </button>
                       </div>
                       <iframe 
-                        src={`${img.url}#toolbar=0&navpanes=0&scrollbar=1`} 
+                        src={`${img.url}#toolbar=0&navpanes=0&scrollbar=0`} 
                         title={`Página ${idx + 1}`}
-                        className="w-full h-[85vh] md:h-[90vh] block border-none bg-white"
+                        className="w-full h-[85vh] md:h-[90vh] block border-none bg-white overflow-hidden"
                       />
                     </div>
                   ) : (
