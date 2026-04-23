@@ -104,6 +104,16 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       return true;
     });
 
+  const handleDragEnd = (_: any, info: any) => {
+    if (activeAnnouncements.length <= 1) return;
+    const threshold = 50;
+    if (info.offset.x < -threshold) {
+      setActiveIndex((prev) => (prev + 1) % activeAnnouncements.length);
+    } else if (info.offset.x > threshold) {
+      setActiveIndex((prev) => (prev - 1 + activeAnnouncements.length) % activeAnnouncements.length);
+    }
+  };
+
   // Al cargar, buscar la primera noticia con prioridad y ponerla en el centro
   React.useEffect(() => {
     if (!initialFocusDone && activeAnnouncements.length > 0) {
@@ -160,7 +170,12 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
         onMouseLeave={() => setIsPaused(false)}
       >
         {!isAnyExpanded ? (
-          <div className="w-full relative h-full flex flex-col items-center justify-center">
+          <motion.div 
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={handleDragEnd}
+            className="w-full relative h-full flex flex-col items-center justify-center cursor-grab active:cursor-grabbing pointer-events-auto"
+          >
              <div className="absolute top-0 left-12 z-20">
                 <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-white/20">
                    Noticias Globales
@@ -188,7 +203,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                   />
                 ))}
              </div>
-          </div>
+          </motion.div>
         ) : (
           <div className="flex justify-center w-full max-w-7xl mx-auto pointer-events-auto h-full items-start pt-4">
             {activeAnnouncements.filter(ann => ann.id === expandedId).map(ann => (
@@ -198,9 +213,9 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                className={`w-full ${ann.isPriority ? 'max-w-[950px]' : 'max-w-[700px]'} max-h-[80vh] bg-white rounded-[40px] md:rounded-[56px] shadow-[0_60px_150px_rgba(0,0,0,0.7)] flex flex-col overflow-y-auto no-scrollbar border border-gray-100 relative group`}
+                className={`w-full ${ann.isPriority ? 'max-w-[950px]' : 'max-w-[700px]'} max-h-[85vh] bg-white rounded-[40px] md:rounded-[56px] shadow-[0_60px_150px_rgba(0,0,0,0.7)] flex flex-col overflow-y-auto no-scrollbar border border-gray-100 relative group`}
               >
-                <div className="shrink-0 h-64 md:h-[500px] relative overflow-hidden">
+                <div className="shrink-0 min-h-[300px] md:min-h-[500px] relative overflow-hidden bg-gray-50">
                   {ann.isPriority && (
                     <div className="absolute top-8 left-8 z-10 px-5 py-2 bg-orange-600 text-white text-xs md:text-sm font-black uppercase tracking-[0.2em] rounded-full shadow-2xl border border-orange-400 flex items-center gap-3">
                        <motion.div 
@@ -213,7 +228,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                   )}
                   {ann.image ? (
                     ann.image.startsWith('data:application/pdf') || ann.image.toLowerCase().endsWith('.pdf') ? (
-                      <div className="w-full h-full bg-gray-100 flex flex-col">
+                      <div className="w-full h-[500px] flex flex-col">
                          <div className="bg-white p-6 border-b flex justify-between items-center">
                             <div className="flex items-center gap-4">
                               <FileText className="text-red-500" size={32} />
@@ -238,16 +253,18 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                          />
                       </div>
                     ) : (
-                      <motion.img 
-                        initial={{ scale: 1.1 }}
-                        animate={{ scale: 1 }}
-                        src={ann.image} 
-                        alt="" 
-                        className="w-full h-full object-cover" 
-                      />
+                      <div className="w-full flex justify-center items-center bg-gray-100/50">
+                        <motion.img 
+                          initial={{ scale: 1.05, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          src={ann.image} 
+                          alt="" 
+                          className="w-full h-auto max-h-[70vh] object-contain shadow-sm" 
+                        />
+                      </div>
                     )
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+                    <div className="w-full h-[300px] md:h-[400px] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
                       <div className="w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-3xl">
                         <span className="text-white font-black text-6xl">!</span>
                       </div>
@@ -255,31 +272,31 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                   )}
                   <button 
                     onClick={() => setExpandedId(null)}
-                    className="absolute top-8 right-8 p-4 bg-white/20 hover:bg-white backdrop-blur-2xl rounded-3xl text-white hover:text-gray-900 shadow-2xl transition-all hover:rotate-90 group-hover:scale-110"
+                    className="absolute top-8 right-8 p-4 bg-white/40 hover:bg-white backdrop-blur-2xl rounded-3xl text-gray-900 shadow-2xl transition-all hover:rotate-90 group-hover:scale-110"
                   >
                     <X size={28} />
                   </button>
                 </div>
-                <div className="p-10 md:p-20 pb-32 md:pb-40 bg-white">
-                  <div className="flex items-center gap-4 mb-8">
+                <div className="p-10 md:p-20 bg-white">
+                  <div className="flex items-center gap-4 mb-6">
                     <span className="px-4 py-1.5 bg-blue-600 text-[10px] font-black text-white rounded-full uppercase tracking-[0.2em] shadow-lg shadow-blue-600/20">
                       {ann.company === 'Global' ? 'Corporativo' : ann.company}
                     </span>
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Comunicado Simex</span>
                   </div>
-                  <h4 className="font-black text-gray-900 text-4xl md:text-7xl mb-8 leading-[1] tracking-tighter">
+                  <h4 className="font-black text-gray-900 text-3xl md:text-5xl mb-8 leading-tight tracking-tighter">
                     {ann.title}
                   </h4>
-                  <div className="text-gray-600 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap font-medium">
+                  <div className="text-gray-700 text-lg md:text-xl leading-relaxed whitespace-pre-wrap font-medium opacity-90">
                     {ann.content}
                   </div>
                 </div>
-                <div className="sticky bottom-0 p-10 md:p-20 pt-0 bg-gradient-to-t from-white via-white/80 to-transparent flex justify-end">
+                <div className="sticky bottom-0 p-10 md:p-12 pt-0 bg-gradient-to-t from-white via-white/80 to-transparent flex justify-end">
                   <button 
                     onClick={() => setExpandedId(null)}
-                    className="px-12 py-5 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-[0.3em] shadow-2xl hover:bg-black transition-all hover:scale-105 active:scale-95"
+                    className="px-10 py-4 bg-gray-900 text-white rounded-xl font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:bg-black transition-all hover:scale-105 active:scale-95"
                   >
-                    Cerrar Comunicado
+                    Cerrar Detalle
                   </button>
                 </div>
               </motion.div>
