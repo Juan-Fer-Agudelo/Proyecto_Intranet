@@ -534,6 +534,8 @@ export default function App() {
           setBulletinQuincenal={setBulletinQuincenal}
           bulletinMensual={bulletinMensual}
           setBulletinMensual={setBulletinMensual}
+          networkConfig={networkConfig}
+          setNetworkConfig={setNetworkConfig}
           saveData={saveData}
           showAdminModal={showAdminModal}
           setShowAdminModal={setShowAdminModal}
@@ -562,6 +564,8 @@ export default function App() {
           setBulletinQuincenal={setBulletinQuincenal}
           bulletinMensual={bulletinMensual}
           setBulletinMensual={setBulletinMensual}
+          networkConfig={networkConfig}
+          setNetworkConfig={setNetworkConfig}
           saveData={saveData}
           showAdminModal={showAdminModal}
           setShowAdminModal={setShowAdminModal}
