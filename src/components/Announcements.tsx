@@ -165,7 +165,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       </AnimatePresence>
 
       <div 
-        className={`fixed inset-x-0 bottom-4 md:bottom-12 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-20 md:top-24 flex items-start justify-center p-4 md:p-8 z-[1400]' : 'z-[1450] h-[350px] md:h-[400px]'}`}
+        className={`fixed inset-x-0 bottom-2 md:bottom-4 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-20 md:top-24 flex items-start justify-center p-4 md:p-8 z-[1400]' : 'z-[1450] h-[350px] md:h-[400px]'}`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
