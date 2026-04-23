@@ -67,6 +67,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   bulletinMensual,
   setBulletinMensual,
   addAnnouncement,
+  setPartyPhotos,
   togglePriority,
   networkConfig,
   setNetworkConfig
