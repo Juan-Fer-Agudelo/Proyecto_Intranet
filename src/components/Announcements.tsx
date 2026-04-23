@@ -9,56 +9,78 @@ interface AnnouncementsProps {
   currentCompany: CompanyCode;
 }
 
-const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void }> = ({ ann, onClick }) => {
+const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void; position: number }> = ({ ann, onClick, position }) => {
+  // Calculamos escala, opacidad y posición 3D basada en la posición relativa al centro (0)
+  const isCenter = position === 0;
+  const isSide = Math.abs(position) === 1;
+  const isFar = Math.abs(position) > 1;
+
+  const scale = isCenter ? 1 : isSide ? 0.75 : 0.55;
+  const opacity = isCenter ? 1 : isSide ? 0.5 : 0.2;
+  const zIndex = 100 - Math.abs(position) * 10;
+  const xOffset = position * (window.innerWidth < 768 ? 130 : 200);
+  const rotateY = position * -35; 
+
   return (
     <motion.div 
-      whileHover={{ y: -10, scale: 1.02 }}
-      onClick={onClick}
-      className={`w-[280px] md:w-[320px] h-[350px] md:h-[400px] flex-shrink-0 bg-white rounded-[32px] shadow-2xl overflow-hidden cursor-pointer border relative transition-shadow duration-300 ${
-        ann.isPriority ? 'border-orange-500/50 shadow-orange-500/20' : 'border-gray-100'
+      initial={false}
+      animate={{ 
+        scale, 
+        opacity, 
+        x: xOffset,
+        zIndex,
+        rotateY,
+        filter: isCenter ? 'blur(0px)' : 'blur(2px)'
+      }}
+      transition={{ type: "spring", stiffness: 200, damping: 25 }}
+      whileHover={isCenter ? { scale: 1.05, y: -10 } : {}}
+      onClick={isCenter ? onClick : undefined}
+      className={`absolute w-[200px] md:w-[240px] h-[240px] md:h-[280px] bg-white rounded-[32px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
+        ann.isPriority ? 'border-orange-500 shadow-orange-500/30' : 'border-gray-100 shadow-black/10'
       }`}
+      style={{ perspective: "1000px" }}
     >
-      {ann.isPriority && (
+      {ann.isPriority && isCenter && (
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: [1, 1.1, 1], opacity: 1 }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="absolute top-4 left-4 z-10 px-3 py-1 bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg border border-orange-400"
+          className="absolute top-3 left-3 z-10 px-2 py-0.5 bg-orange-600 text-white text-[8px] font-black uppercase tracking-widest rounded-full shadow-lg border border-orange-400"
         >
           Prioridad
         </motion.div>
       )}
-      <div className="h-44 md:h-56 overflow-hidden bg-gray-50/50">
+      <div className="h-28 md:h-36 overflow-hidden bg-gray-50/50">
         {ann.image ? (
           ann.image.startsWith('data:application/pdf') || ann.image.toLowerCase().endsWith('.pdf') ? (
             <div className="w-full h-full flex flex-col items-center justify-center bg-red-50 gap-2">
-              <FileText className="text-red-500" size={48} />
-              <span className="text-xs font-black text-red-600 uppercase tracking-widest">Documento PDF</span>
+              <FileText className="text-red-500" size={32} />
+              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">PDF</span>
             </div>
           ) : (
             <img src={ann.image} alt="" className="w-full h-full object-cover" />
           )
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <span className="text-blue-600 font-black text-2xl">!</span>
-            </div>
+            <span className="text-blue-600 font-extrabold text-3xl">!</span>
           </div>
         )}
       </div>
-      <div className="p-6 md:p-8 flex flex-col justify-between h-[calc(100%-11rem)] md:h-[calc(100%-14rem)] bg-white">
+      <div className="p-4 md:p-6 flex flex-col justify-between h-[calc(100%-7rem)] md:h-[calc(100%-9rem)] bg-white">
         <div>
-          <h4 className="font-black text-gray-900 text-sm md:text-lg mb-2 line-clamp-2 leading-tight tracking-tight uppercase">
+          <h4 className="font-black text-gray-900 text-[10px] md:text-sm mb-1 line-clamp-2 leading-tight uppercase tracking-tight">
             {ann.title}
           </h4>
-          <p className="text-gray-600 text-xs md:text-sm line-clamp-3 leading-relaxed opacity-70">
+          <p className="text-gray-500 text-[9px] md:text-[11px] line-clamp-2 leading-tight opacity-80">
             {ann.content}
           </p>
         </div>
-        <div className="flex items-center gap-2 mt-4">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ver más detalle</span>
-        </div>
+        {isCenter && (
+          <div className="flex items-center gap-1.5 mt-2 overflow-hidden">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></div>
+            <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Abrir Noticia</span>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -66,10 +88,8 @@ const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void }> = ({ an
 
 export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, currentCompany }) => {
   const [expandedId, setExpandedId] = React.useState<string | number | null>(null);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const { scrollXProgress } = useScroll({
-    container: containerRef
-  });
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
 
   const activeAnnouncements = announcements
     .filter(a => {
@@ -83,7 +103,30 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       return true;
     });
 
+  // Auto-play interval
+  React.useEffect(() => {
+    if (activeAnnouncements.length <= 1 || isPaused || expandedId) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % activeAnnouncements.length);
+    }, 4500);
+
+    return () => clearInterval(interval);
+  }, [activeAnnouncements.length, isPaused, expandedId]);
+
   const isAnyExpanded = expandedId !== null;
+
+  // Calculamos la posición visual de cada tarjeta para el loop infinito
+  const getRelativePosition = (itemIndex: number) => {
+    const total = activeAnnouncements.length;
+    let position = itemIndex - activeIndex;
+
+    // Manejo de loop infinito suave
+    if (position > total / 2) position -= total;
+    if (position < -total / 2) position += total;
+
+    return position;
+  };
 
   return (
     <>
@@ -100,34 +143,38 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       </AnimatePresence>
 
       <div 
-        className={`fixed inset-x-0 bottom-8 md:bottom-20 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-4 md:p-24 z-[1400]' : 'z-[1450] h-[450px] md:h-[550px]'}`}
+        className={`fixed inset-x-0 bottom-4 md:bottom-12 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-4 md:p-24 z-[1400]' : 'z-[1450] h-[350px] md:h-[400px]'}`}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
       >
         {!isAnyExpanded ? (
-          <div className="w-full relative h-full flex flex-col justify-end pointer-events-auto">
+          <div className="w-full relative h-full flex flex-col items-center justify-center">
              <div className="absolute top-0 left-12 z-20">
-                <span className="px-4 py-2 bg-white/10 backdrop-blur text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full border border-white/20">
-                   Noticias del Grupo
+                <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-white/20">
+                   Noticias Globales
                 </span>
              </div>
              
-             <div 
-               ref={containerRef}
-               className="flex gap-8 overflow-x-auto py-12 px-12 md:px-24 no-scrollbar snap-x snap-mandatory items-center h-full"
-               style={{ scrollBehavior: 'smooth' }}
-             >
-                {activeAnnouncements.map((ann) => (
-                  <div key={ann.id} className="snap-center shrink-0">
-                    <CarouselCard ann={ann} onClick={() => setExpandedId(ann.id)} />
-                  </div>
+             <div className="relative w-full h-full flex items-center justify-center overflow-visible">
+                {activeAnnouncements.map((ann, index) => (
+                    <CarouselCard 
+                      key={ann.id} 
+                      ann={ann} 
+                      position={getRelativePosition(index)} 
+                      onClick={() => setExpandedId(ann.id)} 
+                    />
                 ))}
              </div>
-             
-             {/* Scroll Progress Bar */}
-             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/10 rounded-full overflow-hidden">
-                <motion.div 
-                   className="h-full bg-white/50 w-full origin-left"
-                   style={{ scaleX: scrollXProgress }}
-                />
+
+             {/* Controles rápidos / Indicadores */}
+             <div className="absolute bottom-4 flex gap-2 z-30 pointer-events-auto">
+                {activeAnnouncements.map((_, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setActiveIndex(idx)}
+                    className={`w-6 h-1 rounded-full transition-all duration-300 ${activeIndex === idx ? 'bg-white w-10' : 'bg-white/20'}`}
+                  />
+                ))}
              </div>
           </div>
         ) : (
