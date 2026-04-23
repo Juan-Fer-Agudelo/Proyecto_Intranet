@@ -100,7 +100,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       </AnimatePresence>
 
       <div 
-        className={`fixed inset-x-0 bottom-8 md:bottom-20 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-4 md:p-24 z-[2000]' : 'z-[1450] h-[450px] md:h-[550px]'}`}
+        className={`fixed inset-x-0 bottom-8 md:bottom-20 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-4 md:p-24 z-[1400]' : 'z-[1450] h-[450px] md:h-[550px]'}`}
       >
         {!isAnyExpanded ? (
           <div className="w-full relative h-full flex flex-col justify-end pointer-events-auto">
@@ -139,7 +139,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                className={`w-full ${ann.isPriority ? 'max-w-[950px]' : 'max-w-[700px]'} max-h-[90vh] bg-white rounded-[40px] md:rounded-[56px] shadow-[0_60px_150px_rgba(0,0,0,0.7)] flex flex-col overflow-y-auto custom-scrollbar border border-gray-100 relative group`}
+                className={`w-full ${ann.isPriority ? 'max-w-[950px]' : 'max-w-[700px]'} max-h-[85vh] bg-white rounded-[40px] md:rounded-[56px] shadow-[0_60px_150px_rgba(0,0,0,0.7)] flex flex-col overflow-y-auto no-scrollbar border border-gray-100 relative group`}
               >
                 <div className="shrink-0 h-64 md:h-[500px] relative overflow-hidden">
                   {ann.isPriority && (
