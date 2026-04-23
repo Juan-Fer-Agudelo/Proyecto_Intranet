@@ -210,7 +210,7 @@ function IntranetContent({
   }, [visits]);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900 bg-[#f8fafc]">
       <Header 
         currentCompany={currentCompany}
         setCurrentCompany={setCurrentCompany}
@@ -245,10 +245,10 @@ function IntranetContent({
       </main>
 
       {/* Visit Banner - Minimalist Corporate Footer */}
-      <footer className="z-20 bg-black py-4 border-t border-white/5">
+      <footer className="z-20 bg-white/95 backdrop-blur-md py-4 border-t border-gray-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         <div className="container-custom flex items-center justify-between">
-          <div className="flex items-center gap-3 text-white/40 font-bold text-[10px] uppercase tracking-widest shrink-0">
-            <Calendar size={14} className="text-white/30" />
+          <div className="flex items-center gap-3 text-gray-400 font-bold text-[10px] uppercase tracking-widest shrink-0">
+            <Calendar size={14} className="text-blue-500" />
             <span>Visitas</span>
           </div>
 
@@ -263,12 +263,12 @@ function IntranetContent({
                   transition={{ duration: 0.4 }}
                   className="absolute text-center px-4"
                 >
-                  <span className="text-white text-[12px] md:text-sm font-medium tracking-wide">
+                  <span className="text-gray-900 text-[12px] md:text-sm font-black tracking-wide">
                     {visits[currentVisitIndex]?.text}
                   </span>
                 </motion.div>
               ) : (
-                <div className="text-white/10 italic text-[10px] tracking-widest uppercase">Aquí podrás ver las visitas cuando estén disponibles</div>
+                <div className="text-gray-300 italic text-[10px] tracking-widest uppercase font-bold">Aquí podrás ver las visitas cuando estén disponibles</div>
               )}
             </AnimatePresence>
           </div>

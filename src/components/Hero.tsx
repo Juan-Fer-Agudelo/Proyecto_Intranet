@@ -32,7 +32,7 @@ export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => 
         />
       </AnimatePresence>
 
-      <div className="absolute inset-0 bg-black/60 z-[1]" />
+      <div className="absolute inset-0 bg-black/20 z-[1]" />
       
       <div className="relative z-10 w-full container-custom flex flex-col gap-8 items-center pt-8 md:pt-16">
         {news.length > 0 ? (
