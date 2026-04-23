@@ -9,15 +9,23 @@ interface AnnouncementsProps {
   currentCompany: CompanyCode;
 }
 
-const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void; position: number }> = ({ ann, onClick, position }) => {
+const CarouselCard: React.FC<{ 
+  ann: Announcement; 
+  onClick: () => void; 
+  onSelect: () => void;
+  position: number 
+}> = ({ ann, onClick, onSelect, position }) => {
   // Calculamos escala, opacidad y posición 3D basada en la posición relativa al centro (0)
   const isCenter = position === 0;
   const isSide = Math.abs(position) === 1;
   const isFar = Math.abs(position) > 1;
 
-  const scale = isCenter ? 1 : isSide ? 0.75 : 0.55;
+  // Si tiene prioridad, se ve un 20% más grande que una normal
+  const priorityMultiplier = ann.isPriority ? 1.25 : 1;
+
+  const scale = (isCenter ? 1 : isSide ? 0.75 : 0.55) * priorityMultiplier;
   const opacity = isCenter ? 1 : isSide ? 0.5 : 0.2;
-  const zIndex = 100 - Math.abs(position) * 10;
+  const zIndex = 100 - Math.abs(position) * 10 + (ann.isPriority ? 5 : 0);
   const xOffset = position * (window.innerWidth < 768 ? 130 : 200);
   const rotateY = position * -35; 
 
@@ -33,10 +41,10 @@ const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void; position:
         filter: isCenter ? 'blur(0px)' : 'blur(2px)'
       }}
       transition={{ type: "spring", stiffness: 200, damping: 25 }}
-      whileHover={{ scale: isCenter ? 1.25 : scale * 1.2, y: -20, zIndex: 200 }}
-      onClick={isCenter ? onClick : undefined}
+      whileHover={{ scale: scale * 1.15, y: -20, zIndex: 200 }}
+      onClick={isCenter ? onClick : onSelect}
       className={`absolute w-[110px] md:w-[140px] h-[130px] md:h-[160px] bg-white rounded-[20px] md:rounded-[28px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
-        ann.isPriority ? 'border-orange-500 shadow-orange-500/30' : 'border-gray-100 shadow-black/10'
+        ann.isPriority ? 'border-orange-500 shadow-orange-500/30 ring-4 ring-orange-500/10' : 'border-gray-100 shadow-black/10'
       }`}
       style={{ perspective: "1000px" }}
     >
@@ -189,6 +197,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                       ann={ann} 
                       position={getRelativePosition(index)} 
                       onClick={() => setExpandedId(ann.id)} 
+                      onSelect={() => setActiveIndex(index)}
                     />
                 ))}
              </div>
