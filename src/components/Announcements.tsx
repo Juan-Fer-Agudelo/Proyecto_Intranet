@@ -90,6 +90,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
   const [expandedId, setExpandedId] = React.useState<string | number | null>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
+  const [initialFocusDone, setInitialFocusDone] = React.useState(false);
 
   const activeAnnouncements = announcements
     .filter(a => {
@@ -102,6 +103,17 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       if (end && now > end) return false;
       return true;
     });
+
+  // Al cargar, buscar la primera noticia con prioridad y ponerla en el centro
+  React.useEffect(() => {
+    if (!initialFocusDone && activeAnnouncements.length > 0) {
+      const priorityIndex = activeAnnouncements.findIndex(a => a.isPriority);
+      if (priorityIndex !== -1) {
+        setActiveIndex(priorityIndex);
+      }
+      setInitialFocusDone(true);
+    }
+  }, [activeAnnouncements, initialFocusDone]);
 
   // Auto-play interval
   React.useEffect(() => {
@@ -143,7 +155,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       </AnimatePresence>
 
       <div 
-        className={`fixed inset-x-0 bottom-4 md:bottom-12 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-0 flex items-center justify-center p-4 md:p-24 z-[1400]' : 'z-[1450] h-[350px] md:h-[400px]'}`}
+        className={`fixed inset-x-0 bottom-4 md:bottom-12 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-20 md:top-24 flex items-start justify-center p-4 md:p-8 z-[1400]' : 'z-[1450] h-[350px] md:h-[400px]'}`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
@@ -178,7 +190,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
              </div>
           </div>
         ) : (
-          <div className="flex justify-center w-full max-w-7xl mx-auto pointer-events-auto h-full items-center">
+          <div className="flex justify-center w-full max-w-7xl mx-auto pointer-events-auto h-full items-start pt-4">
             {activeAnnouncements.filter(ann => ann.id === expandedId).map(ann => (
               <motion.div 
                 key={`expanded-${ann.id}`}
@@ -186,7 +198,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
                 initial={{ opacity: 0, scale: 0.9, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 40 }}
-                className={`w-full ${ann.isPriority ? 'max-w-[950px]' : 'max-w-[700px]'} max-h-[85vh] bg-white rounded-[40px] md:rounded-[56px] shadow-[0_60px_150px_rgba(0,0,0,0.7)] flex flex-col overflow-y-auto no-scrollbar border border-gray-100 relative group`}
+                className={`w-full ${ann.isPriority ? 'max-w-[950px]' : 'max-w-[700px]'} max-h-[80vh] bg-white rounded-[40px] md:rounded-[56px] shadow-[0_60px_150px_rgba(0,0,0,0.7)] flex flex-col overflow-y-auto no-scrollbar border border-gray-100 relative group`}
               >
                 <div className="shrink-0 h-64 md:h-[500px] relative overflow-hidden">
                   {ann.isPriority && (
