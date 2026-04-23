@@ -35,7 +35,7 @@ const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void; position:
       transition={{ type: "spring", stiffness: 200, damping: 25 }}
       whileHover={{ scale: isCenter ? 1.25 : scale * 1.2, y: -20, zIndex: 200 }}
       onClick={isCenter ? onClick : undefined}
-      className={`absolute w-[140px] md:w-[180px] h-[160px] md:h-[200px] bg-white rounded-[24px] md:rounded-[32px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
+      className={`absolute w-[110px] md:w-[140px] h-[130px] md:h-[160px] bg-white rounded-[20px] md:rounded-[28px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
         ann.isPriority ? 'border-orange-500 shadow-orange-500/30' : 'border-gray-100 shadow-black/10'
       }`}
       style={{ perspective: "1000px" }}
@@ -45,40 +45,40 @@ const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void; position:
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: [1, 1.1, 1], opacity: 1 }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="absolute top-3 left-3 z-10 px-2 py-0.5 bg-orange-600 text-white text-[8px] font-black uppercase tracking-widest rounded-full shadow-lg border border-orange-400"
+          className="absolute top-2 left-2 z-10 px-1.5 py-0.5 bg-orange-600 text-white text-[7px] font-black uppercase tracking-widest rounded-full shadow-lg border border-orange-400"
         >
           Prioridad
         </motion.div>
       )}
-      <div className="h-28 md:h-36 overflow-hidden bg-gray-50/50">
+      <div className="h-16 md:h-24 overflow-hidden bg-gray-50/50">
         {ann.image ? (
           ann.image.startsWith('data:application/pdf') || ann.image.toLowerCase().endsWith('.pdf') ? (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-red-50 gap-2">
-              <FileText className="text-red-500" size={32} />
-              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">PDF</span>
+            <div className="w-full h-full flex flex-col items-center justify-center bg-red-50 gap-1">
+              <FileText className="text-red-500" size={20} />
+              <span className="text-[8px] font-black text-red-600 uppercase tracking-widest">PDF</span>
             </div>
           ) : (
             <img src={ann.image} alt="" className="w-full h-full object-cover" />
           )
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-            <span className="text-blue-600 font-extrabold text-3xl">!</span>
+            <span className="text-blue-600 font-extrabold text-xl">!</span>
           </div>
         )}
       </div>
-      <div className="p-4 md:p-6 flex flex-col justify-between h-[calc(100%-7rem)] md:h-[calc(100%-9rem)] bg-white">
+      <div className="p-2 md:p-4 flex flex-col justify-between h-[calc(100%-4rem)] md:h-[calc(100%-6rem)] bg-white">
         <div>
-          <h4 className="font-black text-gray-900 text-[10px] md:text-sm mb-1 line-clamp-2 leading-tight uppercase tracking-tight">
+          <h4 className="font-black text-gray-900 text-[8px] md:text-[11px] mb-0.5 line-clamp-1 leading-tight uppercase tracking-tight">
             {ann.title}
           </h4>
-          <p className="text-gray-500 text-[9px] md:text-[11px] line-clamp-2 leading-tight opacity-80">
+          <p className="text-gray-500 text-[7px] md:text-[9px] line-clamp-2 leading-tight opacity-80">
             {ann.content}
           </p>
         </div>
         {isCenter && (
-          <div className="flex items-center gap-1.5 mt-2 overflow-hidden">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></div>
-            <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Abrir Noticia</span>
+          <div className="flex items-center gap-1 mt-1 overflow-hidden">
+            <div className="w-1 h-1 rounded-full bg-blue-600 animate-pulse"></div>
+            <span className="text-[7px] font-black text-blue-600 uppercase tracking-widest">Ver</span>
           </div>
         )}
       </div>
