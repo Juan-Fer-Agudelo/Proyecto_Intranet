@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Announcement, Video, PartyPhoto, Visit } from '../types';
+import { Announcement, Video, PartyPhoto, Visit, NetworkConfig } from '../types';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -35,6 +35,8 @@ interface AdminModalProps {
   setBulletinMensual: (val: any[] | ((prev: any[]) => any[])) => void;
   addAnnouncement: (ann: Omit<Announcement, 'id' | 'active'>) => void;
   togglePriority: (id: string | number) => void;
+  networkConfig: NetworkConfig;
+  setNetworkConfig: (val: NetworkConfig | ((prev: NetworkConfig) => NetworkConfig)) => void;
 }
 
 /**
@@ -65,8 +67,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   bulletinMensual,
   setBulletinMensual,
   addAnnouncement,
-  setPartyPhotos,
-  togglePriority
+  togglePriority,
+  networkConfig,
+  setNetworkConfig
 }) => {
   // --- ESTADOS LOCALES PARA FORMULARIOS ---
   const [newAnn, setNewAnn] = useState<{ 
@@ -872,6 +875,40 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 </div>
               </div>
             )}
+          </section>
+
+          {/* Configuración de Red (n8n) */}
+          <section className="space-y-4 p-6 bg-slate-900 rounded-[2rem] text-white">
+            <h3 className="text-lg font-black flex items-center gap-2">
+              <span className="w-8 h-8 bg-white text-slate-900 rounded-lg flex items-center justify-center text-sm">9</span>
+              Configuración de Microservicios (n8n)
+            </h3>
+            
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-slate-400">URL del Servidor n8n (Interna o Dominio):</label>
+                <input 
+                  type="text"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 outline-none focus:border-blue-400 text-white font-bold text-sm"
+                  placeholder="Ej: http://192.101.2.50:5678"
+                  value={networkConfig.n8nUrl}
+                  onChange={e => setNetworkConfig({...networkConfig, n8nUrl: e.target.value})}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-slate-400">Credenciales Basic Auth (Usuario:Contraseña):</label>
+                <input 
+                  type="text"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 outline-none focus:border-blue-400 text-white font-bold text-sm"
+                  placeholder="Ej: intranet:intranet"
+                  value={networkConfig.n8nAuth}
+                  onChange={e => setNetworkConfig({...networkConfig, n8nAuth: e.target.value})}
+                />
+              </div>
+              <p className="text-[10px] text-slate-400 italic">
+                * Nota: Si cambias el DNS o la IP de n8n, actualízala aquí para que el Directorio y el Login funcionen.
+              </p>
+            </div>
           </section>
 
           <div className="pt-6 border-t">

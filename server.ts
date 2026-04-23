@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
 import cors from 'cors';
+import axios from 'axios';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,7 +28,12 @@ const initialData = {
     PL: []
   },
   // Boletín Mensual: Global para todas las empresas
-  bulletinMensual: []
+  bulletinMensual: [],
+  // Configuración de red para microservicios
+  config: {
+    n8nUrl: 'http://192.101.2.50:5678',
+    n8nAuth: 'intranet:intranet'
+  }
 };
 
 // Ensure data file exists and is valid
@@ -64,6 +70,67 @@ async function startServer() {
   app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
   // --- RUTAS DE LA API ---
+  
+  /**
+   * Proxy para el Directorio: 
+   * Permite que el servidor (que corre en la red interna) acceda al webhook 
+   * de n8n saltándose las restricciones de contenido mixto (HTTPS -> HTTP) del navegador.
+   */
+  app.get('/api/proxy/directorio', async (req, res) => {
+    try {
+      const data = await fs.readJson(DATA_FILE).catch(() => initialData);
+      const config = data.config || initialData.config;
+      
+      console.log(`--- PROXY DIRECTORIO: Conectando a ${config.n8nUrl} ---`);
+      
+      const response = await axios.get(`${config.n8nUrl}/webhook/directorio`, {
+        headers: {
+          'Authorization': 'Basic ' + Buffer.from(config.n8nAuth).toString('base64')
+        },
+        timeout: 10000
+      });
+      console.log('--- PROXY DIRECTORIO: Éxito ---');
+      res.json(response.data);
+    } catch (error: any) {
+      console.error('Error en proxy directorio:', error.message);
+      const data = await fs.readJson(DATA_FILE).catch(() => initialData);
+      const config = data.config || initialData.config;
+
+      if (error.code === 'ECONNABORTED') {
+        res.status(504).json({ error: `Tiempo de espera agotado conectando a ${config.n8nUrl}.` });
+      } else if (error.code === 'ECONNREFUSED') {
+        res.status(502).json({ error: `Conexión rechazada en ${config.n8nUrl}. Revisa que n8n esté activo.` });
+      } else {
+        res.status(500).json({ error: `Error en la IP/DNS ${config.n8nUrl}: ${error.message}` });
+      }
+    }
+  });
+
+  /**
+   * Proxy para la Autenticación:
+   * Redirige las peticiones de login al microservicio local.
+   */
+  app.post('/api/proxy/login', async (req, res) => {
+    try {
+      const data = await fs.readJson(DATA_FILE).catch(() => initialData);
+      const config = data.config || initialData.config;
+
+      console.log(`--- PROXY LOGIN: Conectando a ${config.n8nUrl} ---`);
+      const response = await axios.post(`${config.n8nUrl}/webhook/auth/login`, req.body, {
+        headers: {
+          'Authorization': 'Basic ' + Buffer.from(config.n8nAuth).toString('base64')
+        },
+        timeout: 10000
+      });
+      console.log('--- PROXY LOGIN: Éxito ---');
+      res.json(response.data);
+    } catch (error: any) {
+      console.error('Error en proxy login:', error.message);
+      const data = await fs.readJson(DATA_FILE).catch(() => initialData);
+      const config = data.config || initialData.config;
+      res.status(500).json({ error: `Error en ${config.n8nUrl}: ${error.message}` });
+    }
+  });
 
   /**
    * GET /api/data: Retorna todos los datos almacenados.

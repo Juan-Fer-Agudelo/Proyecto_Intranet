@@ -47,16 +47,12 @@ export default function DirectoryPage() {
     setIsLoading(true);
     setError(null);
     try {
-      // URL del Webhook de n8n configurado en la red interna
-      const response = await fetch('http://192.101.2.50:5678/webhook/directorio', {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Basic ' + btoa('intranet:intranet') // Autenticación básica codificada en Base64
-        }
-      });
+      // Usamos el proxy del servidor para evitar bloqueos por contenido mixto (HTTPS intentando acceder a HTTP)
+      const response = await fetch('/api/proxy/directorio');
 
       if (!response.ok) {
-        throw new Error('Error al conectar con el servidor de directorio.');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Error al conectar con el servidor de directorio.');
       }
 
       const data = await response.json();

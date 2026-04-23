@@ -93,3 +93,11 @@ export interface BulletinImage {
   url: string;
   order: number;
 }
+
+/**
+ * Configuración de red para servicios internos.
+ */
+export interface NetworkConfig {
+  n8nUrl: string;
+  n8nAuth: string;
+}

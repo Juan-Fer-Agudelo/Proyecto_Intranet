@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Routes, Route, useParams, useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { CONFIG } from './constants/config';
-import { Announcement, Video as VideoType, NewsItem, CompanyCode, Module, PartyPhoto, Visit } from './types';
+import { Announcement, Video as VideoType, NewsItem, CompanyCode, Module, PartyPhoto, Visit, NetworkConfig } from './types';
 
 // Components
 import { Header } from './components/Header';
@@ -44,6 +44,8 @@ function IntranetContent({
   setBulletinQuincenal,
   bulletinMensual,
   setBulletinMensual,
+  networkConfig,
+  setNetworkConfig,
   saveData,
   showAdminModal,
   setShowAdminModal
@@ -98,12 +100,11 @@ function IntranetContent({
     setLoginMessage({ text: 'Validando credenciales...', color: 'text-blue-600' });
 
     try {
-      // Consumo del servicio de autenticación proporcionado por el jefe
-      const response = await fetch('http://192.101.2.50:5678/webhook/auth/login', {
+      // Consumo del servicio de autenticación a través del proxy del servidor
+      const response = await fetch('/api/proxy/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + btoa('intranet:intranet')
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           username: username.trim(),
@@ -121,15 +122,16 @@ function IntranetContent({
         setUsername('');
         setLoginMessage({ text: '', color: '' });
       } else {
+        // Mostramos el error específico que viene del proxy (ej. error de conexión a la IP interna)
         setLoginMessage({ 
-          text: data.message || 'Usuario o contraseña incorrectos', 
+          text: data.error || data.message || 'Usuario o contraseña incorrectos', 
           color: 'text-red-500' 
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error de autenticación:', error);
       setLoginMessage({ 
-        text: 'No se pudo conectar con el servidor de autenticación local. Verifique su red.', 
+        text: `Error de red: No se pudo contactar al servidor. (${error.message})`, 
         color: 'text-red-600' 
       });
     }
@@ -343,6 +345,14 @@ function IntranetContent({
               return newValue;
             });
           }}
+          networkConfig={networkConfig}
+          setNetworkConfig={(val: any) => {
+            setNetworkConfig((prev) => {
+              const newValue = typeof val === 'function' ? val(prev) : val;
+              saveData({ config: newValue });
+              return newValue;
+            });
+          }}
         />
 
         <VideosModal 
@@ -400,6 +410,7 @@ export default function App() {
   const [partyPhotos, setPartyPhotos] = useState<PartyPhoto[]>([]);
   const [bulletinQuincenal, setBulletinQuincenal] = useState<any>({ SX: [], SO: [], PL: [] });
   const [bulletinMensual, setBulletinMensual] = useState<any[]>([]);
+  const [networkConfig, setNetworkConfig] = useState<NetworkConfig>({ n8nUrl: '', n8nAuth: '' });
   
   // --- COMUNICACIÓN CON EL BACKEND ---
 
@@ -420,6 +431,7 @@ export default function App() {
       setPartyPhotos(data.partyPhotos || []);
       setBulletinQuincenal(data.bulletinQuincenal || { SX: [], SO: [], PL: [] });
       setBulletinMensual(data.bulletinMensual || []);
+      setNetworkConfig(data.config || { n8nUrl: 'http://192.101.2.50:5678', n8nAuth: 'intranet:intranet' });
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
