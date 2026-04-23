@@ -453,16 +453,16 @@ export default function App() {
       });
       
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+        throw new Error(`Error del Servidor (${response.status}): ${response.statusText}`);
       }
       
       const result = await response.json();
       if (result.success) {
         console.log('--- Datos guardados exitosamente en el servidor ---');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error crítico al guardar datos en el servidor:', error);
-      alert('Error al guardar los cambios en el servidor compartido. Es posible que el archivo sea demasiado grande o no haya conexión.');
+      alert(`No se pudo guardar: ${error.message}\n\nPosibles causas:\n1. El archivo es demasiado pesado para la red.\n2. Se perdió la conexión con el servidor.\n3. El tamaño excede el límite permitido por el proxy (Nginx).`);
     }
   };
 
