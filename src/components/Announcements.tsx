@@ -33,9 +33,9 @@ const CarouselCard: React.FC<{ ann: Announcement; onClick: () => void; position:
         filter: isCenter ? 'blur(0px)' : 'blur(2px)'
       }}
       transition={{ type: "spring", stiffness: 200, damping: 25 }}
-      whileHover={isCenter ? { scale: 1.05, y: -10 } : {}}
+      whileHover={{ scale: isCenter ? 1.25 : scale * 1.2, y: -20, zIndex: 200 }}
       onClick={isCenter ? onClick : undefined}
-      className={`absolute w-[200px] md:w-[240px] h-[240px] md:h-[280px] bg-white rounded-[32px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
+      className={`absolute w-[140px] md:w-[180px] h-[160px] md:h-[200px] bg-white rounded-[24px] md:rounded-[32px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
         ann.isPriority ? 'border-orange-500 shadow-orange-500/30' : 'border-gray-100 shadow-black/10'
       }`}
       style={{ perspective: "1000px" }}
