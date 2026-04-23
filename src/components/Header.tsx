@@ -399,19 +399,19 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Sitios Web Dropdown */}
-        <div className="relative w-full md:w-auto">
+        <div className="relative w-full md:w-auto shrink-0">
           <button 
             className={`
-              w-full md:w-auto px-5 py-2.5 rounded-xl text-sm font-black transition-all flex items-center justify-between md:justify-center gap-2
+              w-full md:w-auto px-3 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-between md:justify-center gap-2
               bg-gray-50 md:bg-white/10 text-gray-700 md:text-white hover:bg-gray-100 md:hover:bg-white/20 border border-gray-100 md:border-white/20
             `}
             onClick={() => toggleDropdown('SITIOS')}
           >
             <div className="flex items-center gap-2">
-              <Globe size={18} />
+              <Globe size={16} />
               <span>Sitios Web</span>
             </div>
-            <ChevronDown size={16} className={`transition-transform duration-300 ${activeDropdown === 'SITIOS' ? 'rotate-180' : ''}`} />
+            <ChevronDown size={14} className={`transition-transform duration-300 ${activeDropdown === 'SITIOS' ? 'rotate-180' : ''}`} />
           </button>
 
           <AnimatePresence>
@@ -420,11 +420,11 @@ export const Header: React.FC<HeaderProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[240px] bg-white rounded-2xl shadow-2xl p-3 z-[1700] border border-gray-100"
+                className="md:absolute md:top-full md:left-0 mt-3 w-full md:w-[350px] bg-white rounded-2xl shadow-2xl p-2 z-[1700] border border-gray-100"
               >
-                <div className="space-y-1">
+                <div className="flex gap-2">
                   <button 
-                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
+                    className="flex-1 flex items-center justify-center p-2.5 rounded-xl text-[10px] font-black text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all border border-gray-50 uppercase tracking-tighter"
                     onClick={() => {
                       window.open('https://www.simex.com.co/', '_blank');
                       setActiveDropdown(null);
@@ -434,7 +434,7 @@ export const Header: React.FC<HeaderProps> = ({
                     Simex
                   </button>
                   <button 
-                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
+                    className="flex-1 flex items-center justify-center p-2.5 rounded-xl text-[10px] font-black text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all border border-gray-50 uppercase tracking-tighter"
                     onClick={() => {
                       window.open('https://www.soinco-sas.com/', '_blank');
                       setActiveDropdown(null);
@@ -444,7 +444,7 @@ export const Header: React.FC<HeaderProps> = ({
                     Soinco
                   </button>
                   <button 
-                    className="w-full flex items-center justify-between p-3 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all"
+                    className="flex-1 flex items-center justify-center p-2.5 rounded-xl text-[10px] font-black text-gray-700 hover:bg-blue-50 hover:text-[var(--primary)] transition-all border border-gray-50 uppercase tracking-tighter"
                     onClick={() => {
                       window.open('https://plastinovo.com/', '_blank');
                       setActiveDropdown(null);

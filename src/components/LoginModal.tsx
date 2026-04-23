@@ -54,6 +54,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <label className="block text-xs font-black text-gray-500 uppercase tracking-widest">Nombre de Usuario</label>
             <input 
               type="text"
+              autoComplete="off"
               className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 focus:border-[var(--primary)] outline-none transition-all font-semibold text-gray-900"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -67,6 +68,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <div className="relative">
               <input 
                 type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
                 className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 focus:border-[var(--primary)] outline-none transition-all font-semibold text-gray-900"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

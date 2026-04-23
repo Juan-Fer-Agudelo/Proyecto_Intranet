@@ -217,7 +217,16 @@ function IntranetContent({
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
         isAdminLoggedIn={isAdminLoggedIn}
-        onAdminClick={() => isAdminLoggedIn ? setShowAdminModal(true) : setShowLoginModal(true)}
+        onAdminClick={() => {
+          if (isAdminLoggedIn) {
+            setShowAdminModal(true);
+          } else {
+            setUsername('');
+            setPassword('');
+            setLoginMessage({ text: '', color: '' });
+            setShowLoginModal(true);
+          }
+        }}
         onVideosClick={() => setShowVideosModal(true)}
         onPartyPhotosClick={() => navigate('/fotos-fiesta')}
         bulletinQuincenal={bulletinQuincenal}
