@@ -66,8 +66,8 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(cors());
-  app.use(express.json({ limit: '200mb' })); // Límite aumentado aún más para evitar fallos con muchas fotos
-  app.use(express.urlencoded({ limit: '200mb', extended: true }));
+  app.use(express.json({ limit: '500mb' })); // Aumentado a 500MB para asegurar que no sea el backend el que bloquea
+  app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
   // --- RUTAS DE LA API ---
   
