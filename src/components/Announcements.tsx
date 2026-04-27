@@ -132,12 +132,15 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
     }
   };
 
-  // Al cargar, buscar la primera noticia con prioridad y ponerla en el centro
+  // Al cargar, buscar la primera noticia con prioridad y abrirla automáticamente
   React.useEffect(() => {
     if (!initialFocusDone && activeAnnouncements.length > 0) {
-      const priorityIndex = activeAnnouncements.findIndex(a => a.isPriority);
-      if (priorityIndex !== -1) {
+      const priorityAnnouncement = activeAnnouncements.find(a => a.isPriority);
+      if (priorityAnnouncement) {
+        const priorityIndex = activeAnnouncements.indexOf(priorityAnnouncement);
         setActiveIndex(priorityIndex);
+        // Abrir automáticamente la noticia de prioridad
+        setExpandedId(priorityAnnouncement.id);
       }
       setInitialFocusDone(true);
     }

@@ -261,7 +261,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[5000] flex items-center justify-center p-2 md:p-4">
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -269,11 +269,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       />
       <motion.div 
         initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
-        className="relative bg-white rounded-3xl p-5 md:p-10 w-full max-w-[95%] md:max-w-[750px] max-h-[95vh] md:max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
+        className="relative bg-white rounded-[2rem] md:rounded-3xl p-4 md:p-10 w-full max-w-[98%] md:max-w-[750px] max-h-[98vh] md:max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
       >
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sticky top-0 bg-white z-20 pb-4 border-b border-gray-100">
-          <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
-          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sticky -top-5 md:top-0 bg-white z-30 pb-4 border-b border-gray-100">
+          <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
+          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
             <button 
               onClick={onLogout}
               className="flex items-center gap-2 px-3 md:px-4 py-2 bg-red-50 text-red-600 rounded-xl text-[10px] md:text-xs font-black hover:bg-red-100 transition-colors whitespace-nowrap"
@@ -284,7 +284,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
             >
-              <X size={24} className="text-gray-500 md:w-7 md:h-7" />
+              <X size={22} className="text-gray-500 md:w-7 md:h-7" />
             </button>
           </div>
         </div>

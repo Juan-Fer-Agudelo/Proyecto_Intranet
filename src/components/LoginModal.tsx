@@ -30,7 +30,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4">
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -38,7 +38,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       />
       <motion.div 
         initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative bg-white rounded-3xl p-8 w-full max-w-[380px] shadow-2xl border border-gray-100"
+        className="relative bg-white rounded-3xl p-6 md:p-8 w-full max-w-[380px] shadow-2xl border border-gray-100"
       >
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">Acceso Admin</h2>
