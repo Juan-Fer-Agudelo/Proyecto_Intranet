@@ -303,69 +303,111 @@ export default function DirectoryPage() {
               </button>
             </div>
           ) : filteredContacts.length > 0 ? (
-            /* TABLA EJECUTIVA: Diseño responsive con scroll horizontal */
-            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50/50 border-b border-slate-100">
-                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 w-56">Empresa</th>
-                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Área (Gestión)</th>
-                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Usuario</th>
-                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Cargo</th>
-                      <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Extensión</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {/* AnimatePresence permite animar las filas cuando aparecen o desaparecen por el filtro */}
-                    <AnimatePresence mode="popLayout">
-                      {filteredContacts.map((contact) => (
-                        <motion.tr
-                          key={contact.id_directorio}
-                          layout
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="group hover:bg-slate-50/80 transition-colors"
-                        >
-                          {/* Columna Empresa */}
-                          <td className="px-6 py-4">
-                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter border block text-center ${getCompanyBadge(contact.empresa)}`}>
-                              {contact.empresa}
-                            </span>
-                          </td>
-                          {/* Columna Gesntión / Área */}
-                          <td className="px-6 py-4">
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">{contact.gestion || '---'}</p>
-                          </td>
-                          {/* Columna Usuario: Con inicial de nombre pintada con color corporativo */}
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0 border ${getCompanyBadge(contact.empresa)}`}>
-                                {contact.nombre?.charAt(0)}
-                              </div>
-                              <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">
-                                {contact.nombre}
-                              </p>
-                            </div>
-                          </td>
-                          {/* Columna Cargo */}
-                          <td className="px-6 py-4">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">{contact.cargo || '---'}</p>
-                          </td>
-                          {/* Columna Extensión: Resaltada con estilo de botón corporativo */}
-                          <td className="px-6 py-4 text-center">
-                            <span className={`inline-block px-5 py-2 rounded-xl font-black text-xl tracking-tighter shadow-sm border ${getCompanyBadge(contact.empresa)}`}>
-                              {contact.extencion || '---'}
-                            </span>
-                          </td>
-                        </motion.tr>
-                      ))}
-                    </AnimatePresence>
-                  </tbody>
-                </table>
+            <>
+              {/* VISTA MÓVIL (CARDS): Se muestra en pantallas pequeñas */}
+              <div className="grid grid-cols-1 gap-4 md:hidden pb-10">
+                {filteredContacts.map((contact) => (
+                  <motion.div 
+                    key={`mobile-${contact.id_directorio}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col gap-4"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg border ${getCompanyBadge(contact.empresa)}`}>
+                          {contact.nombre?.charAt(0)}
+                        </div>
+                        <div>
+                          <h4 className="font-black text-slate-800 text-sm leading-tight uppercase tracking-tight">{contact.nombre}</h4>
+                          <span className={`inline-block px-3 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border mt-1 ${getCompanyBadge(contact.empresa)}`}>
+                            {contact.empresa}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={`flex items-center justify-center px-4 py-2 rounded-2xl border-2 font-black text-xl tracking-tighter ${getCompanyBadge(contact.empresa)}`}>
+                        {contact.extencion || '---'}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-50">
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest block">Área:</span>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase leading-tight">{contact.gestion || '---'}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest block">Cargo:</span>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase leading-tight">{contact.cargo || '---'}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </div>
+
+              {/* VISTA DESKTOP (TABLA): Se oculta en móviles, se optimiza para TV y Monitor */}
+              <div className="hidden md:block bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden mb-10">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50/50 border-b border-slate-100">
+                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 w-56">Empresa</th>
+                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Área (Gestión)</th>
+                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Usuario</th>
+                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Cargo</th>
+                        <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Extensión</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {/* AnimatePresence permite animar las filas cuando aparecen o desaparecen por el filtro */}
+                      <AnimatePresence mode="popLayout">
+                        {filteredContacts.map((contact) => (
+                          <motion.tr
+                            key={contact.id_directorio}
+                            layout
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="group hover:bg-slate-50/80 transition-colors"
+                          >
+                            {/* Columna Empresa */}
+                            <td className="px-6 py-4">
+                              <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter border block text-center ${getCompanyBadge(contact.empresa)}`}>
+                                {contact.empresa}
+                              </span>
+                            </td>
+                            {/* Columna Gesntión / Área */}
+                            <td className="px-6 py-4">
+                              <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">{contact.gestion || '---'}</p>
+                            </td>
+                            {/* Columna Usuario */}
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0 border ${getCompanyBadge(contact.empresa)}`}>
+                                  {contact.nombre?.charAt(0)}
+                                </div>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">
+                                  {contact.nombre}
+                                </p>
+                              </div>
+                            </td>
+                            {/* Columna Cargo */}
+                            <td className="px-6 py-4">
+                              <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">{contact.cargo || '---'}</p>
+                            </td>
+                            {/* Columna Extensión */}
+                            <td className="px-6 py-4 text-center">
+                              <span className={`inline-block px-5 py-2 rounded-xl font-black text-xl tracking-tighter shadow-sm border ${getCompanyBadge(contact.empresa)}`}>
+                                {contact.extencion || '---'}
+                              </span>
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </AnimatePresence>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
           ) : (
             /* Pantalla informativa cuando no hay resultados en la búsqueda */
             <div className="flex flex-col items-center justify-center py-32 text-center bg-white rounded-[4rem] shadow-sm border border-slate-100">

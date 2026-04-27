@@ -26,7 +26,17 @@ const CarouselCard: React.FC<{
   const scale = (isCenter ? 1 : isSide ? 0.75 : 0.55) * priorityMultiplier;
   const opacity = isCenter ? 1 : isSide ? 0.5 : 0.2;
   const zIndex = 100 - Math.abs(position) * 10 + (ann.isPriority ? 5 : 0);
-  const xOffset = position * (window.innerWidth < 768 ? 130 : 200);
+  
+  // Posicionamiento adaptativo según el ancho de la pantalla
+  let xOffset = position * 130; // Mobile default
+  if (window.innerWidth >= 1280) {
+    xOffset = position * 280; // TV / Ultrawide
+  } else if (window.innerWidth >= 1024) {
+    xOffset = position * 240; // Desktop
+  } else if (window.innerWidth >= 768) {
+    xOffset = position * 180; // Tablet
+  }
+  
   const rotateY = position * -35; 
 
   return (
@@ -43,7 +53,7 @@ const CarouselCard: React.FC<{
       transition={{ type: "spring", stiffness: 200, damping: 25 }}
       whileHover={{ scale: scale * 1.15, y: -20, zIndex: 200 }}
       onClick={isCenter ? onClick : onSelect}
-      className={`absolute w-[110px] md:w-[140px] h-[130px] md:h-[160px] bg-white rounded-[20px] md:rounded-[28px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
+      className={`absolute w-[110px] md:w-[150px] lg:w-[180px] h-[130px] md:h-[180px] lg:h-[220px] bg-white rounded-[20px] md:rounded-[32px] shadow-2xl overflow-hidden cursor-pointer border-2 transition-shadow duration-300 pointer-events-auto ${
         ann.isPriority ? 'border-orange-500 shadow-orange-500/30 ring-4 ring-orange-500/10' : 'border-gray-100 shadow-black/10'
       }`}
       style={{ perspective: "1000px" }}
@@ -74,19 +84,19 @@ const CarouselCard: React.FC<{
           </div>
         )}
       </div>
-      <div className="p-2 md:p-4 flex flex-col justify-between h-[calc(100%-4rem)] md:h-[calc(100%-6rem)] bg-white">
+      <div className="p-2 md:p-4 lg:p-6 flex flex-col justify-between h-[calc(100%-4rem)] md:h-[calc(100%-6rem)] lg:h-[calc(100%-8rem)] bg-white">
         <div>
-          <h4 className="font-black text-gray-900 text-[8px] md:text-[11px] mb-0.5 line-clamp-1 leading-tight uppercase tracking-tight">
+          <h4 className="font-black text-gray-900 text-[8px] md:text-sm lg:text-base mb-0.5 md:mb-1 line-clamp-1 leading-tight uppercase tracking-tight">
             {ann.title}
           </h4>
-          <p className="text-gray-500 text-[7px] md:text-[9px] line-clamp-2 leading-tight opacity-80">
+          <p className="text-gray-500 text-[7px] md:text-xs lg:text-sm line-clamp-2 md:line-clamp-3 leading-tight opacity-80 font-medium">
             {ann.content}
           </p>
         </div>
         {isCenter && (
           <div className="flex items-center gap-1 mt-1 overflow-hidden">
-            <div className="w-1 h-1 rounded-full bg-blue-600 animate-pulse"></div>
-            <span className="text-[7px] font-black text-blue-600 uppercase tracking-widest">Ver</span>
+            <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-blue-600 animate-pulse"></div>
+            <span className="text-[7px] md:text-[10px] lg:text-xs font-black text-blue-600 uppercase tracking-widest">Ver</span>
           </div>
         )}
       </div>
@@ -173,7 +183,7 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
       </AnimatePresence>
 
       <div 
-        className={`fixed inset-x-0 bottom-16 md:bottom-20 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-20 md:top-24 flex items-start justify-center p-4 md:p-8 z-[1400]' : 'z-[1450] h-[300px] md:h-[350px]'}`}
+        className={`fixed inset-x-0 bottom-16 md:bottom-20 lg:bottom-24 pointer-events-none transition-all duration-700 ${isAnyExpanded ? 'top-16 md:top-20 lg:top-24 flex items-start justify-center p-2 md:p-8 z-[1400]' : 'z-[1450] h-[280px] md:h-[350px] lg:h-[450px]'}`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
@@ -184,8 +194,8 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
             onDragEnd={handleDragEnd}
             className="w-full relative h-full flex flex-col items-center justify-center cursor-grab active:cursor-grabbing pointer-events-auto"
           >
-             <div className="absolute top-0 left-12 z-20">
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-full border border-white/20">
+             <div className="absolute top-0 left-6 md:left-12 z-20">
+                <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-white/20">
                    Noticias Globales
                 </span>
              </div>

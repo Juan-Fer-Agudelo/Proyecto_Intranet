@@ -36,7 +36,7 @@ export const Hero: React.FC<HeroProps> = ({ news, heroBgs, currentBgIndex }) => 
       
       <div className="relative z-10 w-full container-custom flex flex-col gap-8 items-center pt-8 md:pt-16">
         {news.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12 w-full max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 md:gap-12 w-full max-w-[95%] xl:max-w-none">
             {news.map((item, idx) => (
               <motion.article 
                 key={item.id}

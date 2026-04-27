@@ -269,22 +269,22 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       />
       <motion.div 
         initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
-        className="relative bg-white rounded-3xl p-6 md:p-10 w-full max-w-[650px] max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
+        className="relative bg-white rounded-3xl p-5 md:p-10 w-full max-w-[95%] md:max-w-[750px] max-h-[95vh] md:max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
       >
-        <div className="flex justify-between items-center mb-8 sticky top-0 bg-white z-10 pb-4 border-b border-gray-100">
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sticky top-0 bg-white z-20 pb-4 border-b border-gray-100">
+          <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
+          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
             <button 
               onClick={onLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-black hover:bg-red-100 transition-colors"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-red-50 text-red-600 rounded-xl text-[10px] md:text-xs font-black hover:bg-red-100 transition-colors whitespace-nowrap"
             >
-              <LogOut size={16} /> Cerrar Sesión
+              <LogOut size={14} className="md:w-4 md:h-4" /> Cerrar Sesión
             </button>
             <button 
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
             >
-              <X size={28} className="text-gray-500" />
+              <X size={24} className="text-gray-500 md:w-7 md:h-7" />
             </button>
           </div>
         </div>
@@ -695,7 +695,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 max-h-[400px] overflow-y-auto p-2 border rounded-2xl custom-scrollbar">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto p-2 border rounded-2xl custom-scrollbar">
               {partyPhotos.map((photo, index) => (
                 <div key={photo.id} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                   <img src={photo.url} className="w-full h-full object-cover" alt="" />
