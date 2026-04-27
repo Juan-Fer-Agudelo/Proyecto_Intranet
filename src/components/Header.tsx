@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/90 backdrop-blur-md text-white px-4 md:px-8 py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
+    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/90 backdrop-blur-md text-white px-4 md:px-8 py-2 md:py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
       <div className="flex items-center gap-2 md:gap-5 shrink-0">
         <img 
           src={CONFIG.LOGOS[currentCompany]} 
@@ -200,22 +200,34 @@ export const Header: React.FC<HeaderProps> = ({
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1550] md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       <nav 
         ref={dropdownRef}
         className={`
-          fixed md:static top-0 right-0 bottom-0 w-[85%] max-w-[320px] md:w-auto
+          fixed md:static top-0 right-0 bottom-0 w-[85%] max-w-[300px] md:w-auto
           bg-white md:bg-transparent
           flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2
-          p-8 md:p-0 transition-transform duration-500 z-[1600] ease-out
+          p-6 md:p-0 transition-transform duration-500 z-[1600] ease-out
           ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
-          shadow-[-10px_0_30px_rgba(0,0,0,0.15)] md:shadow-none
+          shadow-[-10px_0_30px_rgba(0,0,0,0.2)] md:shadow-none
           md:pointer-events-auto overflow-y-auto md:overflow-visible
           md:flex-nowrap md:justify-end md:ml-4
         `}
       >
-        <div className="flex md:hidden items-center justify-between w-full mb-8 pb-4 border-b border-gray-100 shrink-0">
-           <span className="text-[var(--primary)] font-black tracking-tighter text-xl">MENU</span>
-           <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-gray-50 rounded-full text-gray-500">
+        <div className="flex md:hidden items-center justify-between w-full mb-6 pb-4 border-b border-gray-100 shrink-0">
+           <span className="text-[var(--primary)] font-black tracking-tighter text-lg">MENÚ DE NAVEGACIÓN</span>
+           <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors">
              <X size={20} />
            </button>
         </div>

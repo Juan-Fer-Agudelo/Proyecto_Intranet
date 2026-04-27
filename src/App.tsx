@@ -245,7 +245,7 @@ function IntranetContent({
       </main>
 
       {/* Visit Banner - Minimalist Corporate Footer */}
-      <footer className="z-20 bg-white/95 backdrop-blur-md py-4 border-t border-gray-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+      <footer className="z-20 bg-white/95 backdrop-blur-md pt-4 pb-6 border-t border-gray-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] safe-area-pb">
         <div className="container-custom flex items-center justify-between">
           <div className="flex items-center gap-3 text-gray-400 font-bold text-[10px] uppercase tracking-widest shrink-0">
             <Calendar size={14} className="text-blue-500" />

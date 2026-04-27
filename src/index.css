@@ -96,6 +96,19 @@ body {
   padding-right: 1.5rem;
 }
 
+/* Utilities */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 1.5rem);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Fluid Typography */
 @layer base {
   h1 { @apply text-4xl md:text-5xl lg:text-6xl font-black tracking-tight; }

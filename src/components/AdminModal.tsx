@@ -261,30 +261,30 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[5000] flex items-center justify-center p-2 md:p-4">
+    <div className="fixed inset-0 z-[6000] flex items-center justify-center p-2 md:p-4">
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-md"
         onClick={onClose}
       />
       <motion.div 
         initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
-        className="relative bg-white rounded-[2rem] md:rounded-3xl p-4 md:p-10 w-full max-w-[98%] md:max-w-[750px] max-h-[98vh] md:max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
+        className="relative bg-white rounded-[1.5rem] md:rounded-3xl p-4 md:p-10 w-full max-w-[98%] md:max-w-[750px] max-h-[96vh] md:max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
       >
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sticky -top-5 md:top-0 bg-white z-30 pb-4 border-b border-gray-100">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8 sticky top-0 bg-white z-30 pb-4 border-b border-gray-100">
           <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
-          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+          <div className="flex items-center gap-2 w-full md:w-auto">
             <button 
               onClick={onLogout}
-              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-red-50 text-red-600 rounded-xl text-[10px] md:text-xs font-black hover:bg-red-100 transition-colors whitespace-nowrap"
+              className="flex-grow md:flex-initial flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl text-[10px] md:text-xs font-black hover:bg-red-100 transition-colors whitespace-nowrap"
             >
-              <LogOut size={14} className="md:w-4 md:h-4" /> Cerrar Sesión
+              <LogOut size={14} /> Cerrar Sesión
             </button>
             <button 
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto"
+              className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
             >
-              <X size={22} className="text-gray-500 md:w-7 md:h-7" />
+              <X size={20} className="text-gray-500" />
             </button>
           </div>
         </div>
