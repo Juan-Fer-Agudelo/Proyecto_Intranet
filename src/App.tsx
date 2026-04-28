@@ -46,6 +46,7 @@ function IntranetContent({
   setBulletinMensual,
   networkConfig,
   setNetworkConfig,
+  stats,
   saveData,
   showAdminModal,
   setShowAdminModal
@@ -377,12 +378,13 @@ function IntranetContent({
           }}
           networkConfig={networkConfig}
           setNetworkConfig={(val: any) => {
-            setNetworkConfig((prev) => {
+            setNetworkConfig((prev: any) => {
               const newValue = typeof val === 'function' ? val(prev) : val;
               saveData({ config: newValue });
               return newValue;
             });
           }}
+          stats={stats}
         />
 
         <VideosModal 
@@ -441,8 +443,10 @@ export default function App() {
   const [bulletinQuincenal, setBulletinQuincenal] = useState<any>({ SX: [], SO: [], PL: [] });
   const [bulletinMensual, setBulletinMensual] = useState<any[]>([]);
   const [networkConfig, setNetworkConfig] = useState<NetworkConfig>({ n8nUrl: '', n8nAuth: '' });
+  const [stats, setStats] = useState<any>({ totalVisits: 0, lastVisit: null });
   
   // --- COMUNICACIÓN CON EL BACKEND ---
+
 
   /**
    * Obtiene todos los datos de la intranet desde el servidor.
@@ -462,6 +466,7 @@ export default function App() {
       setBulletinQuincenal(data.bulletinQuincenal || { SX: [], SO: [], PL: [] });
       setBulletinMensual(data.bulletinMensual || []);
       setNetworkConfig(data.config || { n8nUrl: 'http://192.101.2.50:5678', n8nAuth: 'intranet:intranet' });
+      setStats(data.stats || { totalVisits: 0, lastVisit: null });
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -498,6 +503,9 @@ export default function App() {
 
   // --- EFFECTS ---
   useEffect(() => {
+    // Registrar visita al cargar la aplicación
+    fetch('/api/stats/hit', { method: 'POST' }).catch(err => console.error('Error tracking visit:', err));
+    
     fetchData();
     // Real-time polling every 10 seconds - Bloqueado si el admin está abierto
     const interval = setInterval(() => {
@@ -566,6 +574,7 @@ export default function App() {
           setBulletinMensual={setBulletinMensual}
           networkConfig={networkConfig}
           setNetworkConfig={setNetworkConfig}
+          stats={stats}
           saveData={saveData}
           showAdminModal={showAdminModal}
           setShowAdminModal={setShowAdminModal}
@@ -596,6 +605,7 @@ export default function App() {
           setBulletinMensual={setBulletinMensual}
           networkConfig={networkConfig}
           setNetworkConfig={setNetworkConfig}
+          stats={stats}
           saveData={saveData}
           showAdminModal={showAdminModal}
           setShowAdminModal={setShowAdminModal}

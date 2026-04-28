@@ -29,6 +29,11 @@ const initialData = {
   },
   // Boletín Mensual: Global para todas las empresas
   bulletinMensual: [],
+  // Estadísticas internas
+  stats: {
+    totalVisits: 0,
+    lastVisit: null
+  },
   // Configuración de red para microservicios
   config: {
     n8nUrl: 'http://192.101.2.50:5678',
@@ -129,6 +134,29 @@ async function startServer() {
       const data = await fs.readJson(DATA_FILE).catch(() => initialData);
       const config = data.config || initialData.config;
       res.status(500).json({ error: `Error en ${config.n8nUrl}: ${error.message}` });
+    }
+  });
+
+  /**
+   * POST /api/stats/hit: Incrementa el contador de visitas.
+   */
+  app.post('/api/stats/hit', async (req, res) => {
+    try {
+      let currentData = initialData;
+      if (fs.existsSync(DATA_FILE)) {
+        currentData = await fs.readJson(DATA_FILE);
+      }
+      
+      const stats = currentData.stats || { totalVisits: 0, lastVisit: null };
+      stats.totalVisits += 1;
+      stats.lastVisit = new Date().toISOString();
+      
+      const newData = { ...currentData, stats };
+      await fs.writeJson(DATA_FILE, newData);
+      res.json({ success: true, totalVisits: stats.totalVisits });
+    } catch (error) {
+      console.error('Error updating stats:', error);
+      res.status(500).json({ error: 'Failed to update stats' });
     }
   });
 

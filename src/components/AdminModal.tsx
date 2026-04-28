@@ -5,7 +5,7 @@
  * carga de medios y configuración de la intranet.
  */
 import React, { useState } from 'react';
-import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
+import { X, Trash2, LogOut, Camera, Eye, EyeOff, Video as VideoIcon, FileText, ArrowUp, ArrowDown, Loader2, Calendar } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Announcement, Video, PartyPhoto, Visit, NetworkConfig } from '../types';
 
@@ -37,6 +37,7 @@ interface AdminModalProps {
   togglePriority: (id: string | number) => void;
   networkConfig: NetworkConfig;
   setNetworkConfig: (val: NetworkConfig | ((prev: NetworkConfig) => NetworkConfig)) => void;
+  stats: { totalVisits: number, lastVisit: string | null };
 }
 
 /**
@@ -70,7 +71,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   setPartyPhotos,
   togglePriority,
   networkConfig,
-  setNetworkConfig
+  setNetworkConfig,
+  stats
 }) => {
   // --- ESTADOS LOCALES PARA FORMULARIOS ---
   const [newAnn, setNewAnn] = useState<{ 
@@ -306,6 +308,42 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           <div className="bg-blue-50 p-5 rounded-2xl border-l-8 border-[var(--primary)] text-sm text-blue-900 font-semibold leading-relaxed">
             Bienvenido al centro de mando. Aquí puedes actualizar la información en tiempo real para todos los empleados.
           </div>
+
+          {/* Estadísticas de Tráfico */}
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-xl shadow-blue-200">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <Eye size={20} className="text-white" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-1 rounded-lg">Tiempo Real</span>
+                </div>
+                <h4 className="text-3xl font-black mb-1">{stats?.totalVisits || 0}</h4>
+                <p className="text-sm font-bold opacity-80">Visitas Totales</p>
+                <div className="mt-4 pt-4 border-t border-white/10 text-[9px] font-black uppercase tracking-widest opacity-60">
+                  Impacto acumulado de la plataforma
+                </div>
+             </div>
+
+             <div className="bg-white p-6 rounded-3xl border-2 border-gray-100 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                   <Calendar size={80} />
+                </div>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="w-10 h-10 bg-gray-100 text-gray-400 rounded-xl flex items-center justify-center">
+                    <Calendar size={20} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-green-50 text-green-600 px-2 py-1 rounded-lg">Activo</span>
+                </div>
+                <h4 className="text-sm font-black text-gray-900 mb-1">
+                  {stats?.lastVisit ? new Date(stats.lastVisit).toLocaleDateString() : 'N/A'}
+                </h4>
+                <p className="text-[10px] font-bold text-gray-400 uppercase">Última Visita Registrada</p>
+                <div className="mt-4 pt-4 border-t border-gray-50 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                   {stats?.lastVisit ? new Date(stats.lastVisit).toLocaleTimeString() : 'Esperando datos...'}
+                </div>
+             </div>
+          </section>
 
           {/* Visitas */}
           <section className="space-y-4">
