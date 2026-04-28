@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-[1500] bg-[var(--primary)]/90 backdrop-blur-md text-white px-4 md:px-8 py-2 md:py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
+    <header className="sticky top-0 z-[50000] bg-[var(--primary)]/90 backdrop-blur-md text-white px-4 md:px-8 py-2 md:py-3 flex justify-between items-center shadow-lg border-b border-white/10 transition-all duration-300">
       <div className="flex items-center gap-2 md:gap-5 shrink-0">
         <img 
           src={CONFIG.LOGOS[currentCompany]} 
@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1550] md:hidden"
+            className="fixed inset-0 bg-black/98 backdrop-blur-2xl z-[80000] md:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
         )}
@@ -215,14 +215,14 @@ export const Header: React.FC<HeaderProps> = ({
       <nav 
         ref={dropdownRef}
         className={`
-          fixed md:static top-0 right-0 bottom-0 w-[85%] max-w-[300px] md:w-auto
+          fixed md:static inset-y-0 right-0 w-[95%] md:w-auto
           bg-white md:bg-transparent
-          flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2
-          p-6 md:p-0 transition-transform duration-500 z-[1600] ease-out
+          flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-2
+          p-10 md:p-0 transition-transform duration-500 z-[80001] ease-out
           ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
-          shadow-[-10px_0_30px_rgba(0,0,0,0.2)] md:shadow-none
+          shadow-[-50px_0_150px_rgba(0,0,0,0.95)] md:shadow-none
           md:pointer-events-auto overflow-y-auto md:overflow-visible
-          md:flex-nowrap md:justify-end md:ml-4
+          md:flex-nowrap md:justify-end md:ml-4 h-screen md:h-auto
         `}
       >
         <div className="flex md:hidden items-center justify-between w-full mb-6 pb-4 border-b border-gray-100 shrink-0">

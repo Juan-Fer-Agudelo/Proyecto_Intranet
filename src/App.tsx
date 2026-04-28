@@ -245,35 +245,56 @@ function IntranetContent({
       </main>
 
       {/* Visit Banner - Minimalist Corporate Footer */}
-      <footer className="z-20 bg-white/95 backdrop-blur-md pt-4 pb-6 border-t border-gray-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] safe-area-pb">
-        <div className="container-custom flex items-center justify-between">
-          <div className="flex items-center gap-3 text-gray-400 font-bold text-[10px] uppercase tracking-widest shrink-0">
-            <Calendar size={14} className="text-blue-500" />
-            <span>Visitas</span>
+      <footer className="z-20 bg-white/95 backdrop-blur-md py-4 md:py-3 border-t border-gray-100 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] safe-area-pb">
+        <div className="container-custom flex flex-col md:flex-row items-center justify-between gap-2 md:gap-8">
+          {/* Label Section */}
+          <div className="flex items-center gap-2.5 text-gray-400 font-bold text-[9px] md:text-[10px] uppercase tracking-[0.2em] shrink-0 border-b md:border-b-0 md:border-r border-gray-100 pb-2 md:pb-0 md:pr-8 w-full md:w-auto justify-center md:justify-start">
+            <div className="p-1.5 bg-blue-50 rounded-lg">
+              <Calendar size={14} className="text-blue-600" />
+            </div>
+            <span className="text-gray-500">Próximas Visitas</span>
           </div>
 
-          <div className="flex-grow flex items-center justify-center relative min-h-[30px] overflow-hidden">
+          {/* Content Section */}
+          <div className="flex-grow flex items-center justify-center relative min-h-[36px] md:min-h-[40px] w-full overflow-hidden">
             <AnimatePresence mode="wait">
               {visits.length > 0 ? (
                 <motion.div
                   key={currentVisitIndex}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.4 }}
-                  className="absolute text-center px-4"
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ 
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 100,
+                    duration: 0.5 
+                  }}
+                  className="text-center w-full -translate-y-3 md:-translate-y-2"
                 >
-                  <span className="text-gray-900 text-[12px] md:text-sm font-black tracking-wide">
+                  <span className="text-gray-900 text-[11px] md:text-[13px] font-black tracking-wide block leading-[1.4] md:leading-normal">
                     {visits[currentVisitIndex]?.text}
                   </span>
                 </motion.div>
               ) : (
-                <div className="text-gray-300 italic text-[10px] tracking-widest uppercase font-bold">Aquí podrás ver las visitas cuando estén disponibles</div>
+                <div className="text-gray-300 italic text-[9px] md:text-[10px] tracking-widest uppercase font-bold text-center px-4 -translate-y-3 md:-translate-y-2">
+                  Aquí podrás ver las visitas cuando estén disponibles
+                </div>
               )}
             </AnimatePresence>
           </div>
 
-          <div className="w-[80px] hidden md:block" /> {/* Spacer to keep center alignment */}
+          {/* Right Spacer/Control Area for Desktop Balance */}
+          <div className="hidden md:flex items-center justify-end w-[150px] shrink-0">
+             <div className="flex gap-1.5">
+               {visits.map((_, idx) => (
+                 <div 
+                   key={idx}
+                   className={`h-1 rounded-full transition-all duration-300 ${idx === currentVisitIndex ? 'w-4 bg-blue-500' : 'w-1.5 bg-gray-200'}`}
+                 />
+               ))}
+             </div>
+          </div>
         </div>
       </footer>
 

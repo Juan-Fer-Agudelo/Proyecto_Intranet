@@ -261,33 +261,46 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[6000] flex items-center justify-center p-2 md:p-4">
+    <div className="fixed inset-0 z-[70000] flex items-center justify-center p-0 md:p-4 overflow-hidden">
       <motion.div 
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/80 backdrop-blur-md"
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/90 backdrop-blur-md"
         onClick={onClose}
       />
       <motion.div 
-        initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
-        className="relative bg-white rounded-[1.5rem] md:rounded-3xl p-4 md:p-10 w-full max-w-[98%] md:max-w-[750px] max-h-[96vh] md:max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar"
+        initial={{ y: "100%", opacity: 0 }} 
+        animate={{ y: 0, opacity: 1 }} 
+        exit={{ y: "100%", opacity: 0 }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="relative bg-white w-full h-full md:h-auto md:rounded-3xl md:max-w-[850px] md:max-h-[95vh] flex flex-col shadow-2xl overflow-hidden"
       >
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8 sticky top-0 bg-white z-30 pb-4 border-b border-gray-100">
-          <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">Panel de Control</h2>
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <button 
+        {/* Header - Fixed at top of modal */}
+        <div className="flex justify-between items-center px-4 md:px-8 py-4 md:py-6 border-b border-gray-100 bg-white min-h-[70px] md:min-h-[90px] shrink-0">
+          <div>
+            <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">Panel de Administración</h2>
+            <p className="hidden md:block text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Gestión Centralizada de Contenidos</p>
+          </div>
+          <div className="flex items-center gap-2 md:gap-3">
+             <button 
               onClick={onLogout}
-              className="flex-grow md:flex-initial flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl text-[10px] md:text-xs font-black hover:bg-red-100 transition-colors whitespace-nowrap"
+              className="p-2 md:p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"
+              title="Cerrar Sesión"
             >
-              <LogOut size={14} /> Cerrar Sesión
+              <LogOut size={18} md:size={22} />
             </button>
             <button 
               onClick={onClose}
-              className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 md:p-3 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors"
             >
-              <X size={20} className="text-gray-500" />
+              <X size={18} md:size={22} />
             </button>
           </div>
         </div>
+
+        {/* Scrollable Content Area */}
+        <div className="flex-grow overflow-y-auto p-4 md:p-10 custom-scrollbar pb-24 md:pb-10">
         
         <div className="space-y-10">
           <div className="bg-blue-50 p-5 rounded-2xl border-l-8 border-[var(--primary)] text-sm text-blue-900 font-semibold leading-relaxed">
@@ -921,7 +934,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             </button>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
+  </div>
   );
 };

@@ -114,11 +114,32 @@ export const Announcements: React.FC<AnnouncementsProps> = ({ announcements, cur
     .filter(a => {
       const isCompanyMatch = a.company === currentCompany || a.company === 'Global';
       if (!a.active || !isCompanyMatch) return false;
+      
       const now = new Date();
-      const start = a.startDate ? new Date(a.startDate) : null;
-      const end = a.endDate ? new Date(a.endDate) : null;
-      if (start && now < start) return false;
-      if (end && now > end) return false;
+      // Solo nos interesa la fecha, así que normalizamos el 'now' para comparaciones de solo fecha si es necesario
+      // Pero como el usuario puede querer horas específicas en el futuro, comparamos objetos Date directamente.
+      
+      if (a.startDate) {
+        const start = new Date(a.startDate);
+        // Si la fecha es válida y aún no hemos llegado a ella, no mostramos
+        if (!isNaN(start.getTime()) && now < start) return false;
+      }
+      
+      if (a.endDate) {
+        const end = new Date(a.endDate);
+        if (!isNaN(end.getTime())) {
+          // Si la fecha de fin es hoy (ej: 2024-05-20), el valor suele ser 2024-05-20T00:00:00
+          // Para que dure TODO el día, ajustamos a las 23:59:59
+          const endDateTime = new Date(end.getTime());
+          endDateTime.setHours(23, 59, 59, 999);
+          
+          if (now > endDateTime) {
+            console.log(`Noticia "${a.title}" expirada: ${endDateTime} < ${now}`);
+            return false;
+          }
+        }
+      }
+      
       return true;
     });
 
